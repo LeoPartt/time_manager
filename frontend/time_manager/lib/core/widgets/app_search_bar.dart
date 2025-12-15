@@ -8,6 +8,8 @@ import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_state.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_state.dart';
+import 'package:time_manager/presentation/screens/management/team_management_screen.dart';
+import 'package:time_manager/presentation/screens/management/user_detail_screen.dart';
 
 class AppSearchBar extends StatefulWidget {
   const AppSearchBar({super.key});
@@ -174,6 +176,23 @@ final results = [...filteredUsers, ...filteredTeams];
                                               .withValues(alpha: 0.7),
                                         ),
                                       ),
+                                 onTap: () {
+                                  if (isUser) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => UserDetailScreen(user: item),
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => TeamManagementScreen(team: item as Team),
+                                      ),
+                                    );
+                                  }
+                                },
                               );
                             },
                           ),
