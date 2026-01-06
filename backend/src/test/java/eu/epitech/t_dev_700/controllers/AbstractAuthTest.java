@@ -63,15 +63,21 @@ abstract class AbstractAuthTest {
 
         when(membershipService.isUserManager(memberUser)).thenReturn(false);
         when(membershipService.isUserMemberOfTeam(memberUser, 1L)).thenReturn(true);
-        when(membershipService.isUserManagerOfTeam(memberUser, 1L)).thenReturn(false);
         when(membershipService.isUserMemberOfTeam(memberUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfTeam(memberUser, 1L)).thenReturn(false);
+        when(membershipService.isUserManagerOfTeam(memberUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfOther(memberUser, 1L)).thenReturn(false);
         when(membershipService.isUserManagerOfOther(memberUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfOther(memberUser, 3L)).thenReturn(false);
 
         when(membershipService.isUserManager(managerUser)).thenReturn(true);
         when(membershipService.isUserMemberOfTeam(managerUser, 1L)).thenReturn(true);
-        when(membershipService.isUserManagerOfTeam(managerUser, 1L)).thenReturn(true);
         when(membershipService.isUserMemberOfTeam(managerUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfTeam(managerUser, 1L)).thenReturn(true);
+        when(membershipService.isUserManagerOfTeam(managerUser, 2L)).thenReturn(false);
         when(membershipService.isUserManagerOfOther(managerUser, 1L)).thenReturn(true);
+        when(membershipService.isUserManagerOfOther(managerUser, 2L)).thenReturn(true);
+        when(membershipService.isUserManagerOfOther(managerUser, 3L)).thenReturn(false);
 
         when(planningService.isOwner(memberUser, 1L)).thenReturn(true);
         when(planningService.isOwner(memberUser, 2L)).thenReturn(false);
