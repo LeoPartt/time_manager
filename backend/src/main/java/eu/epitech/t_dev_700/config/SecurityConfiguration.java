@@ -55,6 +55,12 @@ public class SecurityConfiguration {
                         .accessDeniedHandler(
                                 (req, res, e) -> res.setStatus(HttpServletResponse.SC_FORBIDDEN))
                 )
+                .headers(
+                        h -> h
+                                .contentSecurityPolicy(csp -> csp
+                                        .policyDirectives("default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'")
+                                )
+                )
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
