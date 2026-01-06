@@ -57,6 +57,14 @@ class ScheduleRepositoryTest {
         testSchedule.setDepartureTs(departureTime);
     }
 
+    private ScheduleEntity persistSchedule(UserEntity user, OffsetDateTime arrival, OffsetDateTime departure) {
+        ScheduleEntity s = new ScheduleEntity();
+        s.setUser(user);
+        s.setArrivalTs(arrival);
+        s.setDepartureTs(departure);
+        return entityManager.persistAndFlush(s);
+    }
+
     @Test
     void testSaveSchedule_shouldPersistSchedule() {
         ScheduleEntity saved = scheduleRepository.save(testSchedule);
@@ -199,21 +207,158 @@ class ScheduleRepositoryTest {
     }
 
     @Test
-    void testFindAllSchedulesForUser() {
+    void testFindByUser_shouldReturnOnlyUserSchedules() {
         scheduleRepository.save(testSchedule);
 
-        ScheduleEntity schedule2 = new ScheduleEntity();
-        schedule2.setUser(testUser);
-        schedule2.setArrivalTs(OffsetDateTime.now().minusDays(1));
-        scheduleRepository.save(schedule2);
+        // Another user + schedule
+        AccountEntity account2 = new AccountEntity();
+        account2.setUsername("other");
+        account2.setPassword("pw");
 
+        UserEntity otherUser = new UserEntity();
+        otherUser.setFirstName("Other");
+        otherUser.setLastName("User");
+        otherUser.setEmail("other@example.com");
+        otherUser.setPhoneNumber("+000");
+        otherUser.setAccount(account2);
+        account2.setUser(otherUser);
+
+        otherUser = entityManager.persist(otherUser);
         entityManager.flush();
 
-        List<ScheduleEntity> allSchedules = scheduleRepository.findAll();
-        long userSchedules = allSchedules.stream()
-                .filter(s -> s.getUser().equals(testUser))
-                .count();
+        persistSchedule(otherUser,
+                OffsetDateTime.parse("2026-01-01T10:00:00+01:00"),
+                null);
 
-        assertThat(userSchedules).isGreaterThanOrEqualTo(2);
+        List<ScheduleEntity> result = scheduleRepository.findByUser(testUser);
+
+        assertThat(result).allMatch(s -> s.getUser().getId().equals(testUser.getId()));
+    }
+
+    @Test
+    void testFindByUserAndDepartureTsIsNull_shouldReturnOpenSchedule() {
+        OffsetDateTime t0 = OffsetDateTime.parse("2026-01-05T09:00:00+01:00");
+
+        persistSchedule(testUser, t0.minusHours(4), t0.minusHours(2)); // closed
+        ScheduleEntity open = persistSchedule(testUser, t0.minusHours(1), null); // open
+
+        Optional<ScheduleEntity> found = scheduleRepository.findByUserAndDepartureTsIsNull(testUser);
+
+        assertThat(found).isPresent();
+        assertThat(found.get().getId()).isEqualTo(open.getId());
+    }
+
+    @Test
+    void testFindCurrentSchedules_shouldReturnOnlyCurrent_andOrderByArrivalDesc() {
+        OffsetDateTime now = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+
+        // Not current (ended before now)
+        persistSchedule(testUser,
+                now.minusHours(10),
+                now.minusHours(8));
+
+        // Current (open)
+        ScheduleEntity currentOpen = persistSchedule(testUser,
+                now.minusHours(3),
+                null);
+
+        // Current (ends after now)
+        ScheduleEntity currentClosedLater = persistSchedule(testUser,
+                now.minusHours(5),
+                now.plusHours(1));
+
+        // Not current (starts after now -> arrival > now)
+        persistSchedule(testUser,
+                now.plusHours(1),
+                null);
+
+        List<ScheduleEntity> result = scheduleRepository.findCurrentSchedules(testUser, now);
+
+        assertThat(result)
+                .extracting(ScheduleEntity::getId)
+                .containsExactly(
+                        currentOpen.getId(),          // arrival -3h (newer) first
+                        currentClosedLater.getId()    // arrival -5h second
+                );
+    }
+
+    @Test
+    void testFindFrom_shouldIncludeOpenAndDeparturesAfterFrom_andOrderByArrivalAsc() {
+        OffsetDateTime base = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+        OffsetDateTime from = base.minusHours(4);
+
+        // Excluded: departure before from
+        persistSchedule(testUser,
+                base.minusHours(10),
+                base.minusHours(6)); // departure < from
+
+        // Included: departure >= from
+        ScheduleEntity includedClosed = persistSchedule(testUser,
+                base.minusHours(8),
+                base.minusHours(2)); // departure >= from
+
+        // Included: open (departure null)
+        ScheduleEntity includedOpen = persistSchedule(testUser,
+                base.minusHours(1),
+                null);
+
+        List<ScheduleEntity> result = scheduleRepository.findFrom(testUser, from);
+
+        assertThat(result)
+                .extracting(ScheduleEntity::getId)
+                .containsExactly(
+                        includedClosed.getId(), // arrival -8h first
+                        includedOpen.getId()    // arrival -1h second
+                );
+    }
+
+    @Test
+    void testFindUntil_shouldReturnArrivalsBeforeOrEqualToTo_andOrderByArrivalAsc() {
+        OffsetDateTime to = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+
+        ScheduleEntity a = persistSchedule(testUser, to.minusHours(6), to.minusHours(5));
+        ScheduleEntity b = persistSchedule(testUser, to.minusHours(2), null);
+
+        // Excluded (arrival after to)
+        persistSchedule(testUser, to.plusMinutes(1), null);
+
+        List<ScheduleEntity> result = scheduleRepository.findUntil(testUser, to);
+
+        assertThat(result)
+                .extracting(ScheduleEntity::getId)
+                .containsExactly(a.getId(), b.getId());
+    }
+
+    @Test
+    void testFindOverlapping_shouldReturnSchedulesOverlappingWindow_includingOpen() {
+        OffsetDateTime from = OffsetDateTime.parse("2026-01-06T08:00:00+01:00");
+        OffsetDateTime to = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+
+        // Overlaps (open, arrived before to)
+        ScheduleEntity open = persistSchedule(testUser,
+                OffsetDateTime.parse("2026-01-06T10:00:00+01:00"),
+                null);
+
+        // Overlaps (departure after from)
+        ScheduleEntity overlapClosed = persistSchedule(testUser,
+                OffsetDateTime.parse("2026-01-06T07:00:00+01:00"),
+                OffsetDateTime.parse("2026-01-06T09:00:00+01:00"));
+
+        // Excluded: ends before from (departure < from)
+        persistSchedule(testUser,
+                OffsetDateTime.parse("2026-01-06T06:00:00+01:00"),
+                OffsetDateTime.parse("2026-01-06T07:59:59+01:00"));
+
+        // Excluded: starts after to (arrival > to)
+        persistSchedule(testUser,
+                OffsetDateTime.parse("2026-01-06T12:00:01+01:00"),
+                null);
+
+        List<ScheduleEntity> result = scheduleRepository.findOverlapping(testUser, from, to);
+
+        // Ordered by arrival asc per query
+        assertThat(result)
+                .extracting(ScheduleEntity::getId)
+                .containsExactly(overlapClosed.getId(), open.getId());
     }
 }

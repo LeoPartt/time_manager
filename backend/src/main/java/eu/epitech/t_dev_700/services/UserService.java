@@ -5,12 +5,11 @@ import eu.epitech.t_dev_700.mappers.UserMapper;
 import eu.epitech.t_dev_700.models.PlanningModels;
 import eu.epitech.t_dev_700.models.TeamModels;
 import eu.epitech.t_dev_700.models.UserModels;
+import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.repositories.UserRepository;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Optional;
 
 @Service
 public class UserService extends CRUDService<
@@ -50,8 +49,8 @@ public class UserService extends CRUDService<
     }
 
     @Transactional(readOnly = true)
-    public Long[] getClocks(Long id, Optional<Long> from, Optional<Long> to) {
-        return clockService.getUserClocks(id, from, to);
+    public Long[] getClocks(Long id, UserScheduleQuery query) {
+        return clockService.getUserClocks(id, query);
     }
 
     @Transactional(readOnly = true)
