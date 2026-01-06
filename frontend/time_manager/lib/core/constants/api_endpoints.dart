@@ -53,6 +53,8 @@ class ApiEndpoints {
   // ───────────────────────────────
   // REPORTS / KPI endpoints
   // ───────────────────────────────
-  static String get reports => '/reports';
-  static String get kpis => '/reports/kpis';
+
+  static const String globalReport = '/reports';
+  static String userReport(int userId) => '/reports/users/$userId';
+  static String teamReport(int teamId) => '/reports/teams/$teamId';
 }

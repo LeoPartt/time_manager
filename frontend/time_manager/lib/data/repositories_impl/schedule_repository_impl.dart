@@ -2,6 +2,7 @@
 
 import 'package:time_manager/data/datasources/local/cache_manager.dart';
 import 'package:time_manager/data/datasources/remote/schedule_api.dart';
+import 'package:time_manager/domain/entities/schedule.dart';
 
 import 'package:time_manager/domain/repositories/schedule_repository.dart';
 
@@ -33,7 +34,7 @@ class ClockRepositoryImpl implements ClockRepository {
       await api.clockOut(timestamp);
       // 🔹 On sauvegarde la réponse dans le cache
       await cache.save(_cacheKeyClock, {
-        'io': 'IN',
+        'io': 'OUT',
         'timestamp': timestamp.toIso8601String(),
       }, ttlSeconds: 600);
     } catch (e) {
@@ -61,4 +62,59 @@ class ClockRepositoryImpl implements ClockRepository {
   //   Future<void> clearClockCache() async {
   //   await cache.remove(_cacheKeyClock);
   // // }
+
+ @override
+  Future<Clock?> getClockStatus() async {
+    try {
+      final res = await api.getClockStatus(); // Map<String,dynamic>
+
+      // 🔹 Si ton backend renvoie io/timestamp
+      if (res.containsKey('io')) {
+        final io = (res['io'] as String?)?.toUpperCase();
+        final tsStr = res['timestamp'] as String?;
+        final ts = tsStr != null ? DateTime.tryParse(tsStr) : null;
+
+        // cache la vérité backend
+        await cache.save(
+          _cacheKeyClock,
+          {'io': io, 'timestamp': tsStr},
+          ttlSeconds: 600,
+        );
+
+        if (io == 'IN') return Clock(arrivalTs: ts, departureTs: null);
+        if (io == 'OUT') return Clock(arrivalTs: null, departureTs: ts);
+        return null;
+      }
+
+      // 🔹 Si ton backend renvoie arrivalTs/departureTs
+      if (res.containsKey('arrivalTs') || res.containsKey('departureTs')) {
+        final arrival = res['arrivalTs'] != null ? DateTime.tryParse(res['arrivalTs']) : null;
+        final departure = res['departureTs'] != null ? DateTime.tryParse(res['departureTs']) : null;
+
+        // dérive io pour cache
+        final io = departure == null ? 'IN' : 'OUT';
+        await cache.save(
+          _cacheKeyClock,
+          {'io': io, 'timestamp': (departure ?? arrival)?.toIso8601String()},
+          ttlSeconds: 600,
+        );
+
+        return Clock(arrivalTs: arrival, departureTs: departure);
+      }
+
+      return null;
+    } catch (_) {
+      // fallback cache si offline / erreur
+      final cached = await cache.get(_cacheKeyClock);
+      if (cached == null) return null;
+
+      final io = (cached['io'] as String?)?.toUpperCase();
+      final tsStr = cached['timestamp'] as String?;
+      final ts = tsStr != null ? DateTime.tryParse(tsStr) : null;
+
+      if (io == 'IN') return Clock(arrivalTs: ts, departureTs: null);
+      if (io == 'OUT') return Clock(arrivalTs: null, departureTs: ts);
+      return null;
+    }
+  }
 }

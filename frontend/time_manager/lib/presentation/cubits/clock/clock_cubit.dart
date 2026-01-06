@@ -78,4 +78,23 @@ class ClockCubit extends Cubit<ClockState> {
       await clockIn(context, timestamp);
     }
   }
+ Future<void> getStatus(BuildContext context) async {
+  emit(const ClockState.loading());
+  try {
+    final status = await getStatusUseCase(); // Clock?
+
+    if (status == null) {
+      emit(const ClockState.initial()); // => affichera Clock IN par défaut
+      return;
+    }
+
+    if (status.isClockedIn) {
+      emit(ClockState.clockedIn(status));
+    } else {
+      emit(ClockState.clockedOut(status));
+    }
+  } catch (e) {
+    emit(ClockState.error(e.toString()));
+  }
+}
 }

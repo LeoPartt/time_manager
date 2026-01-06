@@ -2,6 +2,7 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/presentation/routes/guard/auth_guard.dart';
 import 'package:time_manager/presentation/screens/auth/login_screen.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/team_dashboard_screen.dart';
 import 'package:time_manager/presentation/screens/management/create_team_screen.dart';
 import 'package:time_manager/presentation/screens/schedule/clocking.dart';
 import 'package:time_manager/presentation/screens/dashboard/dashboard_screen.dart';
@@ -26,7 +27,7 @@ class AppRouter extends RootStackRouter   {
 
   @override
    List<AutoRoute> get routes =>  [
-     AutoRoute(page: HomeRoute.page, initial: false, guards: [authGuard]),
+     AutoRoute(page: DashboardRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: ProfileRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: LoginRoute.page, initial: true),
      AutoRoute(page: SettingsRoute.page, initial: false, guards: [authGuard]),

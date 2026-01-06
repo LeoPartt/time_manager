@@ -9,6 +9,9 @@ class Clock {
     this.departureTs,
   });
 
-    bool get isClockedIn => departureTs == null;
+   bool get isClockedIn => arrivalTs != null && departureTs == null;
+  
+  // 🔹 Helper pour savoir si on a clocké OUT
+  bool get isClockedOut => departureTs != null;
 
 }

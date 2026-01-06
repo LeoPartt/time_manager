@@ -60,18 +60,48 @@ class CreateUserRoute extends PageRouteInfo<void> {
 
 /// generated route for
 /// [DashboardScreen]
-class DashboardRoute extends PageRouteInfo<void> {
-  const DashboardRoute({List<PageRouteInfo>? children})
-    : super(DashboardRoute.name, initialChildren: children);
+class DashboardRoute extends PageRouteInfo<DashboardRouteArgs> {
+  DashboardRoute({Key? key, int? userId, List<PageRouteInfo>? children})
+    : super(
+        DashboardRoute.name,
+        args: DashboardRouteArgs(key: key, userId: userId),
+        initialChildren: children,
+      );
 
   static const String name = 'DashboardRoute';
 
   static PageInfo page = PageInfo(
     name,
     builder: (data) {
-      return const DashboardScreen();
+      final args = data.argsAs<DashboardRouteArgs>(
+        orElse: () => const DashboardRouteArgs(),
+      );
+      return DashboardScreen(key: args.key, userId: args.userId);
     },
   );
+}
+
+class DashboardRouteArgs {
+  const DashboardRouteArgs({this.key, this.userId});
+
+  final Key? key;
+
+  final int? userId;
+
+  @override
+  String toString() {
+    return 'DashboardRouteArgs{key: $key, userId: $userId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! DashboardRouteArgs) return false;
+    return key == other.key && userId == other.userId;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ userId.hashCode;
 }
 
 /// generated route for
@@ -150,6 +180,22 @@ class SettingsRoute extends PageRouteInfo<void> {
     name,
     builder: (data) {
       return const SettingsScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [TeamDashboardScreen]
+class TeamDashboardRoute extends PageRouteInfo<void> {
+  const TeamDashboardRoute({List<PageRouteInfo>? children})
+    : super(TeamDashboardRoute.name, initialChildren: children);
+
+  static const String name = 'TeamDashboardRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const TeamDashboardScreen();
     },
   );
 }

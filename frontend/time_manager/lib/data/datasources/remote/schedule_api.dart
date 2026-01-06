@@ -31,6 +31,8 @@ final body = {
     }
   }
 
-  Future<dynamic> getClockStatus() async =>
-      client.get(ApiEndpoints.clockStatus);
+   Future<Map<String, dynamic>> getClockStatus() async {
+    final res = await client.get(ApiEndpoints.schedules);
+    return res;
+  }
 }

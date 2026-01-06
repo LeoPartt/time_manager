@@ -5,6 +5,7 @@ import 'package:time_manager/core/theme/local_provider.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/account/auth_cubit.dart';
 import 'package:time_manager/presentation/cubits/clock/clock_cubit.dart';
+import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/navigation/navbar_cubit.dart';
@@ -34,8 +35,9 @@ class Application extends StatelessWidget {
             BlocProvider<NavCubit>(
               create: (_) => NavCubit(),
             ),
+        
             BlocProvider<ClockCubit>(
-              create: (_) => locator<ClockCubit>(),
+              create: (_) => locator<ClockCubit>()..getStatus(context),
             ),
             BlocProvider(create: (_) => locator<TeamCubit>(),)
           ],
