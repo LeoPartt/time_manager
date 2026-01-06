@@ -382,6 +382,20 @@ class UserControllerTest {
     }
 
     @Test
+    void testClocks_currentNull_shouldReturnOk_andDelegate() throws Exception {
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{1L, 2L});
+
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("current", ""))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[1,2]"));
+
+        verify(userService).getClocks(eq(1L), any(UserScheduleQuery.class));
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
     void testClocks_currentTrue_withFrom_shouldReturn400_andNotCallService() throws Exception {
         mockMvc.perform(get("/users/1/clocks")
                         .param("current", "true")
@@ -416,17 +430,6 @@ class UserControllerTest {
     void testClocks_invalidFromFormat_shouldReturn400_andNotCallService() throws Exception {
         mockMvc.perform(get("/users/1/clocks")
                         .param("from", "not-a-date"))
-                .andExpect(status().isUnprocessableEntity());
-
-        verifyNoInteractions(userService);
-    }
-
-    @Test
-    void testClocks_currentNull_shouldReturn400_becauseNotNull() throws Exception {
-        // This only matters if someone sends current without value or with empty value.
-        // Example: /users/1/clocks?current=
-        mockMvc.perform(get("/users/1/clocks")
-                        .param("current", ""))
                 .andExpect(status().isUnprocessableEntity());
 
         verifyNoInteractions(userService);
