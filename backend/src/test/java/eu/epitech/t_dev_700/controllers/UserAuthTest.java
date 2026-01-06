@@ -40,6 +40,14 @@ public class UserAuthTest extends AbstractAuthTest {
             }
             """;
 
+    static String POST_PLANNING_REQUEST_BODY = """
+            {
+                "weekDay": 1,
+                "startTime": "08:00",
+                "endTime": "09:00"
+            }
+            """;
+
     @TestConfiguration
     @EnableMethodSecurity(proxyTargetClass = true)
     public static class MethodSecurityTestConfig {
@@ -415,6 +423,102 @@ public class UserAuthTest extends AbstractAuthTest {
                 authForManager(),
                 get("/users/3/teams"),
                 status().isOk());
+    }
+
+    @Test
+    void testAuth_getPlannings_admin() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForAdmin(),
+                get("/users/1/teams"),
+                status().isOk());
+    }
+
+    @Test
+    void testAuth_getPlannings_self_member() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForUser(),
+                get("/users/1/teams"),
+                status().isOk());
+    }
+
+    @Test
+    void testAuth_getPlannings_other_member() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForUser(),
+                get("/users/3/teams"),
+                status().isOk());
+    }
+
+    @Test
+    void testAuth_getPlannings_self_manager() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForManager(),
+                get("/users/2/teams"),
+                status().isOk());
+    }
+
+    @Test
+    void testAuth_getPlannings_managed_manager() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForManager(),
+                get("/users/1/teams"),
+                status().isOk());
+    }
+
+    @Test
+    void testAuth_getPlannings_other_manager() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForManager(),
+                get("/users/3/teams"),
+                status().isOk());
+    }
+
+    @Test
+    void testAuth_postPlannings_admin() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForAdmin(),
+                post("/users/1/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
+                status().isCreated());
+    }
+
+    @Test
+    void testAuth_postPlannings_self_member() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForUser(),
+                post("/users/1/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
+                status().isForbidden());
+    }
+
+    @Test
+    void testAuth_postPlannings_other_member() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForUser(),
+                post("/users/3/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
+                status().isForbidden());
+    }
+
+    @Test
+    void testAuth_postPlannings_self_manager() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForManager(),
+                post("/users/2/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
+                status().isCreated());
+    }
+
+    @Test
+    void testAuth_postPlannings_managed_manager() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForManager(),
+                post("/users/1/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
+                status().isCreated());
+    }
+
+    @Test
+    void testAuth_postPlannings_other_manager() throws Exception {
+        doTestRequestForAuthExpectCode(
+                authForManager(),
+                post("/users/3/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
+                status().isForbidden());
     }
 
 }

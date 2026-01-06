@@ -4,6 +4,7 @@ import eu.epitech.t_dev_700.doc.ApiUnauthorizedResponse;
 import eu.epitech.t_dev_700.models.PlanningModels;
 import eu.epitech.t_dev_700.models.TeamModels;
 import eu.epitech.t_dev_700.models.UserModels;
+import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.services.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -13,11 +14,11 @@ import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
 import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
 import java.util.Set;
 
 @RestController
@@ -93,8 +94,10 @@ public class UserController implements CRUDController<
     @Operation(summary = "Get user's clock records")
     @PreAuthorize("@userAuth.isSelfOrManagerOfUser(authentication, #id)")
     @GetMapping("{id}/clocks")
-    public ResponseEntity<Long[]> getUserClocks(@PathVariable Long id, @RequestParam("from") Optional<Long> from, @RequestParam("to") Optional<Long> to) {
-        return ResponseEntity.ok(this.userService.getClocks(id, from, to));
+    public ResponseEntity<Long[]> getUserClocks(
+            @Valid @ParameterObject @ModelAttribute UserScheduleQuery query,
+            @PathVariable Long id) {
+        return ResponseEntity.ok(this.userService.getClocks(id, query));
     }
 
     @Operation(summary = "Get user's teams")
@@ -114,8 +117,7 @@ public class UserController implements CRUDController<
     @PreAuthorize("@userAuth.isManagerOfUser(authentication, #id)")
     @PostMapping("{id}/plannings")
     public ResponseEntity<PlanningModels.PlanningResponse> postPlanning(@PathVariable Long id, @RequestBody PlanningModels.PostPlanningRequest body) {
-        PlanningModels.PostPlanningRequest fullBody = setPlanningBodyIdAndValidate(id, body);
-        return created("users/%d/plannings".formatted(id), userService.createPlanning(fullBody));
+        return created("users/%d/plannings".formatted(id), userService.createPlanning(setPlanningBodyIdAndValidate(id, body)));
     }
 
     private PlanningModels.PostPlanningRequest setPlanningBodyIdAndValidate(Long id, PlanningModels.PostPlanningRequest body) {

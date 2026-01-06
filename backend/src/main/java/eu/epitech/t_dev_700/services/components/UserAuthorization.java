@@ -63,7 +63,7 @@ public class UserAuthorization {
     @ApiAuthRoles(AuthRole.MANAGER_OF)
     public boolean isManagerOfUser(Authentication authentication, Long userId) {
         UserEntity currentUser = getCurrentUser(authentication);
-        return isAdmin(authentication) || !isSelf(currentUser, userId) && membershipService.isUserManagerOfOther(currentUser, userId);
+        return isAdmin(authentication) || membershipService.isUserManagerOfOther(currentUser, userId);
     }
 
     @ApiAuthRoles(AuthRole.SELF)
