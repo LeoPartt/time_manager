@@ -117,8 +117,7 @@ public class UserController implements CRUDController<
     @PreAuthorize("@userAuth.isManagerOfUser(authentication, #id)")
     @PostMapping("{id}/plannings")
     public ResponseEntity<PlanningModels.PlanningResponse> postPlanning(@PathVariable Long id, @RequestBody PlanningModels.PostPlanningRequest body) {
-        PlanningModels.PostPlanningRequest fullBody = setPlanningBodyIdAndValidate(id, body);
-        return created("users/%d/plannings".formatted(id), userService.createPlanning(fullBody));
+        return created("users/%d/plannings".formatted(id), userService.createPlanning(setPlanningBodyIdAndValidate(id, body)));
     }
 
     private PlanningModels.PostPlanningRequest setPlanningBodyIdAndValidate(Long id, PlanningModels.PostPlanningRequest body) {

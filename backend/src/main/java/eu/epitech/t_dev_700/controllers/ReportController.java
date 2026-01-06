@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,19 +22,22 @@ public class ReportController {
 
     private final ReportsService reportsService;
 
-    @Operation(summary = "Get time tracking reports")
+    @Operation(summary = "Get global time tracking reports of company")
+    @PreAuthorize("@userAuth.isManager(authentication)")
     @GetMapping
     public ResponseEntity<ReportModels.GlobalReportResponse> getReports() {
         return ResponseEntity.ok(reportsService.getGlobalReports());
     }
 
-    @Operation(summary = "Get time tracking reports")
+    @Operation(summary = "Get time tracking reports of user")
+    @PreAuthorize("@userAuth.isSelfOrManager(authentication, #id)")
     @GetMapping("users/{id}")
     public ResponseEntity<ReportModels.UserReportResponse> getUserReports(@PathVariable Long id) {
         return ResponseEntity.ok(reportsService.getUserReports(id));
     }
 
-    @Operation(summary = "Get time tracking reports")
+    @Operation(summary = "Get time tracking reports of team")
+    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
     @GetMapping("teams/{id}")
     public ResponseEntity<ReportModels.TeamReportResponse> getTeamReports(@PathVariable Long id) {
         return ResponseEntity.ok(reportsService.getTeamReports(id));
