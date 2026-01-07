@@ -12,28 +12,31 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
+// ScheduleRepository.java
 @Repository
 public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> {
 
     List<ScheduleEntity> findByUser(UserEntity user);
 
-    List<ScheduleEntity> findByUserAndArrivalTsAfter(UserEntity user, OffsetDateTime oneYearAgo);
-
-    List<ScheduleEntity> findByDepartureTsIsNotNullAndArrivalTsAfter(OffsetDateTime arrivalTs);
-
-    List<ScheduleEntity> findByUserAndDepartureTsIsNotNullAndArrivalTsAfter(UserEntity user, OffsetDateTime arrivalTs);
-
-    List<ScheduleEntity> findByUserIdInAndDepartureTsIsNotNullAndArrivalTsAfter(Collection<Long> user_id, OffsetDateTime arrivalTs);
-
     Optional<ScheduleEntity> findByUserAndDepartureTsIsNull(UserEntity user);
 
+    List<ScheduleEntity> findByUserAndArrivalTsBetween(UserEntity user, OffsetDateTime from, OffsetDateTime to);
+
+    List<ScheduleEntity> findByDepartureTsIsNotNullAndArrivalTsBetween(OffsetDateTime from, OffsetDateTime to);
+
+    List<ScheduleEntity> findByUserAndDepartureTsIsNotNullAndArrivalTsBetween(UserEntity user, OffsetDateTime from, OffsetDateTime to);
+
+    List<ScheduleEntity> findByUserIdInAndDepartureTsIsNotNullAndArrivalTsBetween(Collection<Long> userIds,
+                                                                                  OffsetDateTime from,
+                                                                                  OffsetDateTime to);
+
     @Query("""
-                select s
-                from ScheduleEntity s
-                where s.user = :user
-                  and s.arrivalTs <= :now
-                  and (s.departureTs is null or s.departureTs > :now)
-                order by s.arrivalTs desc
+             select s
+             from ScheduleEntity s
+             where s.user = :user
+               and s.arrivalTs <= :now
+               and (s.departureTs is null or s.departureTs > :now)
+             order by s.arrivalTs desc
             """)
     List<ScheduleEntity> findCurrentSchedules(
             @Param("user") UserEntity user,
@@ -41,11 +44,11 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     );
 
     @Query("""
-                select s
-                from ScheduleEntity s
-                where s.user = :user
-                  and (s.departureTs is null or s.departureTs >= :from)
-                order by s.arrivalTs asc
+             select s
+             from ScheduleEntity s
+             where s.user = :user
+               and (s.departureTs is null or s.departureTs >= :from)
+             order by s.arrivalTs asc
             """)
     List<ScheduleEntity> findFrom(
             @Param("user") UserEntity user,
@@ -53,11 +56,11 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     );
 
     @Query("""
-                select s
-                from ScheduleEntity s
-                where s.user = :user
-                  and s.arrivalTs <= :to
-                order by s.arrivalTs asc
+             select s
+             from ScheduleEntity s
+             where s.user = :user
+               and s.arrivalTs <= :to
+             order by s.arrivalTs asc
             """)
     List<ScheduleEntity> findUntil(
             @Param("user") UserEntity user,
@@ -65,17 +68,17 @@ public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> 
     );
 
     @Query("""
-                select s
-                from ScheduleEntity s
-                where s.user = :user
-                  and s.arrivalTs <= :to
-                  and (s.departureTs is null or s.departureTs >= :from)
-                order by s.arrivalTs asc
+             select s
+             from ScheduleEntity s
+             where s.user = :user
+               and s.arrivalTs <= :to
+               and (s.departureTs is null or s.departureTs >= :from)
+             order by s.arrivalTs asc
             """)
     List<ScheduleEntity> findOverlapping(
             @Param("user") UserEntity user,
             @Param("from") OffsetDateTime from,
             @Param("to") OffsetDateTime to
     );
-
 }
+
