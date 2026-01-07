@@ -6,7 +6,8 @@ import eu.epitech.t_dev_700.models.ClockModels;
 import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.repositories.ScheduleRepository;
 import eu.epitech.t_dev_700.services.components.UserComponent;
-import eu.epitech.t_dev_700.services.exceptions.InvalidClocking;
+import eu.epitech.t_dev_700.services.exceptions.ForbiddenFutureClocking;
+import eu.epitech.t_dev_700.services.exceptions.InvalidClockingAction;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -236,7 +237,7 @@ class ClockServiceTest {
     }
 
     @Test
-    void testPostClock_in_whenOpenScheduleExists_shouldThrowInvalidClocking() {
+    void testPostClock_in_whenOpenScheduleExists_shouldThrowInvalidClockingAction() {
         OffsetDateTime ts = OffsetDateTime.parse("2026-01-01T10:00:00+01:00");
         ClockModels.PostClockRequest body = new ClockModels.PostClockRequest(ClockModels.ClockAction.IN, ts);
 
@@ -248,10 +249,19 @@ class ClockServiceTest {
         when(scheduleRepository.findByUserAndDepartureTsIsNull(user)).thenReturn(Optional.of(open));
 
         assertThatThrownBy(() -> clockService.postClock(body, user))
-                .isInstanceOf(InvalidClocking.class);
+                .isInstanceOf(InvalidClockingAction.class);
 
         verify(scheduleRepository).findByUserAndDepartureTsIsNull(user);
         verify(scheduleRepository, never()).save(any());
+    }
+
+    @Test
+    void testPostClock_in_whenFutureClocking_shouldThrowForbiddenFutureClocking() {
+        OffsetDateTime ts = OffsetDateTime.now().plusDays(1);
+        ClockModels.PostClockRequest body = new ClockModels.PostClockRequest(ClockModels.ClockAction.IN, ts);
+
+        assertThatThrownBy(() -> clockService.postClock(body, user))
+                .isInstanceOf(ForbiddenFutureClocking.class);
     }
 
     @Test
@@ -287,7 +297,7 @@ class ClockServiceTest {
         when(scheduleRepository.findByUserAndDepartureTsIsNull(user)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> clockService.postClock(body, user))
-                .isInstanceOf(InvalidClocking.class);
+                .isInstanceOf(InvalidClockingAction.class);
 
         verify(scheduleRepository).findByUserAndDepartureTsIsNull(user);
         verify(scheduleRepository, never()).save(any());
