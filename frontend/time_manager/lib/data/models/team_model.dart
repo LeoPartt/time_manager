@@ -18,7 +18,7 @@ abstract class TeamModel with _$TeamModel {
   const TeamModel._();
 
   Team toDomain() => Team(
-        id: id.toString(),
+        id: id,
         name: name,
         description: description,
       );

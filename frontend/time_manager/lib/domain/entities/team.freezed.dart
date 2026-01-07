@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$Team {
 
- String get id; String get name; String? get description;@JsonKey(fromJson: _usersFromJson, toJson: _usersToJson) List<User> get members;
+ int get id; String get name; String? get description;@JsonKey(fromJson: _usersFromJson, toJson: _usersToJson) List<User> get members;
 /// Create a copy of Team
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $TeamCopyWith<$Res>  {
   factory $TeamCopyWith(Team value, $Res Function(Team) _then) = _$TeamCopyWithImpl;
 @useResult
 $Res call({
- String id, String name, String? description,@JsonKey(fromJson: _usersFromJson, toJson: _usersToJson) List<User> members
+ int id, String name, String? description,@JsonKey(fromJson: _usersFromJson, toJson: _usersToJson) List<User> members
 });
 
 
@@ -68,7 +68,7 @@ class _$TeamCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? name = null,Object? description = freezed,Object? members = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,members: null == members ? _self.members : members // ignore: cast_nullable_to_non_nullable
 as List<User>,
@@ -156,7 +156,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String id,  String name,  String? description, @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson)  List<User> members)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  String name,  String? description, @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson)  List<User> members)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _Team() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.members);case _:
@@ -177,7 +177,7 @@ return $default(_that.id,_that.name,_that.description,_that.members);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String id,  String name,  String? description, @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson)  List<User> members)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  String name,  String? description, @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson)  List<User> members)  $default,) {final _that = this;
 switch (_that) {
 case _Team():
 return $default(_that.id,_that.name,_that.description,_that.members);case _:
@@ -197,7 +197,7 @@ return $default(_that.id,_that.name,_that.description,_that.members);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String id,  String name,  String? description, @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson)  List<User> members)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  String name,  String? description, @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson)  List<User> members)?  $default,) {final _that = this;
 switch (_that) {
 case _Team() when $default != null:
 return $default(_that.id,_that.name,_that.description,_that.members);case _:
@@ -215,7 +215,7 @@ class _Team implements Team {
   const _Team({required this.id, required this.name, this.description, @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson) final  List<User> members = const []}): _members = members;
   factory _Team.fromJson(Map<String, dynamic> json) => _$TeamFromJson(json);
 
-@override final  String id;
+@override final  int id;
 @override final  String name;
 @override final  String? description;
  final  List<User> _members;
@@ -259,7 +259,7 @@ abstract mixin class _$TeamCopyWith<$Res> implements $TeamCopyWith<$Res> {
   factory _$TeamCopyWith(_Team value, $Res Function(_Team) _then) = __$TeamCopyWithImpl;
 @override @useResult
 $Res call({
- String id, String name, String? description,@JsonKey(fromJson: _usersFromJson, toJson: _usersToJson) List<User> members
+ int id, String name, String? description,@JsonKey(fromJson: _usersFromJson, toJson: _usersToJson) List<User> members
 });
 
 
@@ -279,7 +279,7 @@ class __$TeamCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? name = null,Object? description = freezed,Object? members = null,}) {
   return _then(_Team(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as String,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
+as int,name: null == name ? _self.name : name // ignore: cast_nullable_to_non_nullable
 as String,description: freezed == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String?,members: null == members ? _self._members : members // ignore: cast_nullable_to_non_nullable
 as List<User>,

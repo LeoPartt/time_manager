@@ -7,7 +7,7 @@ part 'team.g.dart';
 @freezed
 abstract class Team with _$Team {
   const factory Team({
-    required String id,
+    required int id,
     required String name,
     String? description,
     @JsonKey(fromJson: _usersFromJson, toJson: _usersToJson)

@@ -20,8 +20,12 @@ import 'package:time_manager/domain/usecases/account/register_account.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_in.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_out.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_status.dart';
+import 'package:time_manager/domain/usecases/team/add_member_to_team.dart';
 import 'package:time_manager/domain/usecases/team/create_team.dart';
+import 'package:time_manager/domain/usecases/team/get_team.dart';
+import 'package:time_manager/domain/usecases/team/get_team_members.dart';
 import 'package:time_manager/domain/usecases/team/get_teams.dart';
+import 'package:time_manager/domain/usecases/team/remove_member_from_team.dart';
 import 'package:time_manager/domain/usecases/user/create_user.dart';
 import 'package:time_manager/domain/usecases/user/delete_user.dart';
 import 'package:time_manager/domain/usecases/user/get_user.dart';
@@ -130,11 +134,20 @@ locator.registerFactory(() => ClockCubit(
 
   locator.registerFactory(() => CreateTeam(locator<TeamRepository>()));
   locator.registerFactory(() => GetTeams(locator<TeamRepository>()));
+  locator.registerFactory(() => AddMemberToTeam(locator<TeamRepository>()));
+  locator.registerFactory(() => RemoveMemberFromTeam(locator<TeamRepository>()));
+  locator.registerFactory(() => GetTeamById(locator<TeamRepository>()));
+  locator.registerFactory(() => GetTeamMembers(locator<TeamRepository>()));
+
 
 
   locator.registerFactory(() => TeamCubit(
     createTeamUseCase: locator<CreateTeam>(), 
-    getTeamsUseCase: locator<GetTeams>()
+    getTeamsUseCase: locator<GetTeams>(),
+    addMemberToTeamUseCase: locator<AddMemberToTeam>(),
+    removeMemberFromTeamUseCase: locator<RemoveMemberFromTeam>(),
+    getTeamByIdUseCase: locator<GetTeamById>(),
+    getTeamMembersUseCase : locator<GetTeamMembers>(),
     ));
 
   locator.registerLazySingleton(() => AppRouter());

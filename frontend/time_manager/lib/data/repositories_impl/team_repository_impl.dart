@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'package:time_manager/core/exceptions/network_exception.dart';
 import 'package:time_manager/data/datasources/local/local_storage_service.dart';
 import 'package:time_manager/data/datasources/remote/team_api.dart';
 import 'package:time_manager/data/models/team_model.dart';
 import 'package:time_manager/domain/entities/team.dart';
+import 'package:time_manager/domain/entities/user.dart';
 import 'package:time_manager/domain/repositories/team_repository.dart';
 import 'package:time_manager/domain/usecases/team/update_team.dart';
 
@@ -25,11 +27,31 @@ class TeamRepositoryImpl implements TeamRepository {
 
   @override
   Future<Team> getTeam(int id) async {
-    final data = await api.getTeam(id);
-    final dto = TeamModel.fromJson(data);
-    await storage.saveData('last_team', jsonEncode(dto.toJson()));
-    return dto.toDomain();
+    try {
+      final res = await api.getTeam(id);
+
+      final membersRes = await api.getMembers(id);
+
+      final members = membersRes.map<User>((m) => User(
+        id: m['id'],
+        username: m['username'],
+        email: m['email'],
+        firstName: m['firstName'],
+        lastName: m['lastName'],
+        phoneNumber: m['phoneNumber'],
+      )).toList();
+
+      return Team(
+        id: res['id'],
+        name: res['name'],
+        description: res['description'] ?? '',
+        members: members,
+      );
+    } catch (e) {
+      throw NetworkException('Erreur lors du chargement de la team : $e');
+    }
   }
+
 
   @override
   Future<Team> createTeam({
@@ -65,7 +87,11 @@ class TeamRepositoryImpl implements TeamRepository {
 
   @override
   Future<void> addMember(int teamId, int userId) async {
-    await api.addMember(teamId, userId);
+    try {
+      await api.addMember(teamId, userId);
+    } catch (e) {
+      rethrow; 
+    }
   }
 
   @override
@@ -74,9 +100,15 @@ class TeamRepositoryImpl implements TeamRepository {
   }
 
   @override
-  Future<List<Map<String, dynamic>>> getMembers(int teamId) async {
-    final members = await api.getMembers(teamId);
-    return members.cast<Map<String, dynamic>>();
+  Future<List<User>> getMembers(int teamId) async {
+    final raw = await api.getMembers(teamId);
+
+    if (raw.isEmpty) return [];
+
+    return raw
+        .whereType<Map<String, dynamic>>()
+        .map(User.fromJson)
+        .toList();
   }
 
   @override
