@@ -10,6 +10,7 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.Collections;
 import java.util.Map;
 
@@ -77,10 +78,17 @@ public class ErrorModels {
     }
 
     @Schema()
-    public record InvalidClockingDetail (
+    public record InvalidClockingActionDetail(
             @Schema(description = "The expected clocking action for the current state", example = "OUT")
             @NotNull
             ClockModels.ClockAction expected
+    ) {}
+
+    @Schema()
+    public record ForbiddenFutureClockingDetail(
+            @Schema(description = "The datetime of the clocking", example = "2030-01-15T10:30:00Z")
+            @NotNull
+            OffsetDateTime datetime
     ) {}
 
     @Schema()

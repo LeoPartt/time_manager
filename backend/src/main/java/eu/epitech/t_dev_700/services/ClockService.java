@@ -7,7 +7,8 @@ import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.repositories.ScheduleRepository;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import eu.epitech.t_dev_700.services.components.UserComponent;
-import eu.epitech.t_dev_700.services.exceptions.InvalidClocking;
+import eu.epitech.t_dev_700.services.exceptions.InvalidClockingAction;
+import eu.epitech.t_dev_700.services.exceptions.ForbiddenFutureClocking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -63,11 +64,15 @@ public class ClockService {
     }
 
     public void postClock(ClockModels.PostClockRequest body, UserEntity user) {
+
+        if (body.timestamp().isAfter(OffsetDateTime.now()))
+            throw new ForbiddenFutureClocking(body.timestamp());
+
         switch (body.io()) {
             case ClockAction.IN -> scheduleRepository
                     .findByUserAndDepartureTsIsNull(user)
                     .ifPresentOrElse(
-                            new InvalidClocking(ClockAction.OUT),
+                            new InvalidClockingAction(ClockAction.OUT),
                             () -> scheduleRepository.save(new ScheduleEntity(user, body.timestamp())));
             case ClockAction.OUT -> scheduleRepository
                     .findByUserAndDepartureTsIsNull(user)
@@ -76,7 +81,7 @@ public class ClockService {
                                 scheduleEntity.setDepartureTs(body.timestamp());
                                 scheduleRepository.save(scheduleEntity);
                             },
-                            new InvalidClocking(ClockAction.IN));
+                            new InvalidClockingAction(ClockAction.IN));
         }
     }
 
