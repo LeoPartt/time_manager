@@ -1,23 +1,26 @@
 package eu.epitech.t_dev_700.entities;
 
+import eu.epitech.t_dev_700.utils.FiltersHelper;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.time.OffsetDateTime;
 
 @Entity
 @Getter
 @Setter
-@Table(name = "membership",
-        uniqueConstraints = @UniqueConstraint(name = "ux_membership_user_team",
-                columnNames = {"user_id", "team_id"}),
+@Table(
+        name = "membership",
+        uniqueConstraints = @UniqueConstraint(name = "ux_membership_user_team", columnNames = {"user_id", "team_id"}),
         indexes = @Index(name = "idx_membership_team_role", columnList = "team_id, role")
 )
 @SQLDelete(sql = "UPDATE membership SET deleted_at = now() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
+@FilterDef(name = FiltersHelper.DELETED_MEMBERSHIP, autoEnabled = true)
+@Filter(name = FiltersHelper.DELETED_MEMBERSHIP, condition = "deleted_at IS NULL")
 public class MembershipEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -41,6 +44,15 @@ public class MembershipEntity {
     public enum TeamRole {
         MEMBER,
         MANAGER
+    }
+
+    public MembershipEntity() {
+    }
+
+    public MembershipEntity(UserEntity user, TeamEntity team, TeamRole role) {
+        this.user = user;
+        this.team = team;
+        this.role = role;
     }
 
 }

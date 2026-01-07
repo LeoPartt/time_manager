@@ -4,9 +4,13 @@ import eu.epitech.t_dev_700.entities.MembershipEntity;
 import eu.epitech.t_dev_700.entities.TeamEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.repositories.MembershipRepository;
+import eu.epitech.t_dev_700.services.exceptions.AlreadyMember;
 import eu.epitech.t_dev_700.services.exceptions.NotAMember;
+import eu.epitech.t_dev_700.utils.FiltersHelper;
 import eu.epitech.t_dev_700.utils.RBoundBiConsumer;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,6 +21,7 @@ import java.util.List;
 public class MembershipService {
 
     private final MembershipRepository membershipRepository;
+    private final EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public List<MembershipEntity> getMembershipsOfUser(UserEntity user) {
@@ -67,11 +72,20 @@ public class MembershipService {
 
     @Transactional
     public void createMembership(TeamEntity team, UserEntity user, MembershipEntity.TeamRole role) {
-        MembershipEntity membership = new MembershipEntity();
-        membership.setTeam(team);
-        membership.setUser(user);
-        membership.setRole(role);
-        membershipRepository.save(membership);
+        FiltersHelper.without(
+                        entityManager.unwrap(Session.class),
+                        FiltersHelper.DELETED_MEMBERSHIP,
+                        () -> membershipRepository.findByTeamAndUser(team, user))
+                .ifPresentOrElse(
+                        membership -> {
+                            if (membership.getDeletedAt() == null) throw new AlreadyMember(user.getId(), team.getId());
+                            else {
+                                membership.setDeletedAt(null);
+                                membershipRepository.save(membership);
+                            }
+                        },
+                        () -> membershipRepository.save(new MembershipEntity(user, team, role))
+                );
     }
 
     @Transactional
@@ -110,4 +124,5 @@ public class MembershipService {
                         .andThen(membershipRepository::save)
                 );
     }
+
 }

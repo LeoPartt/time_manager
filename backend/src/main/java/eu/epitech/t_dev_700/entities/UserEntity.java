@@ -1,5 +1,6 @@
 package eu.epitech.t_dev_700.entities;
 
+import eu.epitech.t_dev_700.utils.FiltersHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -19,6 +20,7 @@ import java.util.Set;
 @Entity
 @Table(
         name = "tm_user",
+        uniqueConstraints = @UniqueConstraint(name = "ux_user_account", columnNames = {"account_id"}),
         indexes = {
                 @Index(name = "idx_user_account_id", columnList = "account_id"),
                 @Index(name = "idx_user_first_last", columnList = "first_name, last_name"),
@@ -26,8 +28,8 @@ import java.util.Set;
         }
 )
 @SQLDelete(sql = "UPDATE tm_user SET deleted_at = now() WHERE id = ?")
-@FilterDef(name = "deletedUserFilter", autoEnabled = true)
-@Filter(name = "deletedUserFilter", condition = "deleted_at IS NULL")
+@FilterDef(name = FiltersHelper.DELETED_USER, autoEnabled = true)
+@Filter(name = FiltersHelper.DELETED_USER, condition = "deleted_at IS NULL")
 public class UserEntity {
 
     @Id

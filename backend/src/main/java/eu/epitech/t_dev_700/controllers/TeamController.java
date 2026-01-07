@@ -5,6 +5,7 @@ import eu.epitech.t_dev_700.doc.ApiUnauthorizedResponse;
 import eu.epitech.t_dev_700.models.TeamModels;
 import eu.epitech.t_dev_700.models.UserModels;
 import eu.epitech.t_dev_700.services.TeamService;
+import eu.epitech.t_dev_700.services.exceptions.AlreadyMember;
 import eu.epitech.t_dev_700.services.exceptions.NotAMember;
 import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import io.swagger.v3.oas.annotations.Operation;
@@ -98,7 +99,7 @@ public class TeamController implements CRUDController<
     @Operation(summary = "Add a member to a team")
     @ApiResponse(responseCode = "204")
     @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
-    @ApiErrorResponse(ResourceNotFound.class)
+    @ApiErrorResponse({AlreadyMember.class, ResourceNotFound.class})
     @PostMapping("{id}/members/{userId}")
     public ResponseEntity<Void> PostMembership(@PathVariable Long id, @PathVariable Long userId) {
         teamService.postMembership(id, userId);

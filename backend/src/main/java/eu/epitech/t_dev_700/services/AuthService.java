@@ -6,6 +6,7 @@ import eu.epitech.t_dev_700.models.AuthModels;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import eu.epitech.t_dev_700.services.exceptions.DeletedUser;
 import eu.epitech.t_dev_700.services.exceptions.InvalidCredentials;
+import eu.epitech.t_dev_700.utils.FiltersHelper;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Session;
@@ -22,7 +23,6 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UserService userService;
     private final EntityManager entityManager;
     private final PasswordResetService passwordResetService;
 
@@ -46,15 +46,10 @@ public class AuthService {
     }
 
     private void verifyIfDeletedUser(AccountEntity account) {
-        Session session = entityManager.unwrap(Session.class);
-        try {
-            session.disableFilter("deletedUserFilter");
+        FiltersHelper.without(entityManager.unwrap(Session.class), FiltersHelper.DELETED_USER, () -> {
             UserEntity user = account.getUser();
-            if (user == null) return;
-            if (user.getDeletedAt() != null) throw new DeletedUser(account.getUsername());
-        } finally {
-            session.enableFilter("deletedUserFilter");
-        }
+            if (user != null && user.getDeletedAt() != null) throw new DeletedUser(account.getUsername());
+        });
     }
 
     public void resetPassword() {
