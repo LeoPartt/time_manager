@@ -32,7 +32,7 @@ class ApiEndpoints {
   static String get teams => '/teams';
   static String teamById(int id) => '/teams/$id';
   static String get createTeam => '/teams';
-
+  static String addMember(int teamId, int userId) => '/teams/$teamId/members/$userId';
   // ───────────────────────────────
   //  MEMBERSHIPS endpoints
   // ───────────────────────────────

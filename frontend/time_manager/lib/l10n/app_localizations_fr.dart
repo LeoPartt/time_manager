@@ -182,4 +182,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get phoneFormatHint => 'Exemple : +33 6 12 34 56 78';
+
+  @override
+  String get teamManagement => 'TEAM MANAGEMENT';
+
+  @override
+  String get teamHintName => 'Veuillez reneseigner un nom de team';
+
+  @override
+  String get createTeam => 'Créer team';
+
+  @override
+  String get teamNameLabel => 'Nom :';
+
+  @override
+  String get teamDescriptionLabel => 'Description : ';
+
+  @override
+  String get teamNoMember => 'Aucun membre';
+
+  @override
+  String get cancel => 'Stop';
+
+  @override
+  String get addMembers => 'Ajoutez des membres';
 }

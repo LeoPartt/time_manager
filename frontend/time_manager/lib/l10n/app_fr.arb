@@ -76,6 +76,14 @@
   "phoneFormatHint": "Exemple : +33 6 12 34 56 78",
    "toggleThemeHint": "Active ou désactive le mode sombre",
   "languageSelectionHint": "Choisir la langue de l’application",
-  "accessibilityInfo": "Ces paramètres améliorent l’accessibilité et la lisibilité pour tous les utilisateurs."
+  "accessibilityInfo": "Ces paramètres améliorent l’accessibilité et la lisibilité pour tous les utilisateurs.",
+  "teamManagement" : "TEAM MANAGEMENT",
+  "teamHintName": "Veuillez reneseigner un nom de team",
+  "createTeam" : "Créer team",
+  "teamNameLabel" : "Nom :",
+  "teamDescriptionLabel" : "Description : ",
+  "teamNoMember" : "Aucun membre",
+  "cancel" : "Stop",
+  "addMembers" : "Ajoutez des membres"
 
 }

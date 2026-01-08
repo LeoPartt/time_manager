@@ -5,6 +5,7 @@ import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/core/utils/accessibility_utils.dart';
 import 'package:time_manager/domain/entities/user.dart';
 import 'package:time_manager/domain/entities/team.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_state.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
@@ -34,6 +35,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     final width = AppSizes.responsiveWidth(context, 350);
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
@@ -76,7 +78,7 @@ final results = [...filteredUsers, ...filteredTeams];
       ],
       child: Semantics(
                 container: true,
-        label: 'Search bar for users and teams',
+        label: tr.searchbarhint,
 
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 200),
@@ -112,7 +114,7 @@ final results = [...filteredUsers, ...filteredTeams];
                   decoration: InputDecoration(
                     icon: Icon(Icons.search_rounded,
                         color: colorScheme.onSurface,),
-                    hintText: 'Search user or team...',
+                    hintText: tr.searchbarhint,
                     hintStyle: TextStyle(
                       color:  colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
