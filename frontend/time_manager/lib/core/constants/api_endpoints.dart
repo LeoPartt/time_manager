@@ -25,6 +25,9 @@ class ApiEndpoints {
   static String get userProfile => '/users/me';
   static String userById(int id) => '/users/$id';
   static String get updateProfile => '/users';
+    static String userClocks(int userId) => '/users/$userId/clocks';
+  static String userTeams(int userId) => '/users/$userId/teams';
+  static String userPlannings(int userId) => '/users/$userId/plannings';
 
   // ───────────────────────────────
   //  TEAMS endpoints
@@ -57,4 +60,11 @@ class ApiEndpoints {
   static const String globalReport = '/reports';
   static String userReport(int userId) => '/reports/users/$userId';
   static String teamReport(int teamId) => '/reports/teams/$teamId';
+
+  // ═══════════════════════════════════════════════════════
+  // 📅 PLANNINGS
+  // ═══════════════════════════════════════════════════════
+  static const String plannings = '/plannings';
+  static String planning(int id) => '/plannings/$id';
 }
+

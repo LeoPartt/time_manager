@@ -6,5 +6,5 @@ class GetClockStatus {
   final ClockRepository repository;
   GetClockStatus(this.repository);
 
-  Future<Clock?> call() => repository.getClockStatus();
+  Future<Clock?> call(int userId) => repository.getClockStatus( userId);
 }

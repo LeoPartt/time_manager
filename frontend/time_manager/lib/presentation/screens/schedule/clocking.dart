@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/core/utils/accessibility_utils.dart';
 import 'package:time_manager/core/utils/extensions/context_extensions.dart';
@@ -43,12 +42,6 @@ class _ClockingScreenState extends State<ClockingScreen> {
       });
     }
   }
-  @override
-void initState() {
-  super.initState();
-  context.read<ClockCubit>().getStatus(context);
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -56,25 +49,37 @@ void initState() {
     final size = MediaQuery.sizeOf(context);
     final isTablet = size.width >= 600;
     final theme = Theme.of(context);
-        final colorScheme = theme.colorScheme;
-
+    final colorScheme = theme.colorScheme;
 
     return BlocProvider(
       create: (_) => locator<ClockCubit>()..getStatus(context),
-
       child: BlocConsumer<ClockCubit, ClockState>(
         listener: (context, state) {
           state.whenOrNull(
-            clockedIn: (_) => context.showSnack("✅ ${tr.clockin} ${tr.successful}!"),
-            clockedOut: (_) => context.showSnack("✅ ${tr.clockout} ${tr.successful}!"),
-            error: (msg) => context.showSnack("⚠️ $msg", isError: true),
+            // ✅ Notifications UNIQUEMENT pour les états d'ACTION
+            actionClockedIn: (_) => context.showSnack(
+              "✅ ${tr.clockin} ${tr.successful}!",
+            ),
+            actionClockedOut: (_) => context.showSnack(
+              "✅ ${tr.clockout} ${tr.successful}!",
+            ),
+            
+            // ⚠️ Erreurs
+            error: (msg) {
+              context.showSnack("⚠️ $msg", isError: true);
+              
+              if (msg.contains('déjà clocké')) {
+                context.read<ClockCubit>().getStatus(context);
+              }
+            },
           );
         },
         builder: (context, state) {
           final isLoading = state is ClockLoading;
-          final isClockedIn = state is ClockedIn;
-          print(isClockedIn);
-      
+          
+          // ✅ L'utilisateur est clocké IN si l'état est statusClockedIn OU actionClockedIn
+          final isClockedIn = state is StatusClockedIn || state is ActionClockedIn;
+
           return Scaffold(
             bottomNavigationBar: const NavBar(),
             resizeToAvoidBottomInset: true,
@@ -92,24 +97,28 @@ void initState() {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // ────────────── HEADER ──────────────
-       AccessibilityUtils.withLabel(
+                        AccessibilityUtils.withLabel(
                           label: isClockedIn ? tr.clockout : tr.clockin,
-                          child: Header(label: isClockedIn ? tr.clockout : tr.clockin),
-                        ),                      SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-      
-                        // ────────────── CARD CONTAINER ──────────────
-      Semantics(
+                          child: Header(
+                            label: isClockedIn ? tr.clockout : tr.clockin,
+                          ),
+                        ),
+                        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
+
+                        Semantics(
                           label: tr.clockin,
-                          container: true,                        child: Container(
+                          container: true,
+                          child: Container(
                             width: double.infinity,
-                            padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p20)),
+                            padding: EdgeInsets.all(
+                              AppSizes.responsiveWidth(context, AppSizes.p20),
+                            ),
                             decoration: BoxDecoration(
                               color: colorScheme.secondary,
                               borderRadius: BorderRadius.circular(AppSizes.r24),
                               boxShadow: [
                                 BoxShadow(
-                                  color: colorScheme.shadow.withValues(alpha:0.2),
+                                  color: colorScheme.shadow.withValues(alpha: 0.2),
                                   blurRadius: 10,
                                   offset: const Offset(0, 4),
                                 ),
@@ -117,21 +126,26 @@ void initState() {
                             ),
                             child: Column(
                               children: [
-         AccessibilityUtils.withTooltip(context,
-                                  tooltip: tr.clockin,                                child: Icon(
+                                AccessibilityUtils.withTooltip(
+                                  context,
+                                  tooltip: tr.clockin,
+                                  child: Icon(
                                     Icons.access_time,
                                     size: AppSizes.responsiveWidth(
                                       context,
                                       isTablet ? 100 : 80,
                                     ),
                                     color: colorScheme.onSurface,
-                                                                      semanticLabel: "Clock icon",
-      
+                                    semanticLabel: "Clock icon",
                                   ),
                                 ),
-                                SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-                          
-                                // ────────────── TIME INPUT ──────────────
+                                SizedBox(
+                                  height: AppSizes.responsiveHeight(
+                                    context,
+                                    AppSizes.p24,
+                                  ),
+                                ),
+
                                 Semantics(
                                   label: isClockedIn ? tr.departure : tr.arrival,
                                   hint: tr.validate,
@@ -142,16 +156,26 @@ void initState() {
                                     onTap: () => _selectTime(context),
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
-                                      fontSize: AppSizes.responsiveText(context, AppSizes.textLg),
+                                      fontSize: AppSizes.responsiveText(
+                                        context,
+                                        AppSizes.textLg,
+                                      ),
                                     ),
                                     decoration: InputDecoration(
                                       prefixIcon: const Icon(Icons.schedule),
-                                      hintText: isClockedIn ? tr.departure : tr.arrival,
+                                      hintText: isClockedIn
+                                          ? tr.departure
+                                          : tr.arrival,
                                       hintStyle: TextStyle(
-                                        fontSize: AppSizes.responsiveText(context, AppSizes.textMd),
+                                        fontSize: AppSizes.responsiveText(
+                                          context,
+                                          AppSizes.textMd,
+                                        ),
                                       ),
                                       border: OutlineInputBorder(
-                                        borderRadius: BorderRadius.circular(AppSizes.r16),
+                                        borderRadius: BorderRadius.circular(
+                                          AppSizes.r16,
+                                        ),
                                         borderSide: BorderSide(
                                           color: colorScheme.secondary,
                                           width: 2,
@@ -162,10 +186,14 @@ void initState() {
                                     ),
                                   ),
                                 ),
-                          
-                                SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-                          
-                                // ────────────── ACTION BUTTON ──────────────
+
+                                SizedBox(
+                                  height: AppSizes.responsiveHeight(
+                                    context,
+                                    AppSizes.p24,
+                                  ),
+                                ),
+
                                 AccessibilityUtils.withLabel(
                                   label: isClockedIn ? tr.clockout : tr.clockin,
                                   child: AppButton(
@@ -178,14 +206,17 @@ void initState() {
                                         final parsedTime = TimeOfDay.fromDateTime(
                                           DateFormat.jm().parse(picked),
                                         );
-                                                          
+
                                         await context
                                             .read<ClockCubit>()
                                             .toggleClockState(context, parsedTime);
-                                                          
+
                                         _timeController.clear();
                                       } else {
-                                        context.showSnack("⚠️ ${tr.validate}", isError: true);
+                                        context.showSnack(
+                                          "⚠️ ${tr.validate}",
+                                          isError: true,
+                                        );
                                       }
                                     },
                                   ),

@@ -31,8 +31,36 @@ final body = {
     }
   }
 
-   Future<Map<String, dynamic>> getClockStatus() async {
-    final res = await client.get(ApiEndpoints.schedules);
-    return res;
+   Future<Map<String, dynamic>?> getClockStatus(int userId) async {
+    try {
+      // ✅ Appel API avec current=true pour récupérer le clock actif
+      final response = await client.get(
+        ApiEndpoints.userClocks(userId),
+        queryParameters: {'current': 'true'},
+      );
+
+      // Le backend retourne Long[] (timestamps en secondes)
+      final clocks = (response as List).map((e) => e as int).toList();
+
+      if (clocks.isEmpty) {
+        return null; // Pas de clock actif
+      }
+
+      // ✅ Si nombre impair → dernier est IN, sinon OUT
+      final isOdd = clocks.length % 2 == 1;
+      final lastTimestamp = DateTime.fromMillisecondsSinceEpoch(
+        clocks.last * 1000,
+        isUtc: true,
+      );
+
+      return {
+        'io': isOdd ? 'IN' : 'OUT',
+        'timestamp': lastTimestamp.toIso8601String(),
+      };
+    } on NetworkException {
+      rethrow;
+    } catch (e) {
+      throw NetworkException('Unexpected error fetching clock status: $e');
+    }
   }
 }

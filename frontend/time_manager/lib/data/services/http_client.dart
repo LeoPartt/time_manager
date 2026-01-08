@@ -20,24 +20,54 @@ class ApiClient {
   // Generic HTTP methods
   // ───────────────────────────────
 
-  Future<dynamic> get(String endpoint) async {
-  final headers = await authHeaderService.buildHeaders();
-  final response = await http.get(Uri.parse('$_baseUrl$endpoint'), headers: headers);
-  return _handleResponse(response);
-}
+  Future<dynamic> get(
+    String endpoint, {
+    Map<String, dynamic>? queryParameters,
+  }) async {
+    final headers = await authHeaderService.buildHeaders();
+    
+    // ✅ Construction de l'URI avec query params
+    var uri = Uri.parse('$_baseUrl$endpoint');
+    if (queryParameters != null && queryParameters.isNotEmpty) {
+      uri = uri.replace(queryParameters: queryParameters.map(
+        (key, value) => MapEntry(key, value.toString()),
+      ));
+    }
 
-
-  Future<Map<String, dynamic>> post(String endpoint, Map<String, dynamic> body,{bool withAuth = true}) async {
-  final headers = withAuth
-      ? await authHeaderService.buildHeaders()
-      : {'Content-Type': 'application/json', 'Accept': 'application/json'};
-    final response = await http.post(
-      Uri.parse('$_baseUrl$endpoint'),
-      headers: headers,
-      body: jsonEncode(body),
-    );
+    final response = await http.get(uri, headers: headers);
     return _handleResponse(response);
   }
+
+
+ Future<Map<String, dynamic>> post(
+  String endpoint,
+  Map<String, dynamic> body, {
+  bool withAuth = true,
+}) async {
+  final headers = withAuth
+      ? await authHeaderService.buildHeaders()
+      : {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        };
+  
+  final response = await http.post(
+    Uri.parse('$_baseUrl$endpoint'),
+    headers: headers,
+    body: jsonEncode(body),
+  );
+  
+  // ✅ Changement ici : _handleResponse peut retourner dynamic
+  final result = _handleResponse(response);
+  
+  // ✅ Si le résultat est un Map, on le retourne
+  if (result is Map<String, dynamic>) {
+    return result;
+  }
+  
+  // ✅ Sinon, on retourne un Map vide
+  return {};
+}
 
   Future<Map<String, dynamic>> patch(String endpoint, Map<String, dynamic> body) async {
     final headers = await authHeaderService.buildHeaders();

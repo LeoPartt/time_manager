@@ -153,6 +153,52 @@ class ManagementRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
+/// [PlanningCalendarScreen]
+class PlanningCalendarRoute extends PageRouteInfo<PlanningCalendarRouteArgs> {
+  PlanningCalendarRoute({Key? key, int? userId, List<PageRouteInfo>? children})
+    : super(
+        PlanningCalendarRoute.name,
+        args: PlanningCalendarRouteArgs(key: key, userId: userId),
+        initialChildren: children,
+      );
+
+  static const String name = 'PlanningCalendarRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<PlanningCalendarRouteArgs>(
+        orElse: () => const PlanningCalendarRouteArgs(),
+      );
+      return PlanningCalendarScreen(key: args.key, userId: args.userId);
+    },
+  );
+}
+
+class PlanningCalendarRouteArgs {
+  const PlanningCalendarRouteArgs({this.key, this.userId});
+
+  final Key? key;
+
+  final int? userId;
+
+  @override
+  String toString() {
+    return 'PlanningCalendarRouteArgs{key: $key, userId: $userId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! PlanningCalendarRouteArgs) return false;
+    return key == other.key && userId == other.userId;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ userId.hashCode;
+}
+
+/// generated route for
 /// [ProfileScreen]
 class ProfileRoute extends PageRouteInfo<void> {
   const ProfileRoute({List<PageRouteInfo>? children})
