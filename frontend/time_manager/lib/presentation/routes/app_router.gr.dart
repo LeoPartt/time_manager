@@ -231,22 +231,6 @@ class SettingsRoute extends PageRouteInfo<void> {
 }
 
 /// generated route for
-/// [TeamDashboardScreen]
-class TeamDashboardRoute extends PageRouteInfo<void> {
-  const TeamDashboardRoute({List<PageRouteInfo>? children})
-    : super(TeamDashboardRoute.name, initialChildren: children);
-
-  static const String name = 'TeamDashboardRoute';
-
-  static PageInfo page = PageInfo(
-    name,
-    builder: (data) {
-      return const TeamDashboardScreen();
-    },
-  );
-}
-
-/// generated route for
 /// [UserEditScreen]
 class UserEditRoute extends PageRouteInfo<UserEditRouteArgs> {
   UserEditRoute({Key? key, required int userId, List<PageRouteInfo>? children})

@@ -11,12 +11,11 @@ import org.springframework.stereotype.Service;
 
 import java.time.*;
 import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
+import java.time.temporal.WeekFields;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 
 @Service
 @RequiredArgsConstructor
@@ -28,79 +27,162 @@ public class ReportsService {
     private final MembershipService membershipService;
     private final PlanningService planningService;
 
-    private final OffsetDateTime oneYearAgo = ZonedDateTime.now().minusYears(1).toOffsetDateTime();
+    private final Clock clock = Clock.systemDefaultZone();
 
     public ReportModels.GlobalReportResponse getGlobalReports() {
-        Averages averages = computeGlobalWorkAverage();
+        ReportModels.Report averages = computeGlobalWorkAverages();
+        ReportModels.Report punctuality = computeGlobalPunctualityRates();
+        ReportModels.Report attendance = computeGlobalAttendanceRates();
+
         return new ReportModels.GlobalReportResponse(
-                averages.weekly,
-                averages.monthly,
-                computeGlobalPunctualityRate(),
-                computeGlobalAttendanceRate()
+                averages,
+                punctuality,
+                attendance
         );
     }
 
     public ReportModels.UserReportResponse getUserReports(Long userId) {
         UserEntity user = userService.findEntityOrThrow(userId);
-        Averages averages = computeUserWorkAverage(user);
+
+        ReportModels.Report averages = computeUserWorkAverages(user);
+        ReportModels.Report punctuality = computeUserPunctualityRates(user);
+        ReportModels.Report attendance = computeUserAttendanceRates(user);
+
         return new ReportModels.UserReportResponse(
-                averages.weekly,
-                averages.monthly,
-                computeUserPunctualityRate(user),
-                computeUserAttendanceRate(user)
+                userId,
+                averages,
+                punctuality,
+                attendance
         );
     }
 
     public ReportModels.TeamReportResponse getTeamReports(Long teamId) {
         TeamEntity team = teamService.findEntityOrThrow(teamId);
-        Averages averages = computeTeamWorkAverage(team);
+
+        ReportModels.Report averages = computeTeamWorkAverages(team);
+        ReportModels.Report punctuality = computeTeamPunctualityRates(team);
+        ReportModels.Report attendance = computeTeamAttendanceRates(team);
+
         return new ReportModels.TeamReportResponse(
-                averages.weekly,
-                averages.monthly,
-                computeTeamPunctualityRate(team),
-                computeTeamAttendanceRate(team)
+                teamId,
+                averages,
+                punctuality,
+                attendance
         );
     }
 
-    private Averages computeGlobalWorkAverage() {
-        return computeAverages(scheduleRepository.findByDepartureTsIsNotNullAndArrivalTsAfter(oneYearAgo))
-                .orElse(Averages.EMPTY);
+    /* -------------------------
+     * Time windows helpers
+     * ------------------------- */
+
+    private OffsetDateTime now() {
+        return OffsetDateTime.now(clock);
     }
 
-    private Averages computeUserWorkAverage(UserEntity user) {
-        return computeAverages(scheduleRepository.findByUserAndDepartureTsIsNotNullAndArrivalTsAfter(user, oneYearAgo))
-                .orElse(Averages.EMPTY);
+    private OffsetDateTime weekFrom(OffsetDateTime now) {
+        // Rolling last 7 days (simple, timezone-safe enough for KPI)
+        return now.minusDays(7);
     }
 
-    private Averages computeTeamWorkAverage(TeamEntity team) {
-        return computeAverages(
-                scheduleRepository.findByUserIdInAndDepartureTsIsNotNullAndArrivalTsAfter(
-                        membershipService.getMembershipsOfTeam(team)
-                                .stream()
-                                .map(m -> m.getUser().getId())
-                                .toList(),
-                        oneYearAgo))
-                .orElse(Averages.EMPTY);
+    private OffsetDateTime monthFrom(OffsetDateTime now) {
+        // From first day of current month (local offset)
+        return now.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
     }
 
-    private float computeGlobalPunctualityRate() {
+    private OffsetDateTime yearFrom(OffsetDateTime now) {
+        return now.minusYears(1);
+    }
+
+    /* -------------------------
+     * Work averages (hours)
+     * ------------------------- */
+
+    private ReportModels.Report computeGlobalWorkAverages() {
+        OffsetDateTime n = now();
+        return computeWorkAveragesForRange(yearFrom(n), n,
+                scheduleRepository.findByDepartureTsIsNotNullAndArrivalTsBetween(yearFrom(n), n))
+                .orElse(ReportModels.Report.EMPTY);
+    }
+
+    private ReportModels.Report computeUserWorkAverages(UserEntity user) {
+        OffsetDateTime n = now();
+        return computeWorkAveragesForRange(yearFrom(n), n,
+                scheduleRepository.findByUserAndDepartureTsIsNotNullAndArrivalTsBetween(user, yearFrom(n), n))
+                .orElse(ReportModels.Report.EMPTY);
+    }
+
+    private ReportModels.Report computeTeamWorkAverages(TeamEntity team) {
+        OffsetDateTime n = now();
+        List<Long> userIds = membershipService.getMembershipsOfTeam(team).stream()
+                .map(m -> m.getUser().getId())
+                .toList();
+
+        return computeWorkAveragesForRange(yearFrom(n), n,
+                scheduleRepository.findByUserIdInAndDepartureTsIsNotNullAndArrivalTsBetween(userIds, yearFrom(n), n))
+                .orElse(ReportModels.Report.EMPTY);
+    }
+
+    /**
+     * Computes:
+     * - weekly average = totalHours / number of distinct ISO weeks in the range that have work
+     * - monthly average = totalHours / number of distinct months in the range that have work
+     * - yearly average = totalHours (over the range)  (or totalHours / 1 if you prefer)
+     */
+    private Optional<ReportModels.Report> computeWorkAveragesForRange(OffsetDateTime from, OffsetDateTime to, List<ScheduleEntity> schedules) {
+        if (schedules.isEmpty()) return Optional.empty();
+
+        double totalHours = schedules.stream()
+                                    .mapToLong(s -> Duration.between(s.getArrivalTs(), s.getDepartureTs()).toMinutes())
+                                    .sum() / 60.0;
+
+        WeekFields wf = WeekFields.ISO;
+        long weekCount = schedules.stream()
+                .map(s -> s.getArrivalTs().toLocalDate())
+                .map(d -> d.get(wf.weekBasedYear()) + "-" + d.get(wf.weekOfWeekBasedYear()))
+                .distinct()
+                .count();
+
+        long monthCount = schedules.stream()
+                .map(s -> YearMonth.from(s.getArrivalTs()))
+                .distinct()
+                .count();
+
+        float weekly = weekCount == 0 ? 0f : (float) (totalHours / weekCount);
+        float monthly = monthCount == 0 ? 0f : (float) (totalHours / monthCount);
+        float yearly = (float) totalHours;
+
+        return Optional.of(new ReportModels.Report(weekly, monthly, yearly));
+    }
+
+    private ReportModels.Report computeGlobalPunctualityRates() {
         List<UserEntity> users = userService.getAll();
-        if (users.isEmpty()) return 0f;
-        return (float) users.stream()
-                .mapToDouble(this::computeUserPunctualityRate)
-                .average()
-                .orElse(0.0);
+        if (users.isEmpty()) return ReportModels.Report.EMPTY;
+
+        return averageRates(users.stream().map(this::computeUserPunctualityRates));
     }
 
-    private float computeGlobalAttendanceRate() {
-        return (float) userService.getAll().stream()
-                .mapToDouble(this::computeUserAttendanceRate)
-                .average()
-                .orElse(0.0);
+    private ReportModels.Report computeTeamPunctualityRates(TeamEntity team) {
+        List<UserEntity> users = membershipService.getUsersOfTeam(team);
+        if (users.isEmpty()) return ReportModels.Report.EMPTY;
+
+        return averageRates(users.stream().map(this::computeUserPunctualityRates));
     }
 
-    private float computeUserPunctualityRate(UserEntity user) {
-        List<ScheduleEntity> schedules = scheduleRepository.findByUserAndArrivalTsAfter(user, oneYearAgo);
+    private ReportModels.Report computeUserPunctualityRates(UserEntity user) {
+        OffsetDateTime n = now();
+        OffsetDateTime wFrom = weekFrom(n);
+        OffsetDateTime mFrom = monthFrom(n);
+        OffsetDateTime yFrom = yearFrom(n);
+
+        return new ReportModels.Report(
+                computeUserPunctualityRate(user, wFrom, n),
+                computeUserPunctualityRate(user, mFrom, n),
+                computeUserPunctualityRate(user, yFrom, n)
+        );
+    }
+
+    private float computeUserPunctualityRate(UserEntity user, OffsetDateTime from, OffsetDateTime to) {
+        List<ScheduleEntity> schedules = scheduleRepository.findByUserAndArrivalTsBetween(user, from, to);
         if (schedules.isEmpty()) return 0f;
 
         Map<DayOfWeek, LocalTime> plannedStartTimes = planningService.getForUser(user).stream()
@@ -121,77 +203,85 @@ public class ReportsService {
         return (float) onTimeCount / schedules.size() * 100f;
     }
 
-    private float computeUserAttendanceRate(UserEntity user) {
+    /* -------------------------
+     * Attendance rates
+     * ------------------------- */
+
+    private ReportModels.Report computeGlobalAttendanceRates() {
+        List<UserEntity> users = userService.getAll();
+        if (users.isEmpty()) return ReportModels.Report.EMPTY;
+
+        return averageRates(users.stream().map(this::computeUserAttendanceRates));
+    }
+
+    private ReportModels.Report computeTeamAttendanceRates(TeamEntity team) {
+        List<UserEntity> users = membershipService.getUsersOfTeam(team);
+        if (users.isEmpty()) return ReportModels.Report.EMPTY;
+
+        return averageRates(users.stream().map(this::computeUserAttendanceRates));
+    }
+
+    private ReportModels.Report computeUserAttendanceRates(UserEntity user) {
+        OffsetDateTime n = now();
+        OffsetDateTime wFrom = weekFrom(n);
+        OffsetDateTime mFrom = monthFrom(n);
+        OffsetDateTime yFrom = yearFrom(n);
+
+        return new ReportModels.Report(
+                computeUserAttendanceRate(user, wFrom, n),
+                computeUserAttendanceRate(user, mFrom, n),
+                computeUserAttendanceRate(user, yFrom, n)
+        );
+    }
+
+    private float computeUserAttendanceRate(UserEntity user, OffsetDateTime from, OffsetDateTime to) {
         List<PlanningEntity> plannings = planningService.getForUser(user);
         if (plannings.isEmpty()) return 0f;
 
-        List<ScheduleEntity> schedules = scheduleRepository.findByUserAndArrivalTsAfter(user, oneYearAgo);
+        List<ScheduleEntity> schedules = scheduleRepository.findByUserAndArrivalTsBetween(user, from, to);
         Set<LocalDate> presentDays = schedules.stream()
                 .map(s -> s.getArrivalTs().toLocalDate())
                 .collect(Collectors.toSet());
 
-        long totalExpectedDays = computeExpectedWorkingDays(plannings);
-        if (totalExpectedDays == 0) return 0f;
+        long expectedDays = computeExpectedWorkingDays(plannings, from.toLocalDate(), to.toLocalDate());
+        if (expectedDays == 0) return 0f;
 
-        float attendanceRate = (float) presentDays.size() / totalExpectedDays * 100f;
-        return Math.min(attendanceRate, 100f);
+        float rate = (float) presentDays.size() / expectedDays * 100f;
+        return Math.min(rate, 100f);
     }
 
-    private float computeTeamPunctualityRate(TeamEntity team) {
-        return (float) membershipService.getUsersOfTeam(team).stream()
-                .mapToDouble(this::computeUserPunctualityRate)
-                .average()
-                .orElse(0.0);
-    }
-
-    private float computeTeamAttendanceRate(TeamEntity team) {
-        return (float) membershipService.getUsersOfTeam(team).stream()
-                .mapToDouble(this::computeUserAttendanceRate)
-                .average()
-                .orElse(0.0);
-    }
-
-    private long computeExpectedWorkingDays(List<PlanningEntity> plannings) {
-        LocalDate today = LocalDate.now();
-        LocalDate start = today.minusYears(1);
+    private long computeExpectedWorkingDays(List<PlanningEntity> plannings, LocalDate startInclusive, LocalDate endExclusive) {
         Set<DayOfWeek> plannedDays = plannings.stream()
                 .map(p -> DayOfWeek.of(p.getWeekDay().ordinal() + 1))
                 .collect(Collectors.toSet());
 
-        return start.datesUntil(today)
+        return startInclusive.datesUntil(endExclusive)
                 .filter(d -> plannedDays.contains(d.getDayOfWeek()))
                 .count();
     }
 
-    private Optional<Averages> computeAverages(List<ScheduleEntity> schedules) {
-        if (schedules.isEmpty())
-            return Optional.empty();
+    /* -------------------------
+     * Small helpers
+     * ------------------------- */
 
-        double totalHours = schedules.stream()
-                .mapToDouble(s -> Duration.between(s.getArrivalTs(), s.getDepartureTs()).toHours())
-                .sum();
+    private ReportModels.Report averageRates(Stream<ReportModels.Report> ratesStream) {
+        DoubleSummaryStatistics w = new DoubleSummaryStatistics();
+        DoubleSummaryStatistics m = new DoubleSummaryStatistics();
+        DoubleSummaryStatistics y = new DoubleSummaryStatistics();
 
-        long weekCount = schedules.stream()
-                .map(s -> s.getArrivalTs().truncatedTo(ChronoUnit.DAYS)
-                        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
-                .distinct()
-                .count();
+        ratesStream.forEach(r -> {
+            w.accept(r.weekly());
+            m.accept(r.monthly());
+            y.accept(r.yearly());
+        });
 
-        long monthCount = schedules.stream()
-                .map(s -> YearMonth.from(s.getArrivalTs()))
-                .distinct()
-                .count();
+        if (w.getCount() == 0) return ReportModels.Report.EMPTY;
 
-        float weekly = weekCount == 0 ? 0 : (float) (totalHours / weekCount);
-        float monthly = monthCount == 0 ? 0 : (float) (totalHours / monthCount);
-
-        return Optional.of(new Averages(weekly, monthly));
+        return new ReportModels.Report(
+                (float) w.getAverage(),
+                (float) m.getAverage(),
+                (float) y.getAverage()
+        );
     }
 
-    /**
-     * Internal record for reusability
-     */
-    private record Averages(float weekly, float monthly) {
-        public static final Averages EMPTY = new Averages(0, 0);
-    }
 }

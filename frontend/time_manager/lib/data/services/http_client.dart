@@ -56,6 +56,9 @@ class ApiClient {
     headers: headers,
     body: jsonEncode(body),
   );
+    if (response.statusCode == 204) {
+      return {};
+    }
   
   // ✅ Changement ici : _handleResponse peut retourner dynamic
   final result = _handleResponse(response);

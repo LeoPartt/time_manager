@@ -16,7 +16,7 @@ import java.time.OffsetDateTime;
                 columnNames = {"user_id", "team_id"}),
         indexes = @Index(name = "idx_membership_team_role", columnList = "team_id, role")
 )
-@SQLDelete(sql = "UPDATE tm_user SET deleted_at = now() WHERE id = ?")
+@SQLDelete(sql = "UPDATE membership SET deleted_at = now() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class MembershipEntity {
     @Id
