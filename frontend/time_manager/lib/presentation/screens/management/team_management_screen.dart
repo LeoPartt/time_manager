@@ -7,6 +7,7 @@ import 'package:time_manager/core/widgets/app_button.dart';
 import 'package:time_manager/core/widgets/app_search_bar.dart';
 import 'package:time_manager/domain/entities/team.dart';
 import 'package:time_manager/domain/entities/user.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_state.dart';
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
@@ -44,6 +45,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     return MultiBlocListener(
       listeners: [
         BlocListener<UserCubit, UserState>(
@@ -95,7 +97,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Header(label: "TEAM MANAGEMENT"),
+                Header(label: tr.teamManagement),
                 const SizedBox(height: 8),
                 AppSearchBar(),
                 const SizedBox(height: 16),
@@ -125,7 +127,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                               _buildTeamContent(context, team),
                           orElse: () => Center(
                             child: Text(
-                              "Aucune équipe sélectionnée",
+                              "Schould not happen",
                               style:
                                   TextStyle(color: AppColors.textPrimary),
                             ),
@@ -146,6 +148,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
   /// --- UI principale ---
   Widget _buildTeamContent(BuildContext context, Team team) {
     final members = team.members; // 🔒 source unique
+    final tr = AppLocalizations.of(context)!;
 
     return Column(
       children: [
@@ -189,7 +192,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
           child: members.isEmpty
               ? Center(
                   child: Text(
-                    "Aucun membre",
+                    tr.teamNoMember ,
                     style:
                         TextStyle(color: AppColors.textPrimary),
                   ),
@@ -239,7 +242,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             AppButton(
-              label: _isAddingMember ? "Cancel" : "Add a new member",
+              label: _isAddingMember ? tr.cancel : tr.addMembers,
               onPressed: () {
                 setState(() {
                   _isAddingMember = !_isAddingMember;
@@ -247,7 +250,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                 });
               },
             ),
-            AppButton(label: "Delete", onPressed: 
+            AppButton(label: tr.delete, onPressed: 
               () async {
                 final confirmed = await _confirmDelete(context);
 

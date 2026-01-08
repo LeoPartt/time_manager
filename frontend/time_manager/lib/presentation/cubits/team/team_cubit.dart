@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:time_manager/domain/entities/user.dart';
 import 'package:time_manager/domain/usecases/team/add_member_to_team.dart';
 import 'package:time_manager/domain/usecases/team/create_team.dart';
 import 'package:time_manager/domain/usecases/team/delete_team.dart';

@@ -436,6 +436,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Example: +1 202 555 0123'**
   String get phoneFormatHint;
+
+  /// No description provided for @teamManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'TEAM MANAGEMENT'**
+  String get teamManagement;
+
+  /// No description provided for @teamHintName.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a team name'**
+  String get teamHintName;
+
+  /// No description provided for @createTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Create team'**
+  String get createTeam;
+
+  /// No description provided for @teamNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Name :'**
+  String get teamNameLabel;
+
+  /// No description provided for @teamDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description :'**
+  String get teamDescriptionLabel;
+
+  /// No description provided for @teamNoMember.
+  ///
+  /// In en, this message translates to:
+  /// **'No members'**
+  String get teamNoMember;
+
+  /// No description provided for @cancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel'**
+  String get cancel;
+
+  /// No description provided for @addMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'Add members'**
+  String get addMembers;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
