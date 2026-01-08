@@ -24,7 +24,6 @@ class TeamEntityTest {
         assertThat(team.getId()).isEqualTo(1L);
         assertThat(team.getName()).isEqualTo("Development Team");
         assertThat(team.getDescription()).isEqualTo("A team of developers");
-        assertThat(team.getDeletedAt()).isNull();
         assertThat(team.getMemberships()).isNotNull().isEmpty();
     }
 
@@ -140,13 +139,4 @@ class TeamEntityTest {
         assertThat(toString).contains("name='Development Team'");
     }
 
-    @Test
-    void testSoftDelete() {
-        assertThat(team.getDeletedAt()).isNull();
-
-        OffsetDateTime deletionTime = OffsetDateTime.now();
-        team.setDeletedAt(deletionTime);
-
-        assertThat(team.getDeletedAt()).isEqualTo(deletionTime);
-    }
 }

@@ -90,7 +90,6 @@ class TeamMapperTest {
         assertThat(entity.getId()).isNull(); // Not set by mapper
         assertThat(entity.getName()).isEqualTo("New Team");
         assertThat(entity.getDescription()).isEqualTo("A brand new team");
-        assertThat(entity.getDeletedAt()).isNull();
     }
 
     @Test
@@ -119,7 +118,6 @@ class TeamMapperTest {
         assertThat(teamEntity.getName()).isEqualTo("Updated Team Name");
         assertThat(teamEntity.getDescription()).isEqualTo("Updated description");
         assertThat(teamEntity.getId()).isEqualTo(1L); // ID should remain unchanged
-        assertThat(teamEntity.getDeletedAt()).isNull(); // deletedAt should remain unchanged
     }
 
     @Test

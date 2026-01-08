@@ -31,19 +31,19 @@ public interface TeamMapper extends CRUDMapper<
 
     @Override
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    
     TeamEntity createEntity(TeamModels.PostTeamRequest req);
 
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    
     void replaceEntity(@MappingTarget TeamEntity entity, TeamModels.PutTeamRequest body);
 
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    
     void updateEntity(@MappingTarget TeamEntity entity, TeamModels.PatchTeamRequest body);
 }
 

@@ -5,13 +5,13 @@ import eu.epitech.t_dev_700.utils.HasDetails;
 import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.security.core.AuthenticationException;
 
-@Schema(description = "Deleted user", example = "Deleted user")
-public final class DeletedUser extends AuthenticationException implements HasDetails<ErrorModels.InvalidCredentialsDetail> {
+@Schema(description = "Unknown user", example = "Unknown user")
+public final class UnknownUser extends AuthenticationException implements HasDetails<ErrorModels.InvalidCredentialsDetail> {
 
     private final ErrorModels.InvalidCredentialsDetail details;
 
-    public DeletedUser(String username) {
-        super("Deleted user");
+    public UnknownUser(String username) {
+        super("Unknown user");
         this.details = new ErrorModels.InvalidCredentialsDetail(username);
     }
 

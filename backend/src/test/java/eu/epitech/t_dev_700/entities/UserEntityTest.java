@@ -37,18 +37,6 @@ class UserEntityTest {
         assertThat(user.getEmail()).isEqualTo("john.doe@example.com");
         assertThat(user.getPhoneNumber()).isEqualTo("+1234567890");
         assertThat(user.getAccount()).isEqualTo(account);
-        assertThat(user.getDeletedAt()).isNull();
-    }
-
-    @Test
-    void testIsDeleted_whenNotDeleted_shouldReturnFalse() {
-        assertThat(user.isDeleted()).isFalse();
-    }
-
-    @Test
-    void testIsDeleted_whenDeleted_shouldReturnTrue() {
-        user.setDeletedAt(OffsetDateTime.now());
-        assertThat(user.isDeleted()).isTrue();
     }
 
     @Test
@@ -120,14 +108,4 @@ class UserEntityTest {
         assertThat(toString).contains("lastName='Doe'");
     }
 
-    @Test
-    void testSoftDelete() {
-        assertThat(user.getDeletedAt()).isNull();
-
-        OffsetDateTime deletionTime = OffsetDateTime.now();
-        user.setDeletedAt(deletionTime);
-
-        assertThat(user.getDeletedAt()).isEqualTo(deletionTime);
-        assertThat(user.isDeleted()).isTrue();
-    }
 }

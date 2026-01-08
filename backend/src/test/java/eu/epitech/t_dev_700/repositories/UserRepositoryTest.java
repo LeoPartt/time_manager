@@ -179,27 +179,4 @@ class UserRepositoryTest {
         assertThat(saved.getPhoneNumber()).isNull();
     }
 
-    @Test
-    void testSoftDeletedUser_shouldHaveDeletedAtSet() {
-        UserEntity saved = userRepository.save(testUser);
-        Long userId = saved.getId();
-        entityManager.flush();
-        entityManager.clear();
-
-        // Reload entity and set deletedAt
-        UserEntity managed = entityManager.find(UserEntity.class, userId);
-        managed.setDeletedAt(OffsetDateTime.now());
-        entityManager.persist(managed);
-        entityManager.flush();
-        entityManager.clear();
-
-        // Query without @SQLRestriction using native query
-        Object[] result = (Object[]) entityManager.getEntityManager()
-                .createNativeQuery("SELECT id, deleted_at FROM tm_user WHERE id = ?1")
-                .setParameter(1, userId)
-                .getSingleResult();
-
-        assertThat(result).isNotNull();
-        assertThat(result[1]).isNotNull(); // deleted_at column should be set
-    }
 }
