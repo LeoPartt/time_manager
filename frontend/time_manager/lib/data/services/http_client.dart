@@ -36,6 +36,9 @@ class ApiClient {
       headers: headers,
       body: jsonEncode(body),
     );
+    if (response.statusCode == 204) {
+      return {};
+    }
     return _handleResponse(response);
   }
 

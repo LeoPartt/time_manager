@@ -93,7 +93,8 @@ class TeamApi {
   // ────────────────
   Future<void> addMember(int teamId, int userId) async {
     try {
-      await client.post('/api/teams/$teamId/members/$userId', {});
+      final res = await client.post('/teams/$teamId/members/$userId', {});
+      if (res.isEmpty) return;
     } on NetworkException {
       rethrow;
     } catch (e) {
@@ -103,7 +104,7 @@ class TeamApi {
 
   Future<void> removeMember(int teamId, int userId) async {
     try {
-      await client.delete('/api/teams/$teamId/members/$userId');
+      await client.delete('/teams/$teamId/members/$userId');
     } on NetworkException {
       rethrow;
     } catch (e) {
@@ -113,14 +114,14 @@ class TeamApi {
 
   Future<List<dynamic>> getMembers(int teamId) async {
     try {
-      final res = await client.get('/api/teams/$teamId/members');
+      final res = await client.get('/teams/$teamId/members');
 
-      if (res.containsKey('data') && res['data'] is List) {
-        return res['data'] as List<dynamic>;
+      if (res is Map<String, dynamic> && res['data'] is List) {
+        return (res['data'] as List).cast<Map<String, dynamic>>();
       }
 
       if (res is List) {
-        return res;
+        return res.cast<Map<String, dynamic>>();
       }
 
       throw NetworkException('Unexpected response format: $res');
@@ -136,7 +137,7 @@ class TeamApi {
   // ────────────────
   Future<void> assignManager(int teamId, int userId) async {
     try {
-      await client.patch('/api/teams/$teamId/manager/$userId', {});
+      await client.patch('/teams/$teamId/manager/$userId', {});
     } on NetworkException {
       rethrow;
     } catch (e) {
@@ -146,7 +147,7 @@ class TeamApi {
 
   Future<void> removeManager(int teamId) async {
     try {
-      await client.delete('/api/teams/$teamId/manager');
+      await client.delete('/teams/$teamId/manager');
     } on NetworkException {
       rethrow;
     } catch (e) {
@@ -156,7 +157,7 @@ class TeamApi {
 
   Future<Map<String, dynamic>> getManager(int teamId) async {
     try {
-      final res = await client.get('/api/teams/$teamId/manager');
+      final res = await client.get('/teams/$teamId/manager');
 
       if (res.containsKey('data') && res['data'] is Map<String, dynamic>) {
         return res['data'] as Map<String, dynamic>;

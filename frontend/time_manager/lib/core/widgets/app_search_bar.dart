@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:time_manager/core/constants/app_colors.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/core/utils/accessibility_utils.dart';
 import 'package:time_manager/domain/entities/user.dart';
@@ -8,6 +9,8 @@ import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_state.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_state.dart';
+import 'package:time_manager/presentation/screens/management/team_management_screen.dart';
+import 'package:time_manager/presentation/screens/management/user_detail_screen.dart';
 
 class AppSearchBar extends StatefulWidget {
   const AppSearchBar({super.key});
@@ -25,7 +28,7 @@ class _AppSearchBarState extends State<AppSearchBar> {
   @override
   void initState() {
     super.initState();
-    context.read<UserCubit>().getUsers(context);
+    context.read<UserCubit>().getUsers();
     context.read<TeamCubit>().getTeams();
   }
 
@@ -172,23 +175,47 @@ final results = [...filteredUsers, ...filteredTeams];
                                   weight: FontWeight.w600,
                                   color: textColor,
                                 ),
-                                subtitle: AccessibilityUtils.accessibleTextWidget(
-                                  context,
-                                  isUser
-                                      ? (item).email
-                                      : (item as Team).description ??
-                                          'No description',
-                                  baseSize: AppSizes.textSm,
-                                  color: textColor.withValues(alpha: 0.8),
-                                ),
-                              ),
+                                subtitle: isUser
+                                    ? Text(
+                                        item.email,
+                                        style: TextStyle(
+                                          color: AppColors.textPrimary
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                      )
+                                    : Text(
+                                        (item as Team).description ??
+                                            'No description',
+                                        style: TextStyle(
+                                          color: AppColors.textPrimary
+                                              .withValues(alpha: 0.7),
+                                        ),
+                                      ),
+                                 onTap: () {
+                                  if (isUser) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => UserDetailScreen(user: item),
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => TeamManagementScreen(team: item as Team),
+                                      ),
+                                    );
+                                  }
+                                },
+                              )
                             );
-                          },
-                        ),
-                ),
-            ],
+                            },
+                          ),
+                  ),
+              ],
+            ),
           ),
-        ),
       ),
     );
   }
