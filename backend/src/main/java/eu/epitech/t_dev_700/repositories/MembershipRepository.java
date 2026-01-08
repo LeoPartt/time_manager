@@ -28,13 +28,6 @@ public interface MembershipRepository extends JpaRepository<MembershipEntity, Lo
 
     boolean existsByUserAndRole(UserEntity user, MembershipEntity.TeamRole role);
 
-    @Query(value="select * from membership where id = :id", nativeQuery=true)
-    Optional<MembershipEntity> findByIdIncludeDeleted(@Param("id") long id);
-
-
-    @Query(value="select * from membership where team_id = :teamId and user_id = :userId", nativeQuery=true)
-    Optional<MembershipEntity> findByTeamIdAndUserIdIncludeDeleted(@Param("userId") long userId, @Param("teamId") long teamId);
-
     @Query("""
     select (count(mA) > 0)
     from MembershipEntity mA

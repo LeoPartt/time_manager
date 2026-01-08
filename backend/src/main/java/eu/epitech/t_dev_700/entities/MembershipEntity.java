@@ -3,8 +3,6 @@ package eu.epitech.t_dev_700.entities;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
 
 import java.time.OffsetDateTime;
 
@@ -16,8 +14,6 @@ import java.time.OffsetDateTime;
         uniqueConstraints = @UniqueConstraint(name = "ux_membership_user_team", columnNames = {"user_id", "team_id"}),
         indexes = @Index(name = "idx_membership_team_role", columnList = "team_id, role")
 )
-@SQLDelete(sql = "UPDATE membership SET deleted_at = now() WHERE id = ?")
-@SQLRestriction("deleted_at IS NULL")
 public class MembershipEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,12 +33,6 @@ public class MembershipEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private TeamRole role;
-
-    public boolean isDeleted() { return deletedAt != null; }
-
-    public void recover() {
-        this.deletedAt = null;
-    }
 
     public enum TeamRole {
         MEMBER,

@@ -173,18 +173,6 @@ class MembershipRepositoryTest {
     }
 
     @Test
-    void testSoftDeletedMembership_shouldNotBeFound() {
-        MembershipEntity saved = membershipRepository.save(testMembership);
-        saved.setDeletedAt(OffsetDateTime.now());
-        entityManager.persist(saved);
-        entityManager.flush();
-        entityManager.clear();
-
-        Optional<MembershipEntity> found = membershipRepository.findById(saved.getId());
-        assertThat(found).isEmpty();
-    }
-
-    @Test
     void testSaveMembership_withDifferentTeam_shouldSucceed() {
         membershipRepository.save(testMembership);
 

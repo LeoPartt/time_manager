@@ -4,7 +4,6 @@ import eu.epitech.t_dev_700.entities.MembershipEntity;
 import eu.epitech.t_dev_700.entities.TeamEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.repositories.MembershipRepository;
-import eu.epitech.t_dev_700.services.exceptions.AlreadyMember;
 import eu.epitech.t_dev_700.services.exceptions.NotAMember;
 import eu.epitech.t_dev_700.utils.RBoundBiConsumer;
 import jakarta.persistence.EntityManager;
@@ -19,7 +18,6 @@ import java.util.List;
 public class MembershipService {
 
     private final MembershipRepository membershipRepository;
-    private final EntityManager entityManager;
 
     @Transactional(readOnly = true)
     public List<MembershipEntity> getMembershipsOfUser(UserEntity user) {
@@ -70,17 +68,7 @@ public class MembershipService {
 
     @Transactional
     public void createMembership(TeamEntity team, UserEntity user, MembershipEntity.TeamRole role) {
-        membershipRepository.findByTeamIdAndUserIdIncludeDeleted(team.getId(), user.getId())
-                .ifPresentOrElse(
-                        membership -> {
-                            if (!membership.isDeleted()) throw new AlreadyMember(user.getId(), team.getId());
-                            else {
-                                membership.recover();
-                                membershipRepository.save(membership);
-                            }
-                        },
-                        () -> membershipRepository.save(new MembershipEntity(user, team, role))
-                );
+        membershipRepository.save(new MembershipEntity(user, team, role));
     }
 
     @Transactional
