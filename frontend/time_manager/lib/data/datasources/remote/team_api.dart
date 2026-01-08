@@ -93,7 +93,7 @@ class TeamApi {
   // ────────────────
   Future<void> addMember(int teamId, int userId) async {
     try {
-      final res = await client.post('/teams/$teamId/members/$userId', {});
+      final res = await client.post(ApiEndpoints.addMember(teamId, userId), {});
       if (res.isEmpty) return;
     } on NetworkException {
       rethrow;

@@ -74,5 +74,13 @@
 
   "invalidPhoneNumber": "Invalid phone number",
   "phoneNumberRequired": "Phone number is required",
-  "phoneFormatHint": "Example: +1 202 555 0123"
-}
+  "phoneFormatHint": "Example: +1 202 555 0123",
+  "teamManagement": "TEAM MANAGEMENT",
+  "teamHintName": "Please enter a team name",
+  "createTeam" : "Create team",
+  "teamNameLabel" : "Name :",
+  "teamDescriptionLabel" : "Description :",
+  "teamNoMember" : "No members",
+  "cancel" : "Cancel",
+  "addMembers" : "Add members"
+  }

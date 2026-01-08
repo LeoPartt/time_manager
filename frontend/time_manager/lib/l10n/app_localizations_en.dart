@@ -182,4 +182,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get phoneFormatHint => 'Example: +1 202 555 0123';
+
+  @override
+  String get teamManagement => 'TEAM MANAGEMENT';
+
+  @override
+  String get teamHintName => 'Please enter a team name';
+
+  @override
+  String get createTeam => 'Create team';
+
+  @override
+  String get teamNameLabel => 'Name :';
+
+  @override
+  String get teamDescriptionLabel => 'Description :';
+
+  @override
+  String get teamNoMember => 'No members';
+
+  @override
+  String get cancel => 'Cancel';
+
+  @override
+  String get addMembers => 'Add members';
 }
