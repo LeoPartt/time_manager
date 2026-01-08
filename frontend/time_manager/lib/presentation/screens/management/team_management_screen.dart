@@ -11,6 +11,7 @@ import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_state.dart';
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_state.dart';
+import 'package:time_manager/presentation/routes/app_router.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 
@@ -77,7 +78,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                 ),
               ),
               initial: () {
-                context.router.pop();
+                context.router.push(const ManagementRoute());
               },
             );
           }
