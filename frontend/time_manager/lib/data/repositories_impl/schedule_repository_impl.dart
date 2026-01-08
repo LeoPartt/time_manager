@@ -2,6 +2,7 @@
 
 import 'package:time_manager/data/datasources/local/cache_manager.dart';
 import 'package:time_manager/data/datasources/remote/schedule_api.dart';
+import 'package:time_manager/domain/entities/schedule.dart';
 
 import 'package:time_manager/domain/repositories/schedule_repository.dart';
 
@@ -33,7 +34,7 @@ class ClockRepositoryImpl implements ClockRepository {
       await api.clockOut(timestamp);
       // 🔹 On sauvegarde la réponse dans le cache
       await cache.save(_cacheKeyClock, {
-        'io': 'IN',
+        'io': 'OUT',
         'timestamp': timestamp.toIso8601String(),
       }, ttlSeconds: 600);
     } catch (e) {
@@ -61,4 +62,47 @@ class ClockRepositoryImpl implements ClockRepository {
   //   Future<void> clearClockCache() async {
   //   await cache.remove(_cacheKeyClock);
   // // }
+
+ @override
+  @override
+  Future<Clock?> getClockStatus(int userId) async {
+    try {
+      // ✅ Appelle TOUJOURS l'API en premier
+      final status = await api.getClockStatus(userId);
+      
+      if (status == null) {
+        await cache.remove(_cacheKeyClock);
+        return null;
+      }
+
+      final io = status['io'] as String;
+      final tsStr = status['timestamp'] as String;
+      final ts = DateTime.parse(tsStr);
+
+      // Met à jour le cache
+      await cache.save(_cacheKeyClock, status, ttlSeconds: 600);
+
+      if (io == 'IN') {
+        return Clock(arrivalTs: ts, departureTs: null);
+      } else {
+        return Clock(arrivalTs: null, departureTs: ts);
+      }
+    } catch (e) {
+      // ⚠️ Fallback sur le cache en cas d'erreur réseau
+      final cached = await cache.get(_cacheKeyClock);
+      if (cached != null) {
+        final io = cached['io'] as String?;
+        final tsStr = cached['timestamp'] as String?;
+        final ts = tsStr != null ? DateTime.tryParse(tsStr) : null;
+
+        if (io == 'IN') {
+          return Clock(arrivalTs: ts, departureTs: null);
+        }
+        if (io == 'OUT') {
+          return Clock(arrivalTs: null, departureTs: ts);
+        }
+      }
+      return null;
+    }
+  }
 }

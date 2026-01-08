@@ -56,7 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
           error: (message) => context.showSnack(message, isError: true),
           authenticated: (_) {
             context.showSnack("✅ ${tr.login} ${tr.successful}");
-            context.router.replaceAll([const HomeRoute()]);
+            context.router.replaceAll([ DashboardRoute()]);
           },
           orElse: () {},
         );

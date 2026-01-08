@@ -4,9 +4,12 @@ import 'package:time_manager/domain/entities/team.dart';
 import 'package:time_manager/domain/entities/user.dart';
 import 'package:time_manager/presentation/routes/guard/auth_guard.dart';
 import 'package:time_manager/presentation/screens/auth/login_screen.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/planning_calendar.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/team_dashboard_screen.dart';
 import 'package:time_manager/presentation/screens/management/create_team_screen.dart';
 import 'package:time_manager/presentation/screens/management/team_management_screen.dart';
 import 'package:time_manager/presentation/screens/management/user_detail_screen.dart';
+import 'package:time_manager/presentation/screens/planning/planning_management_screen.dart';
 import 'package:time_manager/presentation/screens/schedule/clocking.dart';
 import 'package:time_manager/presentation/screens/dashboard/dashboard_screen.dart';
 import 'package:time_manager/presentation/screens/home_screen.dart';
@@ -30,7 +33,7 @@ class AppRouter extends RootStackRouter   {
 
   @override
    List<AutoRoute> get routes =>  [
-     AutoRoute(page: HomeRoute.page, initial: false, guards: [authGuard]),
+     AutoRoute(page: DashboardRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: ProfileRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: LoginRoute.page, initial: true),
      AutoRoute(page: SettingsRoute.page, initial: false, guards: [authGuard]),
@@ -41,6 +44,10 @@ class AppRouter extends RootStackRouter   {
      AutoRoute(page: ManagementRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: UserDetailRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: TeamManagementRoute.page, initial: false, guards: [authGuard]),
-     AutoRoute(page: CreateTeamRoute.page, initial: false, guards: [authGuard])
+     AutoRoute(page: CreateTeamRoute.page, initial: false, guards: [authGuard]),
+     AutoRoute(page: PlanningCalendarRoute.page, initial: false, guards: [authGuard]),
+     AutoRoute(page: TeamDashboardRoute.page, initial: false, guards: [authGuard]),
+     AutoRoute(page: PlanningManagementRoute.page, initial: false, guards: [authGuard]),
+     
   ];
 }

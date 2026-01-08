@@ -23,8 +23,8 @@ class NavBar extends StatelessWidget {
       Icons.person_rounded,
       Icons.settings,
     ];
-    final routes = [
-      const HomeRoute(),
+    final List<PageRouteInfo> routes = [
+       DashboardRoute(),
       const ClockingRoute(),
       const ManagementRoute(),
       const UserRoute(),
