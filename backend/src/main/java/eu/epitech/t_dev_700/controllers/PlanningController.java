@@ -37,7 +37,7 @@ public class PlanningController implements CRUDController<
 
     @Override
     @Operation(summary = "Get all plannings")
-    @PreAuthorize("@userAuth.isAdmin(authentication)")
+    @PreAuthorize("@userAuth.isAdministrator(authentication)")
     @GetMapping
     public ResponseEntity<PlanningModels.PlanningResponse[]> GetAll() {
         return ResponseEntity.ok(planningService.list());
@@ -45,7 +45,7 @@ public class PlanningController implements CRUDController<
 
     @Override
     @Operation(summary = "Create a planning")
-    @PreAuthorize("@userAuth.isAdmin(authentication)")
+    @PreAuthorize("@userAuth.isAdministrator(authentication)")
     @PostMapping
     public ResponseEntity<PlanningModels.PlanningResponse> Post(@Valid @Validated(ExpectsUserId.class) @RequestBody PlanningModels.PostPlanningRequest body) {
         return this.created("plannings", planningService.create(body));

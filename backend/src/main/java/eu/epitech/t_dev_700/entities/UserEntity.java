@@ -18,7 +18,6 @@ import java.util.Set;
 @Entity
 @Table(
         name = "tm_user",
-        uniqueConstraints = @UniqueConstraint(name = "ux_user_account", columnNames = {"account_id"}),
         indexes = {
                 @Index(name = "idx_user_account_id", columnList = "account_id"),
                 @Index(name = "idx_user_first_last", columnList = "first_name, last_name"),
@@ -63,6 +62,12 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PlanningEntity> plannings = new LinkedHashSet<>();
+
+    @Transient
+    public boolean isManager() {
+        return memberships.stream()
+                .anyMatch(m -> m.getRole() == MembershipEntity.TeamRole.MANAGER);
+    }
 
     public boolean isDeleted() { return deletedAt != null; }
 

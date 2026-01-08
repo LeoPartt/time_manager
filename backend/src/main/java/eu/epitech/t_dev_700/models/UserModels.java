@@ -38,7 +38,13 @@ public class UserModels {
             String email,
 
             @Schema(description = "User's phone number", example = "+1234567890")
-            String phoneNumber
+            String phoneNumber,
+
+            @Schema(description = "Whether the user is manager of at least one team", example = "true")
+            boolean isManager,
+
+            @Schema(description = "Whether the user is an administrator", example = "true")
+            boolean isAdministrator
     ) implements User, HasId {
     }
 

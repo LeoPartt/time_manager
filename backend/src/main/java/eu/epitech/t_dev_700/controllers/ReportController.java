@@ -41,7 +41,7 @@ public class ReportController {
 
     @Operation(summary = "Get time tracking reports of team")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
+    @PreAuthorize("@userAuth.isManagerOfTeam(authentication, #id)")
     @GetMapping("teams/{id}")
     public ResponseEntity<ReportModels.TeamReportResponse> getTeamReports(@PathVariable Long id) {
         return ResponseEntity.ok(reportsService.getTeamReports(id));

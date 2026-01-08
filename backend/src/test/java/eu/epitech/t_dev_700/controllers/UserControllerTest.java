@@ -54,7 +54,9 @@ class UserControllerTest {
                 "John",
                 "Doe",
                 "john.doe@example.com",
-                "+1234567890"
+                "+1234567890",
+                false,
+                false
         );
 
         userResponses = new UserModels.UserResponse[]{userResponse};
@@ -169,7 +171,9 @@ class UserControllerTest {
                 "UpdatedJohn",
                 "UpdatedDoe",
                 "updated@example.com",
-                "+9999999999"
+                "+9999999999",
+                false,
+                false
         );
 
         when(userService.replace(eq(1L), any())).thenReturn(updatedModel);
@@ -217,7 +221,9 @@ class UserControllerTest {
                 "Jane",
                 "Doe",
                 "john.doe@example.com",
-                "+1234567890"
+                "+1234567890",
+                false,
+                false
         );
 
         when(userService.update(eq(1L), any())).thenReturn(patchedModel);
