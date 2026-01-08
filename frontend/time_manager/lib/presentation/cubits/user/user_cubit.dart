@@ -71,17 +71,14 @@ class UserCubit extends Cubit<UserState> {
     }
   }
 
-  Future<void> getUsers(BuildContext context) async {
-       final tr = AppLocalizations.of(context)!;
+  Future<void> getUsers() async {
+    emit(const UserState.loading());
 
-   emit(const UserState.loading());
     try {
       final users = await getUsersUseCase();
-
       emit(UserState.listLoaded(users));
     } catch (e) {
-
-      emit(UserState.error(('${tr.error}: ${e.toString()}')));
+      emit(UserState.error(e.toString()));
     }
   }
 
