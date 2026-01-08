@@ -57,10 +57,10 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
                       children: [
                         _buildKPIRow(context, report, colorScheme),
                         SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-                        WorkChart(
-                          weeklyHours: report.workAverageWeekly,
-                          monthlyHours: report.workAverageMonthly,
-                        ),
+                        // WorkChart(
+                        //   weeklyHours: report.workAverageWeekly,
+                        //   monthlyHours: report.workAverageMonthly,
+                        // ),
                       ],
                     ),
                     error: (msg) => Center(child: Text('Erreur: $msg', style: TextStyle(color: Colors.red))),

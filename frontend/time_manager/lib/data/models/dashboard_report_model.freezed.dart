@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DashboardReportModel {
 
-@JsonKey(name: 'WorkAverageWeekly') double get workAverageWeekly;@JsonKey(name: 'WorkAverageMonthly') double get workAverageMonthly;@JsonKey(name: 'PunctualityRate') double get punctualityRate;@JsonKey(name: 'AttendanceRate') double get attendanceRate;
+ int get userId;@JsonKey(name: 'WorkAverages') ReportModel get workAverages;@JsonKey(name: 'PunctualityRates') ReportModel get punctualityRates;@JsonKey(name: 'AttendanceRates') ReportModel get attendanceRates;
 /// Create a copy of DashboardReportModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $DashboardReportModelCopyWith<DashboardReportModel> get copyWith => _$DashboardR
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardReportModel&&(identical(other.workAverageWeekly, workAverageWeekly) || other.workAverageWeekly == workAverageWeekly)&&(identical(other.workAverageMonthly, workAverageMonthly) || other.workAverageMonthly == workAverageMonthly)&&(identical(other.punctualityRate, punctualityRate) || other.punctualityRate == punctualityRate)&&(identical(other.attendanceRate, attendanceRate) || other.attendanceRate == attendanceRate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DashboardReportModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.workAverages, workAverages) || other.workAverages == workAverages)&&(identical(other.punctualityRates, punctualityRates) || other.punctualityRates == punctualityRates)&&(identical(other.attendanceRates, attendanceRates) || other.attendanceRates == attendanceRates));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,workAverageWeekly,workAverageMonthly,punctualityRate,attendanceRate);
+int get hashCode => Object.hash(runtimeType,userId,workAverages,punctualityRates,attendanceRates);
 
 @override
 String toString() {
-  return 'DashboardReportModel(workAverageWeekly: $workAverageWeekly, workAverageMonthly: $workAverageMonthly, punctualityRate: $punctualityRate, attendanceRate: $attendanceRate)';
+  return 'DashboardReportModel(userId: $userId, workAverages: $workAverages, punctualityRates: $punctualityRates, attendanceRates: $attendanceRates)';
 }
 
 
@@ -48,11 +48,11 @@ abstract mixin class $DashboardReportModelCopyWith<$Res>  {
   factory $DashboardReportModelCopyWith(DashboardReportModel value, $Res Function(DashboardReportModel) _then) = _$DashboardReportModelCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'WorkAverageWeekly') double workAverageWeekly,@JsonKey(name: 'WorkAverageMonthly') double workAverageMonthly,@JsonKey(name: 'PunctualityRate') double punctualityRate,@JsonKey(name: 'AttendanceRate') double attendanceRate
+ int userId,@JsonKey(name: 'WorkAverages') ReportModel workAverages,@JsonKey(name: 'PunctualityRates') ReportModel punctualityRates,@JsonKey(name: 'AttendanceRates') ReportModel attendanceRates
 });
 
 
-
+$ReportModelCopyWith<$Res> get workAverages;$ReportModelCopyWith<$Res> get punctualityRates;$ReportModelCopyWith<$Res> get attendanceRates;
 
 }
 /// @nodoc
@@ -65,16 +65,43 @@ class _$DashboardReportModelCopyWithImpl<$Res>
 
 /// Create a copy of DashboardReportModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? workAverageWeekly = null,Object? workAverageMonthly = null,Object? punctualityRate = null,Object? attendanceRate = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? userId = null,Object? workAverages = null,Object? punctualityRates = null,Object? attendanceRates = null,}) {
   return _then(_self.copyWith(
-workAverageWeekly: null == workAverageWeekly ? _self.workAverageWeekly : workAverageWeekly // ignore: cast_nullable_to_non_nullable
-as double,workAverageMonthly: null == workAverageMonthly ? _self.workAverageMonthly : workAverageMonthly // ignore: cast_nullable_to_non_nullable
-as double,punctualityRate: null == punctualityRate ? _self.punctualityRate : punctualityRate // ignore: cast_nullable_to_non_nullable
-as double,attendanceRate: null == attendanceRate ? _self.attendanceRate : attendanceRate // ignore: cast_nullable_to_non_nullable
-as double,
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as int,workAverages: null == workAverages ? _self.workAverages : workAverages // ignore: cast_nullable_to_non_nullable
+as ReportModel,punctualityRates: null == punctualityRates ? _self.punctualityRates : punctualityRates // ignore: cast_nullable_to_non_nullable
+as ReportModel,attendanceRates: null == attendanceRates ? _self.attendanceRates : attendanceRates // ignore: cast_nullable_to_non_nullable
+as ReportModel,
   ));
 }
-
+/// Create a copy of DashboardReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ReportModelCopyWith<$Res> get workAverages {
+  
+  return $ReportModelCopyWith<$Res>(_self.workAverages, (value) {
+    return _then(_self.copyWith(workAverages: value));
+  });
+}/// Create a copy of DashboardReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ReportModelCopyWith<$Res> get punctualityRates {
+  
+  return $ReportModelCopyWith<$Res>(_self.punctualityRates, (value) {
+    return _then(_self.copyWith(punctualityRates: value));
+  });
+}/// Create a copy of DashboardReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ReportModelCopyWith<$Res> get attendanceRates {
+  
+  return $ReportModelCopyWith<$Res>(_self.attendanceRates, (value) {
+    return _then(_self.copyWith(attendanceRates: value));
+  });
+}
 }
 
 
@@ -156,10 +183,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'WorkAverageWeekly')  double workAverageWeekly, @JsonKey(name: 'WorkAverageMonthly')  double workAverageMonthly, @JsonKey(name: 'PunctualityRate')  double punctualityRate, @JsonKey(name: 'AttendanceRate')  double attendanceRate)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int userId, @JsonKey(name: 'WorkAverages')  ReportModel workAverages, @JsonKey(name: 'PunctualityRates')  ReportModel punctualityRates, @JsonKey(name: 'AttendanceRates')  ReportModel attendanceRates)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DashboardReportModel() when $default != null:
-return $default(_that.workAverageWeekly,_that.workAverageMonthly,_that.punctualityRate,_that.attendanceRate);case _:
+return $default(_that.userId,_that.workAverages,_that.punctualityRates,_that.attendanceRates);case _:
   return orElse();
 
 }
@@ -177,10 +204,10 @@ return $default(_that.workAverageWeekly,_that.workAverageMonthly,_that.punctuali
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'WorkAverageWeekly')  double workAverageWeekly, @JsonKey(name: 'WorkAverageMonthly')  double workAverageMonthly, @JsonKey(name: 'PunctualityRate')  double punctualityRate, @JsonKey(name: 'AttendanceRate')  double attendanceRate)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int userId, @JsonKey(name: 'WorkAverages')  ReportModel workAverages, @JsonKey(name: 'PunctualityRates')  ReportModel punctualityRates, @JsonKey(name: 'AttendanceRates')  ReportModel attendanceRates)  $default,) {final _that = this;
 switch (_that) {
 case _DashboardReportModel():
-return $default(_that.workAverageWeekly,_that.workAverageMonthly,_that.punctualityRate,_that.attendanceRate);case _:
+return $default(_that.userId,_that.workAverages,_that.punctualityRates,_that.attendanceRates);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +224,10 @@ return $default(_that.workAverageWeekly,_that.workAverageMonthly,_that.punctuali
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'WorkAverageWeekly')  double workAverageWeekly, @JsonKey(name: 'WorkAverageMonthly')  double workAverageMonthly, @JsonKey(name: 'PunctualityRate')  double punctualityRate, @JsonKey(name: 'AttendanceRate')  double attendanceRate)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int userId, @JsonKey(name: 'WorkAverages')  ReportModel workAverages, @JsonKey(name: 'PunctualityRates')  ReportModel punctualityRates, @JsonKey(name: 'AttendanceRates')  ReportModel attendanceRates)?  $default,) {final _that = this;
 switch (_that) {
 case _DashboardReportModel() when $default != null:
-return $default(_that.workAverageWeekly,_that.workAverageMonthly,_that.punctualityRate,_that.attendanceRate);case _:
+return $default(_that.userId,_that.workAverages,_that.punctualityRates,_that.attendanceRates);case _:
   return null;
 
 }
@@ -212,13 +239,13 @@ return $default(_that.workAverageWeekly,_that.workAverageMonthly,_that.punctuali
 @JsonSerializable()
 
 class _DashboardReportModel extends DashboardReportModel {
-  const _DashboardReportModel({@JsonKey(name: 'WorkAverageWeekly') required this.workAverageWeekly, @JsonKey(name: 'WorkAverageMonthly') required this.workAverageMonthly, @JsonKey(name: 'PunctualityRate') required this.punctualityRate, @JsonKey(name: 'AttendanceRate') required this.attendanceRate}): super._();
+  const _DashboardReportModel({required this.userId, @JsonKey(name: 'WorkAverages') required this.workAverages, @JsonKey(name: 'PunctualityRates') required this.punctualityRates, @JsonKey(name: 'AttendanceRates') required this.attendanceRates}): super._();
   factory _DashboardReportModel.fromJson(Map<String, dynamic> json) => _$DashboardReportModelFromJson(json);
 
-@override@JsonKey(name: 'WorkAverageWeekly') final  double workAverageWeekly;
-@override@JsonKey(name: 'WorkAverageMonthly') final  double workAverageMonthly;
-@override@JsonKey(name: 'PunctualityRate') final  double punctualityRate;
-@override@JsonKey(name: 'AttendanceRate') final  double attendanceRate;
+@override final  int userId;
+@override@JsonKey(name: 'WorkAverages') final  ReportModel workAverages;
+@override@JsonKey(name: 'PunctualityRates') final  ReportModel punctualityRates;
+@override@JsonKey(name: 'AttendanceRates') final  ReportModel attendanceRates;
 
 /// Create a copy of DashboardReportModel
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +260,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DashboardReportModel&&(identical(other.workAverageWeekly, workAverageWeekly) || other.workAverageWeekly == workAverageWeekly)&&(identical(other.workAverageMonthly, workAverageMonthly) || other.workAverageMonthly == workAverageMonthly)&&(identical(other.punctualityRate, punctualityRate) || other.punctualityRate == punctualityRate)&&(identical(other.attendanceRate, attendanceRate) || other.attendanceRate == attendanceRate));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _DashboardReportModel&&(identical(other.userId, userId) || other.userId == userId)&&(identical(other.workAverages, workAverages) || other.workAverages == workAverages)&&(identical(other.punctualityRates, punctualityRates) || other.punctualityRates == punctualityRates)&&(identical(other.attendanceRates, attendanceRates) || other.attendanceRates == attendanceRates));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,workAverageWeekly,workAverageMonthly,punctualityRate,attendanceRate);
+int get hashCode => Object.hash(runtimeType,userId,workAverages,punctualityRates,attendanceRates);
 
 @override
 String toString() {
-  return 'DashboardReportModel(workAverageWeekly: $workAverageWeekly, workAverageMonthly: $workAverageMonthly, punctualityRate: $punctualityRate, attendanceRate: $attendanceRate)';
+  return 'DashboardReportModel(userId: $userId, workAverages: $workAverages, punctualityRates: $punctualityRates, attendanceRates: $attendanceRates)';
 }
 
 
@@ -253,11 +280,11 @@ abstract mixin class _$DashboardReportModelCopyWith<$Res> implements $DashboardR
   factory _$DashboardReportModelCopyWith(_DashboardReportModel value, $Res Function(_DashboardReportModel) _then) = __$DashboardReportModelCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'WorkAverageWeekly') double workAverageWeekly,@JsonKey(name: 'WorkAverageMonthly') double workAverageMonthly,@JsonKey(name: 'PunctualityRate') double punctualityRate,@JsonKey(name: 'AttendanceRate') double attendanceRate
+ int userId,@JsonKey(name: 'WorkAverages') ReportModel workAverages,@JsonKey(name: 'PunctualityRates') ReportModel punctualityRates,@JsonKey(name: 'AttendanceRates') ReportModel attendanceRates
 });
 
 
-
+@override $ReportModelCopyWith<$Res> get workAverages;@override $ReportModelCopyWith<$Res> get punctualityRates;@override $ReportModelCopyWith<$Res> get attendanceRates;
 
 }
 /// @nodoc
@@ -270,17 +297,44 @@ class __$DashboardReportModelCopyWithImpl<$Res>
 
 /// Create a copy of DashboardReportModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? workAverageWeekly = null,Object? workAverageMonthly = null,Object? punctualityRate = null,Object? attendanceRate = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? userId = null,Object? workAverages = null,Object? punctualityRates = null,Object? attendanceRates = null,}) {
   return _then(_DashboardReportModel(
-workAverageWeekly: null == workAverageWeekly ? _self.workAverageWeekly : workAverageWeekly // ignore: cast_nullable_to_non_nullable
-as double,workAverageMonthly: null == workAverageMonthly ? _self.workAverageMonthly : workAverageMonthly // ignore: cast_nullable_to_non_nullable
-as double,punctualityRate: null == punctualityRate ? _self.punctualityRate : punctualityRate // ignore: cast_nullable_to_non_nullable
-as double,attendanceRate: null == attendanceRate ? _self.attendanceRate : attendanceRate // ignore: cast_nullable_to_non_nullable
-as double,
+userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
+as int,workAverages: null == workAverages ? _self.workAverages : workAverages // ignore: cast_nullable_to_non_nullable
+as ReportModel,punctualityRates: null == punctualityRates ? _self.punctualityRates : punctualityRates // ignore: cast_nullable_to_non_nullable
+as ReportModel,attendanceRates: null == attendanceRates ? _self.attendanceRates : attendanceRates // ignore: cast_nullable_to_non_nullable
+as ReportModel,
   ));
 }
 
-
+/// Create a copy of DashboardReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ReportModelCopyWith<$Res> get workAverages {
+  
+  return $ReportModelCopyWith<$Res>(_self.workAverages, (value) {
+    return _then(_self.copyWith(workAverages: value));
+  });
+}/// Create a copy of DashboardReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ReportModelCopyWith<$Res> get punctualityRates {
+  
+  return $ReportModelCopyWith<$Res>(_self.punctualityRates, (value) {
+    return _then(_self.copyWith(punctualityRates: value));
+  });
+}/// Create a copy of DashboardReportModel
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ReportModelCopyWith<$Res> get attendanceRates {
+  
+  return $ReportModelCopyWith<$Res>(_self.attendanceRates, (value) {
+    return _then(_self.copyWith(attendanceRates: value));
+  });
+}
 }
 
 // dart format on

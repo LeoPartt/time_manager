@@ -14,9 +14,14 @@ import 'package:time_manager/presentation/cubits/dashboard/dashboard_state.dart'
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_state.dart';
 import 'package:time_manager/presentation/routes/app_router.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/charts/monthly_work_chart.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/charts/weekly_work_chart.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/charts/yearly_work_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/team_selector.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
+
+enum ReportPeriod { week, month, year }
 
 @RoutePage()
 class DashboardScreen extends StatelessWidget {
@@ -27,7 +32,6 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // ✅ Crée un NOUVEAU cubit à chaque navigation
       create: (context) => locator<DashboardCubit>(),
       child: _DashboardView(userId: userId),
     );
@@ -44,11 +48,12 @@ class _DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<_DashboardView> {
+  ReportPeriod _selectedPeriod = ReportPeriod.year;
+
   @override
   void initState() {
     super.initState();
-    
-    // ✅ Attendre que le widget soit monté avant d'accéder au contexte
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         _loadDashboard();
@@ -59,25 +64,19 @@ class _DashboardViewState extends State<_DashboardView> {
   void _loadDashboard() {
     final cubit = context.read<DashboardCubit>();
 
-    // ✅ Si userId fourni, charge directement
     if (widget.userId != null) {
       cubit.loadUserReport(context, widget.userId!);
       return;
     }
 
-    // ✅ Sinon, récupère depuis UserCubit
     final userState = context.read<UserCubit>().state;
 
     userState.when(
       loaded: (user) {
         cubit.loadUserReport(context, user.id);
       },
-      initial: () {
-        // UserCubit pas chargé, on attend
-      },
-      loading: () {
-        // UserCubit en loading, on attend
-      },
+      initial: () {},
+      loading: () {},
       error: (msg) {
         context.showSnack("⚠️ $msg", isError: true);
       },
@@ -110,16 +109,13 @@ class _DashboardViewState extends State<_DashboardView> {
                 Header(label: tr.dashboard),
                 SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
-                // ✅ Écoute UserCubit ET DashboardCubit
                 BlocListener<UserCubit, UserState>(
                   listener: (context, userState) {
-                    // ✅ Quand UserCubit devient "loaded", charge le dashboard
                     userState.whenOrNull(
                       loaded: (user) {
                         if (widget.userId == null) {
                           final dashboardState = context.read<DashboardCubit>().state;
-                          
-                          // ✅ Ne charge QUE si le dashboard n'est pas déjà chargé ou en loading
+
                           if (dashboardState is Initial) {
                             context.read<DashboardCubit>().loadUserReport(context, user.id);
                           }
@@ -129,11 +125,8 @@ class _DashboardViewState extends State<_DashboardView> {
                   },
                   child: BlocBuilder<UserCubit, UserState>(
                     builder: (context, userState) {
-                      // ✅ Si UserCubit est en loading et DashboardCubit est en initial
-                      // → Affiche un loader pour l'utilisateur
                       return BlocBuilder<DashboardCubit, DashboardState>(
                         builder: (context, dashboardState) {
-                          // ✅ UserCubit loading + DashboardCubit initial = Attente du profil
                           if (userState is UserLoading && dashboardState is Initial) {
                             return Center(
                               child: Column(
@@ -150,7 +143,6 @@ class _DashboardViewState extends State<_DashboardView> {
                             );
                           }
 
-                          // ✅ Affiche l'état du dashboard
                           return dashboardState.when(
                             initial: () => const Center(
                               child: CircularProgressIndicator(),
@@ -237,136 +229,169 @@ class _DashboardViewState extends State<_DashboardView> {
     );
   }
 
-  Widget _buildDashboardContent(
-    BuildContext context,
-    report,
-    ColorScheme colorScheme,
-  ) {
-    return Column(
-      children: [
-        AttendanceChart(
-        punctualityRate: report.punctualityRate,
-        attendanceRate: report.attendanceRate,
+ Widget _buildDashboardContent(
+  BuildContext context,
+  report,
+  ColorScheme colorScheme,
+) {
+  return Column(
+    children: [
+      // Sélecteur de période
+      _buildPeriodSelector(context, colorScheme),
+      SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
+
+      // Chart Attendance/Punctuality
+      AttendanceChart(
+        punctualityRate: _getRateForPeriod(report.punctualityRates),
+        attendanceRate: _getRateForPeriod(report.attendanceRates),
+        period: _getPeriodLabel(),
       ),
-      
-        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-        _buildWorkCharts(context, report, colorScheme),
-         SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-        Row(
-                                  children: [
-                                    Expanded(
-                                      child: AccessibilityUtils.withTooltip(
-                                        context,
-                                        tooltip: 'Calendar',
-                                        child: AppButton(
-                                          label: "Calendar",
-                                          fullSize: true,
-                                          onPressed: () => context.pushRoute(
-                                            PlanningCalendarRoute(),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
 
-                                    SizedBox(
-                                      width: AppSizes.responsiveWidth(
-                                        context,
-                                        AppSizes.p16,
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: AccessibilityUtils.withTooltip(
-                                        context,
-                                        tooltip: "Team",
-                                        child: AppButton(
-                                          label: "Team",
-                                          fullSize: true,
-                                         onPressed: () => context.pushRoute(
-                                            TeamDashboardRoute(),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-      ],
-    );
-  }
+      SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
-  Widget _buildKPIRow(BuildContext context, report, ColorScheme colorScheme) {
-    return Row(
-      children: [
-        Expanded(
-          child: _buildKPICard(
-            context,
-            'Ponctualité',
-            '${report.punctualityRate.toStringAsFixed(1)}%',
-            Icons.access_time,
-            colorScheme.primary,
-          ),
-        ),
-        SizedBox(width: AppSizes.responsiveWidth(context, AppSizes.p16)),
-        Expanded(
-          child: _buildKPICard(
-            context,
-            'Assiduité',
-            '${report.attendanceRate.toStringAsFixed(1)}%',
-            Icons.check_circle,
-            colorScheme.secondary,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildKPICard(
-    BuildContext context,
-    String title,
-    String value,
-    IconData icon,
-    Color color,
-  ) {
-    return Container(
-      padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p20)),
-      decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
-        borderRadius: BorderRadius.circular(AppSizes.r16),
+      // ✅ Work Chart dynamique selon la période
+      _buildWorkChartForPeriod(
+        context,
+        report.workAverages,
+        colorScheme,
       ),
-      child: Column(
+
+      SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
+
+      // Boutons navigation
+      Row(
         children: [
-          Icon(icon, size: 40, color: color),
-          SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p8)),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 24,
-              fontWeight: FontWeight.bold,
-              color: color,
+          Expanded(
+            child: AccessibilityUtils.withTooltip(
+              context,
+              tooltip: 'Calendar',
+              child: AppButton(
+                label: "Calendar",
+                fullSize: true,
+                onPressed: () => context.pushRoute(
+                  PlanningCalendarRoute(),
+                ),
+              ),
             ),
           ),
-          Text(title, style: const TextStyle(fontSize: 14)),
+          SizedBox(
+            width: AppSizes.responsiveWidth(
+              context,
+              AppSizes.p16,
+            ),
+          ),
+          Expanded(
+            child: AccessibilityUtils.withTooltip(
+              context,
+              tooltip: "Team",
+              child: AppButton(
+                label: "Team",
+                fullSize: true,
+                onPressed: () => context.pushRoute(
+                  TeamDashboardRoute(),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    ],
+  );
+}
+
+// ✅ Nouveau: Sélectionne le bon chart selon la période
+Widget _buildWorkChartForPeriod(
+  BuildContext context,
+  dynamic workAverages,
+  ColorScheme colorScheme,
+) {
+  switch (_selectedPeriod) {
+    case ReportPeriod.week:
+      return WeeklyWorkChart(
+        totalHours: workAverages.weekly,
+      );
+    case ReportPeriod.month:
+      return MonthlyWorkChart(
+        totalHours: workAverages.monthly,
+      );
+    case ReportPeriod.year:
+      return YearlyWorkChart(
+        totalHours: workAverages.yearly,
+      );
+  }
+}
+
+  Widget _buildPeriodSelector(BuildContext context, ColorScheme colorScheme) {
+    return Container(
+      padding: EdgeInsets.all(AppSizes.p4),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest,
+        borderRadius: BorderRadius.circular(AppSizes.r12),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildPeriodButton(
+              context,
+              'Semaine',
+              ReportPeriod.week,
+              colorScheme,
+            ),
+          ),
+          Expanded(
+            child: _buildPeriodButton(
+              context,
+              'Mois',
+              ReportPeriod.month,
+              colorScheme,
+            ),
+          ),
+          Expanded(
+            child: _buildPeriodButton(
+              context,
+              'Année',
+              ReportPeriod.year,
+              colorScheme,
+            ),
+          ),
         ],
       ),
     );
   }
 
-  Widget _buildWorkCharts(BuildContext context, report, ColorScheme colorScheme) {
-    return Column(
-      children: [
-        _buildWorkCard(
-          context,
-          'Hebdomadaire',
-          report.workAverageWeekly,
-          colorScheme,
+  Widget _buildPeriodButton(
+    BuildContext context,
+    String label,
+    ReportPeriod period,
+    ColorScheme colorScheme,
+  ) {
+    final isSelected = _selectedPeriod == period;
+
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedPeriod = period;
+        });
+      },
+      child: Container(
+        padding: EdgeInsets.symmetric(
+          vertical: AppSizes.p12,
+          horizontal: AppSizes.p16,
         ),
-        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p16)),
-        _buildWorkCard(
-          context,
-          'Mensuel',
-          report.workAverageMonthly,
-          colorScheme,
+        decoration: BoxDecoration(
+          color: isSelected ? colorScheme.primary : Colors.transparent,
+          borderRadius: BorderRadius.circular(AppSizes.r8),
         ),
-      ],
+        child: Text(
+          label,
+          textAlign: TextAlign.center,
+          style: TextStyle(
+            fontSize: 14,
+            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
+          ),
+        ),
+      ),
     );
   }
 
@@ -409,5 +434,39 @@ class _DashboardViewState extends State<_DashboardView> {
         ],
       ),
     );
+  }
+
+  // Helpers pour extraire les bonnes données selon la période
+  double _getRateForPeriod(dynamic reportRates) {
+    switch (_selectedPeriod) {
+      case ReportPeriod.week:
+        return reportRates.weekly;
+      case ReportPeriod.month:
+        return reportRates.monthly;
+      case ReportPeriod.year:
+        return reportRates.yearly;
+    }
+  }
+
+  double _getWorkAverageForPeriod(dynamic workAverages) {
+    switch (_selectedPeriod) {
+      case ReportPeriod.week:
+        return workAverages.weekly;
+      case ReportPeriod.month:
+        return workAverages.monthly;
+      case ReportPeriod.year:
+        return workAverages.yearly;
+    }
+  }
+
+  String _getPeriodLabel() {
+    switch (_selectedPeriod) {
+      case ReportPeriod.week:
+        return 'Hebdomadaire';
+      case ReportPeriod.month:
+        return 'Mensuel';
+      case ReportPeriod.year:
+        return 'Annuel';
+    }
   }
 }

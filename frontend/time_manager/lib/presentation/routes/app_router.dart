@@ -9,6 +9,7 @@ import 'package:time_manager/presentation/screens/dashboard/widgets/team_dashboa
 import 'package:time_manager/presentation/screens/management/create_team_screen.dart';
 import 'package:time_manager/presentation/screens/management/team_management_screen.dart';
 import 'package:time_manager/presentation/screens/management/user_detail_screen.dart';
+import 'package:time_manager/presentation/screens/planning/planning_management_screen.dart';
 import 'package:time_manager/presentation/screens/schedule/clocking.dart';
 import 'package:time_manager/presentation/screens/dashboard/dashboard_screen.dart';
 import 'package:time_manager/presentation/screens/home_screen.dart';
@@ -46,6 +47,7 @@ class AppRouter extends RootStackRouter   {
      AutoRoute(page: CreateTeamRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: PlanningCalendarRoute.page, initial: false, guards: [authGuard]),
      AutoRoute(page: TeamDashboardRoute.page, initial: false, guards: [authGuard]),
+     AutoRoute(page: PlanningManagementRoute.page, initial: false, guards: [authGuard]),
      
   ];
 }

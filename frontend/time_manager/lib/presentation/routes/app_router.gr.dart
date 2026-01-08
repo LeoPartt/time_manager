@@ -199,6 +199,59 @@ class PlanningCalendarRouteArgs {
 }
 
 /// generated route for
+/// [PlanningManagementScreen]
+class PlanningManagementRoute
+    extends PageRouteInfo<PlanningManagementRouteArgs> {
+  PlanningManagementRoute({
+    Key? key,
+    required int userId,
+    List<PageRouteInfo>? children,
+  }) : super(
+         PlanningManagementRoute.name,
+         args: PlanningManagementRouteArgs(key: key, userId: userId),
+         rawPathParams: {'userId': userId},
+         initialChildren: children,
+       );
+
+  static const String name = 'PlanningManagementRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final pathParams = data.inheritedPathParams;
+      final args = data.argsAs<PlanningManagementRouteArgs>(
+        orElse: () =>
+            PlanningManagementRouteArgs(userId: pathParams.getInt('userId')),
+      );
+      return PlanningManagementScreen(key: args.key, userId: args.userId);
+    },
+  );
+}
+
+class PlanningManagementRouteArgs {
+  const PlanningManagementRouteArgs({this.key, required this.userId});
+
+  final Key? key;
+
+  final int userId;
+
+  @override
+  String toString() {
+    return 'PlanningManagementRouteArgs{key: $key, userId: $userId}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! PlanningManagementRouteArgs) return false;
+    return key == other.key && userId == other.userId;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ userId.hashCode;
+}
+
+/// generated route for
 /// [ProfileScreen]
 class ProfileRoute extends PageRouteInfo<void> {
   const ProfileRoute({List<PageRouteInfo>? children})
@@ -228,6 +281,113 @@ class SettingsRoute extends PageRouteInfo<void> {
       return const SettingsScreen();
     },
   );
+}
+
+/// generated route for
+/// [TeamDashboardScreen]
+class TeamDashboardRoute extends PageRouteInfo<void> {
+  const TeamDashboardRoute({List<PageRouteInfo>? children})
+    : super(TeamDashboardRoute.name, initialChildren: children);
+
+  static const String name = 'TeamDashboardRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const TeamDashboardScreen();
+    },
+  );
+}
+
+/// generated route for
+/// [TeamManagementScreen]
+class TeamManagementRoute extends PageRouteInfo<TeamManagementRouteArgs> {
+  TeamManagementRoute({
+    Key? key,
+    required Team team,
+    List<PageRouteInfo>? children,
+  }) : super(
+         TeamManagementRoute.name,
+         args: TeamManagementRouteArgs(key: key, team: team),
+         initialChildren: children,
+       );
+
+  static const String name = 'TeamManagementRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<TeamManagementRouteArgs>();
+      return TeamManagementScreen(key: args.key, team: args.team);
+    },
+  );
+}
+
+class TeamManagementRouteArgs {
+  const TeamManagementRouteArgs({this.key, required this.team});
+
+  final Key? key;
+
+  final Team team;
+
+  @override
+  String toString() {
+    return 'TeamManagementRouteArgs{key: $key, team: $team}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! TeamManagementRouteArgs) return false;
+    return key == other.key && team == other.team;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ team.hashCode;
+}
+
+/// generated route for
+/// [UserDetailScreen]
+class UserDetailRoute extends PageRouteInfo<UserDetailRouteArgs> {
+  UserDetailRoute({Key? key, required User user, List<PageRouteInfo>? children})
+    : super(
+        UserDetailRoute.name,
+        args: UserDetailRouteArgs(key: key, user: user),
+        initialChildren: children,
+      );
+
+  static const String name = 'UserDetailRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      final args = data.argsAs<UserDetailRouteArgs>();
+      return UserDetailScreen(key: args.key, user: args.user);
+    },
+  );
+}
+
+class UserDetailRouteArgs {
+  const UserDetailRouteArgs({this.key, required this.user});
+
+  final Key? key;
+
+  final User user;
+
+  @override
+  String toString() {
+    return 'UserDetailRouteArgs{key: $key, user: $user}';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    if (other is! UserDetailRouteArgs) return false;
+    return key == other.key && user == other.user;
+  }
+
+  @override
+  int get hashCode => key.hashCode ^ user.hashCode;
 }
 
 /// generated route for

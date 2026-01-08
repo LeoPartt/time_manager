@@ -27,7 +27,10 @@ import 'package:time_manager/domain/usecases/account/logout_user.dart';
 import 'package:time_manager/domain/usecases/account/register_account.dart';
 import 'package:time_manager/domain/usecases/dashboard/get_team_report.dart';
 import 'package:time_manager/domain/usecases/dashboard/get_user_report.dart';
+import 'package:time_manager/domain/usecases/planning/create_planning.dart';
+import 'package:time_manager/domain/usecases/planning/delete_planning.dart';
 import 'package:time_manager/domain/usecases/planning/get_user_plannings.dart';
+import 'package:time_manager/domain/usecases/planning/update_planning.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_in.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_out.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_status.dart';
@@ -216,10 +219,13 @@ locator.registerFactory(() => ClockCubit(
 
   // Use Cases
   locator.registerLazySingleton(() => GetUserPlannings(locator<PlanningRepository>()));
+  locator.registerLazySingleton(() => CreatePlanning(locator<PlanningRepository>()));
+  locator.registerLazySingleton(() => UpdatePlanning(locator<PlanningRepository>()));
+  locator.registerLazySingleton(() => DeletePlanning(locator<PlanningRepository>()));
 
   
   locator.registerFactory(() => PlanningCubit(
-    getUserPlanningsUseCase: locator<GetUserPlannings>(),
+    getUserPlanningsUseCase: locator<GetUserPlannings>(), createPlanningUseCase: locator<CreatePlanning>(), updatePlanningUseCase: locator<UpdatePlanning>(), deletePlanningUseCase: locator<DeletePlanning>(),
   ));
 
 

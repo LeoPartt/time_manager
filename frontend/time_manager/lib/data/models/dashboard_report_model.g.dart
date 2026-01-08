@@ -9,17 +9,23 @@ part of 'dashboard_report_model.dart';
 _DashboardReportModel _$DashboardReportModelFromJson(
   Map<String, dynamic> json,
 ) => _DashboardReportModel(
-  workAverageWeekly: (json['WorkAverageWeekly'] as num).toDouble(),
-  workAverageMonthly: (json['WorkAverageMonthly'] as num).toDouble(),
-  punctualityRate: (json['PunctualityRate'] as num).toDouble(),
-  attendanceRate: (json['AttendanceRate'] as num).toDouble(),
+  userId: (json['userId'] as num).toInt(),
+  workAverages: ReportModel.fromJson(
+    json['WorkAverages'] as Map<String, dynamic>,
+  ),
+  punctualityRates: ReportModel.fromJson(
+    json['PunctualityRates'] as Map<String, dynamic>,
+  ),
+  attendanceRates: ReportModel.fromJson(
+    json['AttendanceRates'] as Map<String, dynamic>,
+  ),
 );
 
 Map<String, dynamic> _$DashboardReportModelToJson(
   _DashboardReportModel instance,
 ) => <String, dynamic>{
-  'WorkAverageWeekly': instance.workAverageWeekly,
-  'WorkAverageMonthly': instance.workAverageMonthly,
-  'PunctualityRate': instance.punctualityRate,
-  'AttendanceRate': instance.attendanceRate,
+  'userId': instance.userId,
+  'WorkAverages': instance.workAverages,
+  'PunctualityRates': instance.punctualityRates,
+  'AttendanceRates': instance.attendanceRates,
 };
