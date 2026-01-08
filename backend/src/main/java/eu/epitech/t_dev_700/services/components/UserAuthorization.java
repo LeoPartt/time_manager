@@ -29,41 +29,57 @@ public class UserAuthorization {
     }
 
     @ApiAuthRoles(AuthRole.ADMINISTRATOR)
-    public boolean isAdmin(Authentication authentication) {
+    public boolean isAdministrator(Authentication authentication) {
         return ((AccountEntity) authentication.getPrincipal()).isAdmin();
     }
 
     @ApiAuthRoles(AuthRole.MEMBER_OF)
-    public boolean isTeamMember(Authentication authentication, Long teamId) {
-        return isAdmin(authentication) || membershipService.isUserMemberOfTeam(getCurrentUser(authentication), teamId);
+    public boolean isMemberOfTeam(Authentication authentication, Long teamId) {
+        return isAdministrator(authentication)
+               || membershipService.isUserMemberOfTeam(getCurrentUser(authentication), teamId);
+    }
+
+    @ApiAuthRoles({AuthRole.MEMBER_OF, AuthRole.MANAGER})
+    public boolean isMemberOfTeamOrManager(Authentication authentication, Long teamId) {
+        UserEntity currentUser = getCurrentUser(authentication);
+        return isAdministrator(authentication)
+               || membershipService.isUserMemberOfTeam(currentUser, teamId)
+               || membershipService.isUserManager(currentUser);
     }
 
     @ApiAuthRoles(AuthRole.MANAGER_OF)
-    public boolean isTeamManager(Authentication authentication, Long teamId) {
-        return isAdmin(authentication) || membershipService.isUserManagerOfTeam(getCurrentUser(authentication), teamId);
+    public boolean isManagerOfTeam(Authentication authentication, Long teamId) {
+        return isAdministrator(authentication)
+               || membershipService.isUserManagerOfTeam(getCurrentUser(authentication), teamId);
     }
 
     @ApiAuthRoles(AuthRole.MANAGER)
     public boolean isManager(Authentication authentication) {
-        return isAdmin(authentication) || membershipService.isUserManager(getCurrentUser(authentication));
+        return isAdministrator(authentication)
+               || membershipService.isUserManager(getCurrentUser(authentication));
     }
 
     @ApiAuthRoles({AuthRole.SELF, AuthRole.MANAGER})
     public boolean isSelfOrManager(Authentication authentication, Long userId) {
         UserEntity currentUser = getCurrentUser(authentication);
-        return isAdmin(authentication) || isSelf(currentUser, userId) || membershipService.isUserManager(getCurrentUser(authentication));
+        return isAdministrator(authentication)
+               || isSelf(currentUser, userId)
+               || membershipService.isUserManager(getCurrentUser(authentication));
     }
 
     @ApiAuthRoles({AuthRole.SELF, AuthRole.MANAGER_OF})
     public boolean isSelfOrManagerOfUser(Authentication authentication, Long userId) {
         UserEntity currentUser = getCurrentUser(authentication);
-        return isAdmin(authentication) || isSelf(currentUser, userId) || membershipService.isUserManagerOfOther(currentUser, userId);
+        return isAdministrator(authentication)
+               || isSelf(currentUser, userId)
+               || membershipService.isUserManagerOfOther(currentUser, userId);
     }
 
     @ApiAuthRoles(AuthRole.MANAGER_OF)
     public boolean isManagerOfUser(Authentication authentication, Long userId) {
         UserEntity currentUser = getCurrentUser(authentication);
-        return isAdmin(authentication) || membershipService.isUserManagerOfOther(currentUser, userId);
+        return isAdministrator(authentication)
+               || membershipService.isUserManagerOfOther(currentUser, userId);
     }
 
     @ApiAuthRoles(AuthRole.SELF)
@@ -74,13 +90,16 @@ public class UserAuthorization {
     @ApiAuthRoles(AuthRole.MANAGER_OF)
     public boolean isManagerOfOwner(Authentication authentication, Long planningId) {
         UserEntity currentUser = getCurrentUser(authentication);
-        return isAdmin(authentication) || planningService.isManagerOfOwner(currentUser, planningId);
+        return isAdministrator(authentication)
+               || planningService.isManagerOfOwner(currentUser, planningId);
     }
 
     @ApiAuthRoles({AuthRole.SELF, AuthRole.MANAGER_OF})
     public boolean isOwnerOrManagerOfOwner(Authentication authentication, Long planningId) {
         UserEntity currentUser = getCurrentUser(authentication);
-        return isAdmin(authentication) || planningService.isOwner(currentUser, planningId) || planningService.isManagerOfOwner(currentUser, planningId);
+        return isAdministrator(authentication)
+               || planningService.isOwner(currentUser, planningId)
+               || planningService.isManagerOfOwner(currentUser, planningId);
     }
 
     private boolean isSelf(UserEntity currentUser, Long userId) {

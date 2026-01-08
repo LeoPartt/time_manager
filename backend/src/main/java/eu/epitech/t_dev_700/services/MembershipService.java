@@ -6,6 +6,7 @@ import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.repositories.MembershipRepository;
 import eu.epitech.t_dev_700.services.exceptions.NotAMember;
 import eu.epitech.t_dev_700.utils.RBoundBiConsumer;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -67,11 +68,7 @@ public class MembershipService {
 
     @Transactional
     public void createMembership(TeamEntity team, UserEntity user, MembershipEntity.TeamRole role) {
-        MembershipEntity membership = new MembershipEntity();
-        membership.setTeam(team);
-        membership.setUser(user);
-        membership.setRole(role);
-        membershipRepository.save(membership);
+        membershipRepository.save(new MembershipEntity(user, team, role));
     }
 
     @Transactional
@@ -110,4 +107,5 @@ public class MembershipService {
                         .andThen(membershipRepository::save)
                 );
     }
+
 }

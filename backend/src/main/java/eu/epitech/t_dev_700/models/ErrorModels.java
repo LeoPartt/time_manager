@@ -119,4 +119,15 @@ public class ErrorModels {
             @NotNull
             long teamId
     ) {}
+
+    @Schema()
+    public record AlreadyMemberDetail(
+            @Schema(description = "The id of the user", example = "1")
+            @NotNull
+            long userId,
+
+            @Schema(description = "The id of the team", example = "1")
+            @NotNull
+            long teamId
+    ) {}
 }

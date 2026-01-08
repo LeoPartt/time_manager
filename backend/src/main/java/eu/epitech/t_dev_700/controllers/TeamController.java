@@ -5,6 +5,7 @@ import eu.epitech.t_dev_700.doc.ApiUnauthorizedResponse;
 import eu.epitech.t_dev_700.models.TeamModels;
 import eu.epitech.t_dev_700.models.UserModels;
 import eu.epitech.t_dev_700.services.TeamService;
+import eu.epitech.t_dev_700.services.exceptions.AlreadyMember;
 import eu.epitech.t_dev_700.services.exceptions.NotAMember;
 import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import io.swagger.v3.oas.annotations.Operation;
@@ -60,7 +61,7 @@ public class TeamController implements CRUDController<
     @Operation(summary = "Modify a team")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @ApiErrorResponse(ResourceNotFound.class)
-    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
+    @PreAuthorize("@userAuth.isManagerOfTeam(authentication, #id)")
     @PutMapping("{id}")
     public ResponseEntity<TeamModels.TeamResponse> Put(@PathVariable Long id, @Valid @RequestBody TeamModels.PutTeamRequest body) {
         return ResponseEntity.ok(teamService.replace(id, body));
@@ -70,7 +71,7 @@ public class TeamController implements CRUDController<
     @Operation(summary = "Update a team")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @ApiErrorResponse(ResourceNotFound.class)
-    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
+    @PreAuthorize("@userAuth.isManagerOfTeam(authentication, #id)")
     @PatchMapping("{id}")
     public ResponseEntity<TeamModels.TeamResponse> Patch(@PathVariable Long id, @Valid @RequestBody TeamModels.PatchTeamRequest body) {
         return ResponseEntity.ok(teamService.update(id, body));
@@ -79,7 +80,7 @@ public class TeamController implements CRUDController<
     @Override
     @Operation(summary = "Delete a team")
     @ApiResponse(responseCode = "204")
-    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
+    @PreAuthorize("@userAuth.isManagerOfTeam(authentication, #id)")
     @ApiErrorResponse(ResourceNotFound.class)
     @DeleteMapping("{id}")
     public ResponseEntity<Void> Delete(@PathVariable Long id) {
@@ -97,8 +98,8 @@ public class TeamController implements CRUDController<
 
     @Operation(summary = "Add a member to a team")
     @ApiResponse(responseCode = "204")
-    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
-    @ApiErrorResponse(ResourceNotFound.class)
+    @PreAuthorize("@userAuth.isManagerOfTeam(authentication, #id)")
+    @ApiErrorResponse({AlreadyMember.class, ResourceNotFound.class})
     @PostMapping("{id}/members/{userId}")
     public ResponseEntity<Void> PostMembership(@PathVariable Long id, @PathVariable Long userId) {
         teamService.postMembership(id, userId);
@@ -108,7 +109,7 @@ public class TeamController implements CRUDController<
     @Operation(summary = "Remove a member from a team")
     @ApiResponse(responseCode = "204")
     @ApiErrorResponse({NotAMember.class, ResourceNotFound.class})
-    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
+    @PreAuthorize("@userAuth.isManagerOfTeam(authentication, #id)")
     @DeleteMapping("{id}/members/{userId}")
     public ResponseEntity<Void> DeleteMembership(@PathVariable Long id, @PathVariable Long userId) {
         teamService.deleteMembership(id, userId);
@@ -126,7 +127,7 @@ public class TeamController implements CRUDController<
     @Operation(summary = "Set the manager of a team")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @ApiErrorResponse({NotAMember.class, ResourceNotFound.class})
-    @PreAuthorize("@userAuth.isTeamManager(authentication, #id)")
+    @PreAuthorize("@userAuth.isManagerOfTeam(authentication, #id)")
     @PatchMapping("{id}/manager/{userId}")
     public ResponseEntity<UserModels.UserResponse> PatchManager(@PathVariable Long id, @PathVariable Long userId) {
         return ResponseEntity.ok(teamService.updateManager(id, userId));
@@ -135,7 +136,7 @@ public class TeamController implements CRUDController<
     @Operation(summary = "Delete the manager of a team")
     @ApiResponse(responseCode = "204")
     @ApiErrorResponse(ResourceNotFound.class)
-    @PreAuthorize("@userAuth.isAdmin(authentication)")
+    @PreAuthorize("@userAuth.isAdministrator(authentication)")
     @DeleteMapping("{id}/manager")
     public ResponseEntity<Void> DeleteManager(@PathVariable Long id) {
         teamService.deleteManager(id);
