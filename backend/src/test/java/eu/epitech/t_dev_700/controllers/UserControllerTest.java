@@ -1,24 +1,28 @@
 package eu.epitech.t_dev_700.controllers;
 
-import eu.epitech.t_dev_700.services.TeamService;
-import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import eu.epitech.t_dev_700.models.UserModels;
+import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.services.ClockService;
+import eu.epitech.t_dev_700.services.TeamService;
 import eu.epitech.t_dev_700.services.UserService;
+import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.OffsetDateTime;
+
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -256,5 +260,178 @@ class UserControllerTest {
 
         mockMvc.perform(delete("/users/999"))
                 .andExpect(status().isNotFound());
+    }
+
+    @Test
+    void testClocks_noQuery_shouldDelegateWithNullsAndCurrentFalse() throws Exception {
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{});
+
+        mockMvc.perform(get("/users/1/clocks"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[]"));
+
+        ArgumentCaptor<UserScheduleQuery> captor = ArgumentCaptor.forClass(UserScheduleQuery.class);
+        verify(userService).getClocks(eq(1L), captor.capture());
+
+        UserScheduleQuery q = captor.getValue();
+        assertThat(q.getFrom()).isNull();
+        assertThat(q.getTo()).isNull();
+        assertThat(q.getCurrent()).isFalse();
+    }
+
+    @Test
+    void testClocks_fromOnly_shouldBindFromAndDelegate() throws Exception {
+        String from = "2026-01-01T10:00:00+01:00";
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{123L});
+
+        mockMvc.perform(get("/users/1/clocks").param("from", from))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[123]"));
+
+        ArgumentCaptor<UserScheduleQuery> captor = ArgumentCaptor.forClass(UserScheduleQuery.class);
+        verify(userService).getClocks(eq(1L), captor.capture());
+
+        UserScheduleQuery q = captor.getValue();
+        assertThat(q.getFrom()).isEqualTo(OffsetDateTime.parse(from));
+        assertThat(q.getTo()).isNull();
+        assertThat(q.getCurrent()).isFalse();
+    }
+
+    @Test
+    void testClocks_toOnly_shouldBindToAndDelegate() throws Exception {
+        String to = "2026-01-10T10:00:00+01:00";
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{111L, 222L});
+
+        mockMvc.perform(get("/users/1/clocks").param("to", to))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[111,222]"));
+
+        ArgumentCaptor<UserScheduleQuery> captor = ArgumentCaptor.forClass(UserScheduleQuery.class);
+        verify(userService).getClocks(eq(1L), captor.capture());
+
+        UserScheduleQuery q = captor.getValue();
+        assertThat(q.getFrom()).isNull();
+        assertThat(q.getTo()).isEqualTo(OffsetDateTime.parse(to));
+        assertThat(q.getCurrent()).isFalse();
+    }
+
+    @Test
+    void testClocks_fromAndTo_shouldBindBothAndDelegate() throws Exception {
+        String from = "2026-01-01T10:00:00+01:00";
+        String to   = "2026-01-10T10:00:00+01:00";
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{1L, 2L, 3L});
+
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("from", from)
+                        .param("to", to))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[1,2,3]"));
+
+        ArgumentCaptor<UserScheduleQuery> captor = ArgumentCaptor.forClass(UserScheduleQuery.class);
+        verify(userService).getClocks(eq(1L), captor.capture());
+
+        UserScheduleQuery q = captor.getValue();
+        assertThat(q.getFrom()).isEqualTo(OffsetDateTime.parse(from));
+        assertThat(q.getTo()).isEqualTo(OffsetDateTime.parse(to));
+        assertThat(q.getCurrent()).isFalse();
+    }
+
+    @Test
+    void testClocks_currentTrue_shouldBindCurrentAndDelegate() throws Exception {
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{999L});
+
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("current", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[999]"));
+
+        ArgumentCaptor<UserScheduleQuery> captor = ArgumentCaptor.forClass(UserScheduleQuery.class);
+        verify(userService).getClocks(eq(1L), captor.capture());
+
+        UserScheduleQuery q = captor.getValue();
+        assertThat(q.getCurrent()).isTrue();
+        assertThat(q.getFrom()).isNull();
+        assertThat(q.getTo()).isNull();
+    }
+
+    @Test
+    void testClocks_invalidFromFormat_shouldReturn400() throws Exception {
+        mockMvc.perform(get("/users/1/clocks").param("from", "not-a-date"))
+                .andExpect(status().isUnprocessableEntity());
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void testClocks_currentTrue_shouldReturnOk_andDelegate() throws Exception {
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{1L, 2L});
+
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("current", "true"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[1,2]"));
+
+        verify(userService).getClocks(eq(1L), any(UserScheduleQuery.class));
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void testClocks_currentNull_shouldReturnOk_andDelegate() throws Exception {
+        when(userService.getClocks(eq(1L), any())).thenReturn(new Long[]{1L, 2L});
+
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("current", ""))
+                .andExpect(status().isOk())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().json("[1,2]"));
+
+        verify(userService).getClocks(eq(1L), any(UserScheduleQuery.class));
+        verifyNoMoreInteractions(userService);
+    }
+
+    @Test
+    void testClocks_currentTrue_withFrom_shouldReturn400_andNotCallService() throws Exception {
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("current", "true")
+                        .param("from", "2026-01-01T10:00:00+01:00"))
+                .andExpect(status().isUnprocessableEntity());
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void testClocks_currentTrue_withTo_shouldReturn400_andNotCallService() throws Exception {
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("current", "true")
+                        .param("to", "2026-01-10T10:00:00+01:00"))
+                .andExpect(status().isUnprocessableEntity());
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void testClocks_currentTrue_withFromAndTo_shouldReturn400_andNotCallService() throws Exception {
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("current", "true")
+                        .param("from", "2026-01-01T10:00:00+01:00")
+                        .param("to", "2026-01-10T10:00:00+01:00"))
+                .andExpect(status().isUnprocessableEntity());
+
+        verifyNoInteractions(userService);
+    }
+
+    @Test
+    void testClocks_invalidFromFormat_shouldReturn400_andNotCallService() throws Exception {
+        mockMvc.perform(get("/users/1/clocks")
+                        .param("from", "not-a-date"))
+                .andExpect(status().isUnprocessableEntity());
+
+        verifyNoInteractions(userService);
     }
 }

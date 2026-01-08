@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
-@RequiredArgsConstructor
 @org.springframework.context.annotation.Profile("!test")
 @Tag(name = "Authentication")
+@RequiredArgsConstructor
 public class AuthController {
 
     private final AuthService authService;
@@ -36,5 +36,25 @@ public class AuthController {
     public ResponseEntity<AuthModels.LoginResponse> PostLogin(@Valid @RequestBody AuthModels.LoginRequest body) {
         String jwtToken = authService.authenticate(body);
         return ResponseEntity.ok(new AuthModels.LoginResponse(jwtToken, jwtService.getExpirationTime()));
+    }
+
+    @Operation(summary = "Request to reset user's password")
+    @ApiResponse(responseCode = "204", description = "Request sent", useReturnTypeSchema = true)
+    //@ApiErrorResponse({InvalidCredentials.class, DeletedUser.class})
+    //@SecurityRequirements
+    @PostMapping("/reset")
+    public ResponseEntity<Void> ResetPassword() {
+        authService.resetPassword();
+        return ResponseEntity.noContent().build();
+    }
+
+    @Operation(summary = "Change user's password")
+    @ApiResponse(responseCode = "204", description = "Successfully changed password", useReturnTypeSchema = true)
+    //@ApiErrorResponse({InvalidCredentials.class, DeletedUser.class})
+    //@SecurityRequirements
+    @PostMapping("/change")
+    public ResponseEntity<Void> ChangePassword(@Valid @RequestBody AuthModels.ChangeRequest body) {
+        authService.changePassword(body);
+        return ResponseEntity.noContent().build();
     }
 }

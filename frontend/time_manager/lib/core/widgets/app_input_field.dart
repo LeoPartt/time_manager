@@ -7,7 +7,7 @@ class AppInputField extends StatefulWidget {
   final String label;
   final IconData? icon;
   final bool obscureText;
-   final StringValidator? validator;
+  final StringValidator? validator;
   final TextInputType? keyboardType;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onChanged;
@@ -21,7 +21,7 @@ class AppInputField extends StatefulWidget {
     this.icon,
     this.obscureText = false,
     this.controller,
-        this.validator,
+    this.validator,
     this.keyboardType,
     this.textInputAction,
     this.onChanged,
@@ -35,63 +35,86 @@ class AppInputField extends StatefulWidget {
 
 class _AppInputFieldState extends State<AppInputField> {
   late bool _obscure;
+  bool _touched = false;
+  final FocusNode _focusNode = FocusNode();
 
   @override
   void initState() {
     super.initState();
     _obscure = widget.obscureText;
+    _focusNode.addListener(() {
+      if (!_focusNode.hasFocus) {
+        setState(() => _touched = true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _focusNode.dispose();
+    super.dispose();
   }
 
   void _toggleObscure() {
     setState(() => _obscure = !_obscure);
   }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
 
     return TextFormField(
-       obscureText: _obscure,
+      focusNode: _focusNode,
+      obscureText: _obscure,
+      autofocus: true,
       validator: widget.validator,
       keyboardType: widget.keyboardType,
       textInputAction: widget.textInputAction,
       maxLines: widget.maxLines,
+      autovalidateMode: _touched
+            ? AutovalidateMode.always
+            : AutovalidateMode.disabled,
       onChanged: widget.onChanged,
       onFieldSubmitted: (_) => widget.onSubmitted?.call(),
       controller: widget.controller,
-     
+
       style: theme.textTheme.bodyMedium?.copyWith(
         fontSize: AppSizes.responsiveText(context, AppSizes.textMd),
       ),
-      
+
       decoration: InputDecoration(
         suffixIcon: widget.obscureText
             ? Semantics(
                 label: _obscure ? 'Show password' : 'Hide password',
                 button: true,
                 child: IconButton(
-                  icon: Icon(_obscure ? Icons.visibility_off : Icons.visibility),
+                  icon: Icon(
+                    _obscure ? Icons.visibility_off : Icons.visibility,
+                  ),
                   onPressed: _toggleObscure,
                   tooltip: _obscure ? 'Show password' : 'Hide password',
                 ),
               )
             : null,
-        prefixIcon:
-            widget.icon != null ? Icon(widget.icon, color: theme.colorScheme.primary) : null,
+        prefixIcon: widget.icon != null
+            ? Icon(widget.icon, color: theme.colorScheme.primary)
+            : null,
         labelText: widget.label,
-        labelStyle: theme.textTheme.bodySmall?.copyWith(
+        labelStyle: textTheme.bodySmall?.copyWith(
           fontSize: AppSizes.responsiveText(context, AppSizes.textSm),
-          color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+          color: colorScheme.onSurface.withValues(alpha: 0.7),
         ),
         filled: true,
-        fillColor: theme.colorScheme.surfaceContainerHighest,
+        fillColor: colorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.r12),
-          borderSide: BorderSide(color: theme.colorScheme.outline),
+          borderSide: BorderSide(color: colorScheme.outline),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(AppSizes.r12),
-          borderSide:
-              BorderSide(color: theme.colorScheme.primary, width: 2),
+          borderSide: BorderSide(color: colorScheme.primary, width: 2),
         ),
       ),
     );

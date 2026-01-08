@@ -1,31 +1,51 @@
-import 'package:time_manager/core/constants/app_strings.dart';
+import 'package:flutter/material.dart';
 import 'package:time_manager/core/utils/extensions/string_extensions.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 /// Provides reusable validation functions for form inputs.
 class Validators {
-  static String? validateEmail(String? value) {
+  
+  static String? validateEmail(BuildContext context, String? value) {
+            final tr = AppLocalizations.of(context)!;
+
     if (value == null || value.isEmpty) {
-      return AppStrings.emailRequired;
+      return tr.emailRequired;
     }
     if (!value.isValidEmail) {
-      return AppStrings.invalidEmail;
+      return tr.invalidEmail;
     }
     return null;
   }
 
-  static String? validatePassword(String? value) {
+static String? validatePhone(BuildContext context, String? value) {
+  final tr = AppLocalizations.of(context)!;
+  if (value == null || value.isEmpty) {
+    return tr.phoneNumberRequired;
+  }
+  if (value.length < 8) {
+    return tr.invalidPhoneNumber;
+  }
+  return null;
+}
+
+
+  static String? validatePassword(BuildContext context, String? value) {
+                final tr = AppLocalizations.of(context)!;
+
     if (value == null || value.isEmpty) {
-      return AppStrings.passwordRequired;
+      return tr.passwordRequired;
     }
     if (value.length < 6) {
-      return AppStrings.shortPassword;
+      return tr.shortPassword;
     }
     return null;
   }
 
-  static String? validateNotEmpty(String? value, String fieldName) {
+  static String? validateNotEmpty(BuildContext context, String? value, String fieldName) {
+                final tr = AppLocalizations.of(context)!;
+
     if (value == null || value.isEmpty) {
-      return AppStrings.fieldIsRequired(fieldName);
+      return tr.fieldIsRequired(fieldName);
     }
     return null;
   }

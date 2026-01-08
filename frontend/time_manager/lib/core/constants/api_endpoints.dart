@@ -1,4 +1,3 @@
-
 import 'package:time_manager/initialization/environment.dart';
 
 /// Centralized definition of all backend API endpoints.
@@ -40,13 +39,13 @@ class ApiEndpoints {
   // ───────────────────────────────
   //  SCHEDULE endpoints
   // ───────────────────────────────
-  static String get schedules => '/schedules';
+  static String get schedules => '/clocks';
   static String scheduleById(int id) => '/schedules/$id';
-  static String get clockIn => '/clock/in';
-  static String get clockOut => '/clock/out';
+  // static String get clockIn => '/clocks';
+  // static String get clockOut => '/clocks';
   static String get history => '/schedules/history';
    
-  static String get clockStatus => '/clock/status';
+  static String get clockStatus => '/clocks/status';
 
   // ───────────────────────────────
   // REPORTS / KPI endpoints

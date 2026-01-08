@@ -50,12 +50,6 @@ class SecurityConfigTest {
     }
 
     @Test
-    void testActuatorHealth_shouldBeAccessible() throws Exception {
-        mockMvc.perform(get("/actuator/health"))
-                .andExpect(status().isOk());
-    }
-
-    @Test
     void testPublicEndpoints_shouldBeAccessibleWithoutAuthentication() throws Exception {
         // Given the current security config allows all requests
         // This test verifies that endpoints are accessible

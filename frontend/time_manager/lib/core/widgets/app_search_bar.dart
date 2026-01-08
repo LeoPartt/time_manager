@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_manager/core/constants/app_colors.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/core/utils/accessibility_utils.dart';
 import 'package:time_manager/domain/entities/user.dart';
 import 'package:time_manager/domain/entities/team.dart';
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
@@ -34,6 +35,12 @@ class _AppSearchBarState extends State<AppSearchBar> {
   @override
   Widget build(BuildContext context) {
     final width = AppSizes.responsiveWidth(context, 350);
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+      final backgroundColor =
+        AccessibilityUtils.ensureContrast(context, colorScheme.secondary);
+    final textColor =
+        AccessibilityUtils.ensureContrast(context, colorScheme.secondary);
 
  final lowerQuery = _query.toLowerCase();
 final filteredUsers = _allUsers
@@ -67,98 +74,106 @@ final results = [...filteredUsers, ...filteredTeams];
           },
         ),
       ],
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Container global avec coins arrondis, qui s’ouvre en bas quand il y a des résultats
-          AnimatedContainer(
-            duration: const Duration(milliseconds: 200),
-            width: width,
-            decoration: BoxDecoration(
-              color: AppColors.accent,
-              borderRadius: BorderRadius.circular(AppSizes.r24),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 3),
-                ),
-              ],
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Barre de recherche
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
-                  child: TextField(
-                    controller: _controller,
-                    onChanged: (value) =>
-                        setState(() { _query = value.trim(); 
-                        print(_query);} ),
-                    style: TextStyle(
-                      color: AppColors.textPrimary,
-                      fontSize:
-                          AppSizes.responsiveText(context, AppSizes.textLg),
+      child: Semantics(
+                container: true,
+        label: 'Search bar for users and teams',
+
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          width: width,
+          decoration: BoxDecoration(
+            color: colorScheme.secondary,
+            borderRadius: BorderRadius.circular(AppSizes.r24),
+            boxShadow: [
+             BoxShadow(
+                color: colorScheme.shadow.withValues(alpha: 0.1),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Barre de recherche
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: AppSizes.p12),
+                child: TextField(
+                  controller: _controller,
+                  onChanged: (value) =>
+                      setState(() =>_query = value.trim()
+                       ),
+                  style: TextStyle(
+                    color: textColor,
+                    fontSize:
+                        AppSizes.responsiveText(context, AppSizes.textLg),
+                  ),
+                  decoration: InputDecoration(
+                    icon: Icon(Icons.search_rounded,
+                        color: colorScheme.onSurface,),
+                    hintText: 'Search user or team...',
+                    hintStyle: TextStyle(
+                      color:  colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
-                    decoration: InputDecoration(
-                      icon: Icon(Icons.search_rounded,
-                          color: AppColors.textPrimary),
-                      hintText: 'Search user or team...',
-                      hintStyle: TextStyle(
-                        color: AppColors.textPrimary.withValues(alpha: 0.6),
-                      ),
-                      border: InputBorder.none,
-                    ),
+                    border: InputBorder.none,
                   ),
                 ),
-
-                // Résultats intégrés directement dans le container
-                if (_query.isNotEmpty)
-                  Container(
-                    color: AppColors.accent.withValues(alpha: 0.95),
-                    constraints: const BoxConstraints(maxHeight: 250),
-                    child: results.isEmpty
-                        ? Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: Center(
-                              child: Text(
-                                _allTeams.toString(),
-                                style: TextStyle(
-                                  color: AppColors.textPrimary.withValues(
-                                    alpha: 0.8,
-                                  ),
-                                ),
-                              ),
+              ),
+        
+              // Résultats intégrés directement dans le container
+              if (_query.isNotEmpty)
+                Container(
+                  color: backgroundColor.withValues(alpha: 0.95),
+                  constraints: const BoxConstraints(maxHeight: 250),
+                  child: results.isEmpty
+                      ? Padding(
+                          padding: const EdgeInsets.all(AppSizes.p16),
+                          child: Center(
+                            child:  AccessibilityUtils.accessibleTextWidget(
+                              context,
+                              _allTeams.toString(),
+                              baseSize: AppSizes.textMd,
+                              color: textColor.withValues(alpha: 0.8),
                             ),
-                          )
-                        : ListView.separated(
-                            shrinkWrap: true,
-                            physics: const BouncingScrollPhysics(),
-                            itemCount: results.length,
-                            separatorBuilder: (_, _) => Divider(
-                              height: 1,
-                              color:
-                                  AppColors.primary.withValues(alpha: 0.2),
-                            ),
-                            itemBuilder: (context, index) {
-                              final item = results[index];
-                              final isUser = item is User;
+                           
+                          ),
+                        )
+                      : ListView.separated(
+                          shrinkWrap: true,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: results.length,
+                          separatorBuilder: (_, _) => Divider(
+                            height: 1,
+                            color: colorScheme.primary.withValues(alpha: 0.2),
+                          ),
+                          itemBuilder: (context, index) {
+                            final item = results[index];
+                            final isUser = item is User;
+                            final iconColor = AccessibilityUtils.ensureContrast(
+                              context,
+                              colorScheme.secondary,
+                            );
 
-                              return ListTile(
+        
+                            return Semantics(
+                              button: true,
+                              label: isUser
+                                  ? 'User ${item.firstName} ${item.lastName}'
+                                  : 'Team ${(item as Team).name}',
+                              child: ListTile(
                                 leading: Icon(
                                   isUser ? Icons.person : Icons.group,
-                                  color: AppColors.textPrimary,
+                                  color: iconColor,
                                 ),
-                                title: Text(
+                                title: AccessibilityUtils.accessibleTextWidget(
+                                  context,
                                   isUser
                                       ? '${item.firstName} ${item.lastName}'
                                       : (item as Team).name,
-                                  style: TextStyle(
-                                    color: AppColors.textPrimary,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  baseSize: AppSizes.textLg,
+                                  weight: FontWeight.w600,
+                                  color: textColor,
                                 ),
                                 subtitle: isUser
                                     ? Text(
@@ -193,14 +208,14 @@ final results = [...filteredUsers, ...filteredTeams];
                                     );
                                   }
                                 },
-                              );
+                              )
+                            );
                             },
                           ),
                   ),
               ],
             ),
           ),
-        ],
       ),
     );
   }

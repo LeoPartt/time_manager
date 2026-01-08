@@ -14,6 +14,15 @@ public class AuthModels {
             @NotNull String password
     ) {}
 
+    @Schema(description = "User login credentials")
+    public record ChangeRequest(
+            @Schema(description = "Reset personal code", example = "A0x1Q3")
+            @NotNull String code,
+
+            @Schema(description = "User's new password", example = "SecurePass123!")
+            @NotNull String password
+    ) {}
+
     @Schema(description = "Authentication response containing JWT token")
     public record LoginResponse(
             @Schema(description = "JWT bearer token for API authentication", example = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...")

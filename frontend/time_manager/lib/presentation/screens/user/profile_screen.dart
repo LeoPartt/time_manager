@@ -1,8 +1,8 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
-import 'package:time_manager/core/constants/app_strings.dart';
 
 @RoutePage()
 class ProfileScreen extends StatefulWidget {
@@ -25,8 +25,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
+            final tr = AppLocalizations.of(context)!;
+
     return Scaffold(
-      appBar: AppBar(title: const Text(AppStrings.dashboard)),
+      appBar: AppBar(title:  Text(tr.dashboard)),
       // body: BlocBuilder<UserCubit, UserState>(
       //   builder: (context, state) {
       //     return state.when(

@@ -13,20 +13,22 @@ import java.time.OffsetDateTime;
 @Setter
 @Table(name = "membership",
         uniqueConstraints = @UniqueConstraint(name = "ux_membership_user_team",
-                columnNames = {"user_id","team_id"}),
+                columnNames = {"user_id", "team_id"}),
         indexes = @Index(name = "idx_membership_team_role", columnList = "team_id, role")
 )
-@SQLDelete(sql = "UPDATE tm_user SET deleted_at = now() WHERE id = ?")
+@SQLDelete(sql = "UPDATE membership SET deleted_at = now() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
 public class MembershipEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false) @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
     private UserEntity user;
 
-    @ManyToOne(optional = false) @JoinColumn(name = "team_id")
+    @ManyToOne(optional = false)
+    @JoinColumn(name = "team_id")
     private TeamEntity team;
 
     @Column(name = "deleted_at")

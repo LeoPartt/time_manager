@@ -4,5 +4,6 @@ abstract class AccountRepository {
   Future<User> login(String username, String password);
   Future<User> register(String username, String email, String password);
   Future<void> logout();
-  Future<User?> getCurrentUser();
+  
+
 }

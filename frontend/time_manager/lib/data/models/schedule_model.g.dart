@@ -7,20 +7,14 @@ part of 'schedule_model.dart';
 // **************************************************************************
 
 _ClockModel _$ClockModelFromJson(Map<String, dynamic> json) => _ClockModel(
-  id: (json['id'] as num).toInt(),
-  arrivalTs: json['arrivalTs'] == null
-      ? null
-      : DateTime.parse(json['arrivalTs'] as String),
-  departureTs: json['departureTs'] == null
-      ? null
-      : DateTime.parse(json['departureTs'] as String),
-  userId: (json['userId'] as num).toInt(),
+  id: (json['id'] as num?)?.toInt(),
+  arrivalTs: json['arrivalTs'] as String,
+  departureTs: json['departureTs'] as String?,
 );
 
 Map<String, dynamic> _$ClockModelToJson(_ClockModel instance) =>
     <String, dynamic>{
       'id': instance.id,
-      'arrivalTs': instance.arrivalTs?.toIso8601String(),
-      'departureTs': instance.departureTs?.toIso8601String(),
-      'userId': instance.userId,
+      'arrivalTs': instance.arrivalTs,
+      'departureTs': instance.departureTs,
     };

@@ -1,41 +1,42 @@
 package eu.epitech.t_dev_700.controllers;
 
-import eu.epitech.t_dev_700.doc.ApiErrorResponse;
 import eu.epitech.t_dev_700.doc.ApiUnauthorizedResponse;
+import eu.epitech.t_dev_700.models.PlanningModels;
 import eu.epitech.t_dev_700.models.TeamModels;
 import eu.epitech.t_dev_700.models.UserModels;
+import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.services.UserService;
-import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import jakarta.validation.Valid;
+import jakarta.validation.Validator;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.Set;
 
 @RestController
-@RequestMapping("users")
-@RequiredArgsConstructor
-
+@RequestMapping("/users")
 @Tag(name = "User Management")
 @ApiUnauthorizedResponse
+@RequiredArgsConstructor
 public class UserController implements CRUDController<
         UserModels.UserResponse,
         UserModels.PostUserRequest,
         UserModels.PutUserRequest,
         UserModels.PatchUserRequest
         > {
-
+    private final Validator validator;
     private final UserService userService;
 
     @Override
     @Operation(summary = "Get user at id")
-    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-    @ApiErrorResponse(ResourceNotFound.class)
     @PreAuthorize("@userAuth.isSelfOrManager(authentication, #id)")
     @GetMapping("{id}")
     public ResponseEntity<UserModels.UserResponse> Get(@PathVariable("id") Long id) {
@@ -44,7 +45,6 @@ public class UserController implements CRUDController<
 
     @Override
     @Operation(summary = "Get all users")
-    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @PreAuthorize("@userAuth.isManager(authentication)")
     @GetMapping
     public ResponseEntity<UserModels.UserResponse[]> GetAll() {
@@ -53,7 +53,6 @@ public class UserController implements CRUDController<
 
     @Override
     @Operation(summary = "Create a user")
-    @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     @PreAuthorize("@userAuth.isManager(authentication)")
     @PostMapping
     public ResponseEntity<UserModels.UserResponse> Post(@Valid @RequestBody UserModels.PostUserRequest body) {
@@ -62,8 +61,6 @@ public class UserController implements CRUDController<
 
     @Override
     @Operation(summary = "Modify an existing user")
-    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-    @ApiErrorResponse(ResourceNotFound.class)
     @PreAuthorize("@userAuth.isSelfOrManagerOfUser(authentication, #id)")
     @PutMapping("{id}")
     public ResponseEntity<UserModels.UserResponse> Put(@PathVariable Long id, @Valid @RequestBody UserModels.PutUserRequest body) {
@@ -72,8 +69,6 @@ public class UserController implements CRUDController<
 
     @Override
     @Operation(summary = "Update an existing user")
-    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-    @ApiErrorResponse(ResourceNotFound.class)
     @PreAuthorize("@userAuth.isSelfOrManagerOfUser(authentication, #id)")
     @PatchMapping("{id}")
     public ResponseEntity<UserModels.UserResponse> Patch(@PathVariable Long id, @Valid @RequestBody UserModels.PatchUserRequest body) {
@@ -82,8 +77,6 @@ public class UserController implements CRUDController<
 
     @Override
     @Operation(summary = "Delete an existing user")
-    @ApiResponse(responseCode = "204")
-    @ApiErrorResponse(ResourceNotFound.class)
     @PreAuthorize("@userAuth.isSelfOrManagerOfUser(authentication, #id)")
     @DeleteMapping("{id}")
     public ResponseEntity<Void> Delete(@PathVariable Long id) {
@@ -99,20 +92,39 @@ public class UserController implements CRUDController<
     }
 
     @Operation(summary = "Get user's clock records")
-    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-    @ApiErrorResponse(ResourceNotFound.class)
     @PreAuthorize("@userAuth.isSelfOrManagerOfUser(authentication, #id)")
     @GetMapping("{id}/clocks")
-    public ResponseEntity<Long[]> getUserClocks(@PathVariable Long id, @RequestParam("from") Optional<Long> from, @RequestParam("to") Optional<Long> to) {
-        return ResponseEntity.ok(this.userService.getClocks(id, from, to));
+    public ResponseEntity<Long[]> getUserClocks(
+            @Valid @ParameterObject @ModelAttribute UserScheduleQuery query,
+            @PathVariable Long id) {
+        return ResponseEntity.ok(this.userService.getClocks(id, query));
     }
 
     @Operation(summary = "Get user's teams")
-    @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-    @ApiErrorResponse(ResourceNotFound.class)
     @GetMapping("{id}/teams")
     public ResponseEntity<TeamModels.TeamResponse[]> getTeams(@PathVariable Long id) {
         return ResponseEntity.ok(userService.getTeams(id));
+    }
+
+    @Operation(summary = "Get user's plannings")
+    @PreAuthorize("@userAuth.isSelfOrManagerOfUser(authentication, #id)")
+    @GetMapping("{id}/plannings")
+    public ResponseEntity<PlanningModels.PlanningResponse[]> getPlannings(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getPlannings(id));
+    }
+
+    @Operation(summary = "Create a user's planning")
+    @PreAuthorize("@userAuth.isManagerOfUser(authentication, #id)")
+    @PostMapping("{id}/plannings")
+    public ResponseEntity<PlanningModels.PlanningResponse> postPlanning(@PathVariable Long id, @RequestBody PlanningModels.PostPlanningRequest body) {
+        return created("users/%d/plannings".formatted(id), userService.createPlanning(setPlanningBodyIdAndValidate(id, body)));
+    }
+
+    private PlanningModels.PostPlanningRequest setPlanningBodyIdAndValidate(Long id, PlanningModels.PostPlanningRequest body) {
+        PlanningModels.PostPlanningRequest fullBody = new PlanningModels.PostPlanningRequest(id, body);
+        Set<ConstraintViolation<PlanningModels.PostPlanningRequest>> violations = validator.validate(fullBody);
+        if (!violations.isEmpty()) throw new ConstraintViolationException(violations);
+        return fullBody;
     }
 
 }

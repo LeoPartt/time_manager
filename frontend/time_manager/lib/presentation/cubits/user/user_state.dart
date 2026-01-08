@@ -8,6 +8,7 @@ class UserState with _$UserState {
   const factory UserState.initial() = _Initial;
   const factory UserState.loading() = UserLoading;
   const factory UserState.loaded(User user) = UserLoaded;
+  const factory UserState.updated(User user) = UserUpdated;
     const factory UserState.listLoaded(List<User> users) = UserListLoaded;
     const factory UserState.deleted() = UserDeleted;
 

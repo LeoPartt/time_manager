@@ -18,11 +18,11 @@ class TeamSelector extends StatelessWidget {
     final teams = ["Team Marguerite", "Team Alpha", "Team Beta"];
 
     return DropdownButtonFormField<String>(
-      value: selectedTeam,
+      initialValue: selectedTeam,
       decoration: InputDecoration(
         labelText: "Select Team",
         filled: true,
-        fillColor: colorScheme.surfaceVariant,
+        fillColor: colorScheme.surfaceContainerHighest,
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
       ),
       items: [

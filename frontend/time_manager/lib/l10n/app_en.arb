@@ -11,15 +11,68 @@
   "english": "English",
   "french": "French",
   "me": "ME",
-  "modify": "modify",
-  "delete": "delete",
+  "modify": "Modify",
+  "successful": "with success",
+  "delete": "Delete",
   "clockin": "CLOCK IN",
   "clockout": "CLOCK OUT",
-  "validate": "validate",
-  "arrival": "arrival time",
+  "validate": "Validate",
+  "arrival": "Arrival time",
+  "registerTitle": "Create an user",
+  "welcome": "Welcome",
+  "teams": "Teams",
+  "teamDetails": "Team Details",
+  "reports": "Reports",
+  "kpiTitle": "Performance Indicators",
+  "loading": "Loading...",
+  "error": "An error occurred",
+  "emailLabel": "Email Address",
+  "passwordLabel": "Password",
+  "userNameLabel": "Username",
+  "firstNameLabel": "First Name",
+  "phoneNumberLabel": "Phone Number",
+  "lastNameLabel": "Last Name",
+  "loginButton": "Sign In",
+  "registerButton": "Create",
+  "emailRequired": "Email address is required",
+  "invalidEmail": "Invalid email address",
+  "passwordRequired": "Password is required",
+  "shortPassword": "Password must be at least 6 characters",
+  "fieldRequired": "The field cannot be empty",
   "departure": "departure time",
+  "badRequest": "Invalid request (400)",
+  "unauthorized": "Unauthorized access (401)",
+  "notFound": "Resource not found (404)",
+  "serverError": "Server error (500)",
+  "forgotPassword": "Forgot your password?",
   "management": "MANAGEMENT",
   "addanewuser": "new user",
   "addanewteam": "new team",
-  "searchbarhint": "User or team..."
+  "searchbarhint": "User or team...",
+  "networkError": "Network error ({code})",
+  "@networkError": {
+    "description": "Displayed when a network error occurs",
+    "placeholders": {
+      "code": {
+        "type": "int",
+        "example": "401"
+      }
+    }
+  },
+ "fieldIsRequired": "The '{field}' field is required.",
+  "@fieldIsRequired": {
+    "description": "Error message when a required field is missing.",
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "email"
+      }
+    }
+  },"toggleThemeHint": "Toggle between dark and light mode",
+  "languageSelectionHint": "Select the application language",
+  "accessibilityInfo": "These settings improve accessibility and readability for all users.",
+
+  "invalidPhoneNumber": "Invalid phone number",
+  "phoneNumberRequired": "Phone number is required",
+  "phoneFormatHint": "Example: +1 202 555 0123"
 }

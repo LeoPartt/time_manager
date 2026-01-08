@@ -1,15 +1,13 @@
 package eu.epitech.t_dev_700.entities;
 
 import jakarta.persistence.*;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.ForeignKey;
-import jakarta.persistence.Index;
-import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.*;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.SQLDelete;
 
 import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
@@ -50,7 +48,7 @@ public class UserEntity {
     @Column(name = "last_name", nullable = false, length = 100)
     private String lastName;
 
-    // citext in Postgres for case-insensitive comparison; keep nullable if optional
+    @NotBlank
     @Column(name = "email", columnDefinition = "VARCHAR")
     private String email;
 
@@ -58,12 +56,14 @@ public class UserEntity {
     @Column(name = "phone_number", length = 32)
     private String phoneNumber;
 
-    // Soft delete marker
     @Column(name = "deleted_at")
     private OffsetDateTime deletedAt;
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MembershipEntity> memberships = new LinkedHashSet<>();
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<PlanningEntity> plannings = new LinkedHashSet<>();
 
     public boolean isActive() { return deletedAt == null; }
 

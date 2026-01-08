@@ -40,6 +40,7 @@ class AppColors {
   static const Color borderLight = Color(0xFFE0E0E0);
   static const Color borderDark = Color(0xFF2E2E2E);
   static const Color shadow = Color(0x29000000); // 16% opacity black
+ static const Color shadowDark =  Color(0x29FFFFFF); // white, 16% opacity
 
   // ───────────────────────────────
   //  Gradients

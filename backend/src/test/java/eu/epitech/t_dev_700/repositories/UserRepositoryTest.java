@@ -171,13 +171,11 @@ class UserRepositoryTest {
 
     @Test
     void testSaveUser_withOptionalFieldsNull_shouldSucceed() {
-        testUser.setEmail(null);
         testUser.setPhoneNumber(null);
 
         UserEntity saved = userRepository.save(testUser);
 
         assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getEmail()).isNull();
         assertThat(saved.getPhoneNumber()).isNull();
     }
 

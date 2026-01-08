@@ -1,7 +1,6 @@
 package eu.epitech.t_dev_700.config;
 
 import eu.epitech.t_dev_700.models.ErrorModels;
-import eu.epitech.t_dev_700.services.exceptions.InvalidCredentials;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.DecodingException;
 import jakarta.persistence.EntityNotFoundException;
@@ -97,6 +96,6 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Object> handleUnexpected(Exception ex, WebRequest request) {
-        return new ErrorModels.ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request).toResponse();
+        return new ErrorModels.ErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR, "An unexpected error occurred", request, ex).toResponse();
     }
 }

@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$ClockModel {
 
- int get id; DateTime? get arrivalTs; DateTime? get departureTs; int get userId;
+ int? get id; String get arrivalTs; String? get departureTs;
 /// Create a copy of ClockModel
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $ClockModelCopyWith<ClockModel> get copyWith => _$ClockModelCopyWithImpl<ClockMo
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClockModel&&(identical(other.id, id) || other.id == id)&&(identical(other.arrivalTs, arrivalTs) || other.arrivalTs == arrivalTs)&&(identical(other.departureTs, departureTs) || other.departureTs == departureTs)&&(identical(other.userId, userId) || other.userId == userId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ClockModel&&(identical(other.id, id) || other.id == id)&&(identical(other.arrivalTs, arrivalTs) || other.arrivalTs == arrivalTs)&&(identical(other.departureTs, departureTs) || other.departureTs == departureTs));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,arrivalTs,departureTs,userId);
+int get hashCode => Object.hash(runtimeType,id,arrivalTs,departureTs);
 
 @override
 String toString() {
-  return 'ClockModel(id: $id, arrivalTs: $arrivalTs, departureTs: $departureTs, userId: $userId)';
+  return 'ClockModel(id: $id, arrivalTs: $arrivalTs, departureTs: $departureTs)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $ClockModelCopyWith<$Res>  {
   factory $ClockModelCopyWith(ClockModel value, $Res Function(ClockModel) _then) = _$ClockModelCopyWithImpl;
 @useResult
 $Res call({
- int id, DateTime? arrivalTs, DateTime? departureTs, int userId
+ int? id, String arrivalTs, String? departureTs
 });
 
 
@@ -65,13 +65,12 @@ class _$ClockModelCopyWithImpl<$Res>
 
 /// Create a copy of ClockModel
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? arrivalTs = freezed,Object? departureTs = freezed,Object? userId = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = freezed,Object? arrivalTs = null,Object? departureTs = freezed,}) {
   return _then(_self.copyWith(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,arrivalTs: freezed == arrivalTs ? _self.arrivalTs : arrivalTs // ignore: cast_nullable_to_non_nullable
-as DateTime?,departureTs: freezed == departureTs ? _self.departureTs : departureTs // ignore: cast_nullable_to_non_nullable
-as DateTime?,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as int,
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,arrivalTs: null == arrivalTs ? _self.arrivalTs : arrivalTs // ignore: cast_nullable_to_non_nullable
+as String,departureTs: freezed == departureTs ? _self.departureTs : departureTs // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 
@@ -156,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  DateTime? arrivalTs,  DateTime? departureTs,  int userId)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int? id,  String arrivalTs,  String? departureTs)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ClockModel() when $default != null:
-return $default(_that.id,_that.arrivalTs,_that.departureTs,_that.userId);case _:
+return $default(_that.id,_that.arrivalTs,_that.departureTs);case _:
   return orElse();
 
 }
@@ -177,10 +176,10 @@ return $default(_that.id,_that.arrivalTs,_that.departureTs,_that.userId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  DateTime? arrivalTs,  DateTime? departureTs,  int userId)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int? id,  String arrivalTs,  String? departureTs)  $default,) {final _that = this;
 switch (_that) {
 case _ClockModel():
-return $default(_that.id,_that.arrivalTs,_that.departureTs,_that.userId);case _:
+return $default(_that.id,_that.arrivalTs,_that.departureTs);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +196,10 @@ return $default(_that.id,_that.arrivalTs,_that.departureTs,_that.userId);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  DateTime? arrivalTs,  DateTime? departureTs,  int userId)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int? id,  String arrivalTs,  String? departureTs)?  $default,) {final _that = this;
 switch (_that) {
 case _ClockModel() when $default != null:
-return $default(_that.id,_that.arrivalTs,_that.departureTs,_that.userId);case _:
+return $default(_that.id,_that.arrivalTs,_that.departureTs);case _:
   return null;
 
 }
@@ -212,13 +211,12 @@ return $default(_that.id,_that.arrivalTs,_that.departureTs,_that.userId);case _:
 @JsonSerializable()
 
 class _ClockModel implements ClockModel {
-  const _ClockModel({required this.id, this.arrivalTs, this.departureTs, required this.userId});
+  const _ClockModel({this.id, required this.arrivalTs, this.departureTs});
   factory _ClockModel.fromJson(Map<String, dynamic> json) => _$ClockModelFromJson(json);
 
-@override final  int id;
-@override final  DateTime? arrivalTs;
-@override final  DateTime? departureTs;
-@override final  int userId;
+@override final  int? id;
+@override final  String arrivalTs;
+@override final  String? departureTs;
 
 /// Create a copy of ClockModel
 /// with the given fields replaced by the non-null parameter values.
@@ -233,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClockModel&&(identical(other.id, id) || other.id == id)&&(identical(other.arrivalTs, arrivalTs) || other.arrivalTs == arrivalTs)&&(identical(other.departureTs, departureTs) || other.departureTs == departureTs)&&(identical(other.userId, userId) || other.userId == userId));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ClockModel&&(identical(other.id, id) || other.id == id)&&(identical(other.arrivalTs, arrivalTs) || other.arrivalTs == arrivalTs)&&(identical(other.departureTs, departureTs) || other.departureTs == departureTs));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,id,arrivalTs,departureTs,userId);
+int get hashCode => Object.hash(runtimeType,id,arrivalTs,departureTs);
 
 @override
 String toString() {
-  return 'ClockModel(id: $id, arrivalTs: $arrivalTs, departureTs: $departureTs, userId: $userId)';
+  return 'ClockModel(id: $id, arrivalTs: $arrivalTs, departureTs: $departureTs)';
 }
 
 
@@ -253,7 +251,7 @@ abstract mixin class _$ClockModelCopyWith<$Res> implements $ClockModelCopyWith<$
   factory _$ClockModelCopyWith(_ClockModel value, $Res Function(_ClockModel) _then) = __$ClockModelCopyWithImpl;
 @override @useResult
 $Res call({
- int id, DateTime? arrivalTs, DateTime? departureTs, int userId
+ int? id, String arrivalTs, String? departureTs
 });
 
 
@@ -270,13 +268,12 @@ class __$ClockModelCopyWithImpl<$Res>
 
 /// Create a copy of ClockModel
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? arrivalTs = freezed,Object? departureTs = freezed,Object? userId = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = freezed,Object? arrivalTs = null,Object? departureTs = freezed,}) {
   return _then(_ClockModel(
-id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
-as int,arrivalTs: freezed == arrivalTs ? _self.arrivalTs : arrivalTs // ignore: cast_nullable_to_non_nullable
-as DateTime?,departureTs: freezed == departureTs ? _self.departureTs : departureTs // ignore: cast_nullable_to_non_nullable
-as DateTime?,userId: null == userId ? _self.userId : userId // ignore: cast_nullable_to_non_nullable
-as int,
+id: freezed == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
+as int?,arrivalTs: null == arrivalTs ? _self.arrivalTs : arrivalTs // ignore: cast_nullable_to_non_nullable
+as String,departureTs: freezed == departureTs ? _self.departureTs : departureTs // ignore: cast_nullable_to_non_nullable
+as String?,
   ));
 }
 

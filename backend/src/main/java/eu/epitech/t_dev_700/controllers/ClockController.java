@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clocks")
-@RequiredArgsConstructor
 @ApiUnauthorizedResponse
 @Tag(name = "Clock Management")
+@RequiredArgsConstructor
 public class ClockController {
 
     private final ClockService clockService;

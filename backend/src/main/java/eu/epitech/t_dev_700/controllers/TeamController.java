@@ -1,11 +1,10 @@
 package eu.epitech.t_dev_700.controllers;
 
 import eu.epitech.t_dev_700.doc.ApiErrorResponse;
+import eu.epitech.t_dev_700.doc.ApiUnauthorizedResponse;
 import eu.epitech.t_dev_700.models.TeamModels;
 import eu.epitech.t_dev_700.models.UserModels;
 import eu.epitech.t_dev_700.services.TeamService;
-import eu.epitech.t_dev_700.doc.ApiUnauthorizedResponse;
-import eu.epitech.t_dev_700.services.exceptions.InvalidClocking;
 import eu.epitech.t_dev_700.services.exceptions.NotAMember;
 import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import io.swagger.v3.oas.annotations.Operation;
@@ -19,9 +18,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/teams")
-@RequiredArgsConstructor
 @Tag(name = "Team Management")
 @ApiUnauthorizedResponse
+@RequiredArgsConstructor
 public class TeamController implements CRUDController<
         TeamModels.TeamResponse,
         TeamModels.PostTeamRequest,

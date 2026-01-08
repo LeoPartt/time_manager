@@ -29,6 +29,13 @@ public class MembershipService {
     }
 
     @Transactional(readOnly = true)
+    public List<UserEntity> getUsersOfTeam(TeamEntity team) {
+        return membershipRepository.findByTeam(team).stream()
+                .map(MembershipEntity::getUser)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
     public boolean isUserMemberOfTeam(UserEntity user, Long teamId) {
         return membershipRepository.existsByUserAndTeam_Id(user, teamId);
     }
@@ -41,6 +48,11 @@ public class MembershipService {
     @Transactional(readOnly = true)
     public boolean isUserManager(UserEntity user) {
         return membershipRepository.existsByUserAndRole(user, MembershipEntity.TeamRole.MANAGER);
+    }
+
+    @Transactional(readOnly = true)
+    public boolean isUserManagerOfOther(UserEntity user, UserEntity otherUser) {
+        return this.isUserManagerOfOther(user, otherUser.getId());
     }
 
     @Transactional(readOnly = true)

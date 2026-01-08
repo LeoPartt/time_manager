@@ -29,7 +29,7 @@ class Application extends StatelessWidget {
               create: (_) => locator<AuthCubit>(),
             ),
             BlocProvider<UserCubit>(
-              create: (_) => locator<UserCubit>(),
+              create: (_) => locator<UserCubit>()..restoreSession(),
             ),
             BlocProvider<NavCubit>(
               create: (_) => NavCubit(),
@@ -40,7 +40,6 @@ class Application extends StatelessWidget {
             BlocProvider(create: (_) => locator<TeamCubit>(),)
           ],
           child: MaterialApp.router(
-            title: 'Time Manager',
             theme: themeSwitcher.currentTheme,
             locale: localeProvider.locale,
             supportedLocales: AppLocalizations.supportedLocales,

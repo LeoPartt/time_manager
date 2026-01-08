@@ -12,34 +12,42 @@ class NavBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+   final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+
     final size = MediaQuery.sizeOf(context);
     final icons = const [
       Icons.bar_chart_rounded,
       Icons.work_history_rounded,
       Icons.group_rounded,
       Icons.person_rounded,
-      Icons.settings
+      Icons.settings,
     ];
     final routes = [
       const HomeRoute(),
       const ClockingRoute(),
       const ManagementRoute(),
       const UserRoute(),
-      const SettingsRoute()
+      const SettingsRoute(),
     ];
 
     return Container(
-      margin: EdgeInsets.all( AppSizes.responsiveHeight(context, size.height * 0.02)),
-      padding: EdgeInsets.symmetric(vertical: AppSizes.responsiveHeight(context,size.height * 0.01)),
+      margin: EdgeInsets.all(
+        AppSizes.responsiveHeight(context, size.height * 0.02),
+      ),
+      padding: EdgeInsets.symmetric(
+        vertical: AppSizes.responsiveHeight(context, size.height * 0.01),
+      ),
       decoration: BoxDecoration(
         color: AppColors.accent,
         borderRadius: BorderRadius.circular(20),
-        boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          offset: Offset(0, 4),
-                          blurRadius: 12,
-                        ),]
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: 0.25),
+            offset: const Offset(0, 4),
+            blurRadius: AppSizes.r12,
+          ),
+        ],
       ),
       child: BlocBuilder<NavCubit, NavState>(
         builder: (context, state) {
@@ -50,14 +58,15 @@ class NavBar extends StatelessWidget {
               return IconButton(
                 onPressed: () => {
                   context.pushRoute(routes[index]),
-                  context.read<NavCubit>().changeTab(index)
+                  context.read<NavCubit>().changeTab(index),
                 },
                 icon: Icon(
                   icons[index],
                   size: AppSizes.responsiveHeight(context, AppSizes.iconLarge),
-                  color: isSelected ? AppColors.primary : AppColors.backgroundDark,
+                  color: isSelected
+                      ? Theme.of(context).colorScheme.primary
+                      : Theme.of(context).scaffoldBackgroundColor,
                 ),
-                
               );
             }),
           );

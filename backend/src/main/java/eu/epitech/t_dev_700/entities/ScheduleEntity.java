@@ -27,9 +27,16 @@ public class ScheduleEntity {
     private UserEntity user;
 
     @Column(name = "arrival_ts", nullable = false)
-    private OffsetDateTime arrivalTs;      // maps to TIMESTAMPTZ
+    private OffsetDateTime arrivalTs;
 
     @Column(name = "departure_ts")
     private OffsetDateTime departureTs;
+
+    public ScheduleEntity() {}
+
+    public ScheduleEntity(UserEntity user, OffsetDateTime arrivalTs) {
+        this.user = user;
+        this.arrivalTs = arrivalTs;
+    }
 
 }

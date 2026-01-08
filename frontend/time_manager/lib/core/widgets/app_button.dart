@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:time_manager/core/constants/app_colors.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 
 class AppButton extends StatelessWidget {
@@ -18,30 +17,34 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
+    final textTheme = Theme.of(context).textTheme;
     final w = AppSizes.responsiveWidth(context, fullSize ? 300 : 150);
     final h = AppSizes.responsiveHeight(context, fullSize ? 60 : 48);
     final r = BorderRadius.circular(AppSizes.r16);
-
+  final backgroundColor = isLoading
+        ? colorScheme.secondary.withValues(alpha: 0.7)
+        : colorScheme.secondary;
+    final borderColor = colorScheme.shadow.withValues(alpha: 0.6);
     return Material(
       color: Colors.transparent,
       child: Ink(
         width: w,
         height: h,
         decoration: BoxDecoration(
-          color: isLoading
-              ? AppColors.secondary.withValues(alpha: 0.7)
-              : AppColors.secondary,
+          color:backgroundColor,
           borderRadius: r,
           border: Border.all(
-            color: AppColors.shadow.withValues(alpha: 0.6),
+            color: borderColor,
             width: 2,
           ),
         ),
         child: InkWell(
           borderRadius: r,
           onTap: isLoading ? null : onPressed,
-          splashColor: AppColors.primary.withValues(alpha: 0.2),
-          highlightColor: AppColors.primary.withValues(alpha: 0.1),
+          splashColor: colorScheme.primary.withValues(alpha: 0.2),
+          highlightColor: colorScheme.primary.withValues(alpha: 0.1),
           child: Center(
             child: AnimatedSwitcher(
               duration: const Duration(milliseconds: 200),
@@ -55,24 +58,23 @@ class AppButton extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SizedBox(
-                          width: fullSize ? 24 : 18,
-                          height: fullSize ? 24 : 18,
-                          child: const CircularProgressIndicator(
+                          width: fullSize ? AppSizes.p24 : 18,
+                          height: fullSize ? AppSizes.p24 : 18,
+                          child:  CircularProgressIndicator(
                             strokeWidth: 2,
                             valueColor:
-                                AlwaysStoppedAnimation(Colors.white),
+                                AlwaysStoppedAnimation(colorScheme.surface),
                           ),
                         ),
                         const SizedBox(width: 12),
                         Text(
                           _buildLoadingText(label),
-                          style: TextStyle(
-                            fontSize: fullSize
-                                ? AppSizes.textLg
-                                : AppSizes.textMd,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white,
-                          ),
+                          style: textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: fullSize
+                ? AppSizes.textLg
+                : AppSizes.textMd,
+          ),
                         ),
                       ],
                     )
@@ -81,13 +83,14 @@ class AppButton extends StatelessWidget {
                       fit: BoxFit.scaleDown,
                       child: Text(
                         label,
-                        style: TextStyle(
-                          fontSize: fullSize
-                              ? AppSizes.textDisplay
+                        style: 
+                        textTheme.displayLarge?.copyWith(
+            fontWeight: FontWeight.bold,
+            fontSize: fullSize
+                ? AppSizes.textDisplay
                               : AppSizes.textXxl,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.textPrimary,
-                        ),
+          ),
+                      
                       ),
                     ),
             ),

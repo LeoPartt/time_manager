@@ -1,10 +1,11 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-import 'package:time_manager/core/constants/app_strings.dart';
 import 'package:time_manager/core/widgets/app_card.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/dashboard_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/team_selector.dart';
+import 'package:time_manager/presentation/widgets/navbar.dart';
 
 @RoutePage()
 class DashboardScreen extends StatefulWidget {
@@ -21,14 +22,12 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
+            final tr = AppLocalizations.of(context)!;
+
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppStrings.dashboard, style: textTheme.titleLarge),
-        centerTitle: true,
-        backgroundColor: colorScheme.surface,
-        elevation: 0,
-      ),
+             bottomNavigationBar: const NavBar(),
+
       body: Padding(
         padding: const EdgeInsets.all(AppSizes.p16),
         child: SingleChildScrollView(
@@ -105,7 +104,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         LinearProgressIndicator(
           value: value,
           color: colorScheme.primary,
-          backgroundColor: colorScheme.surfaceVariant,
+          backgroundColor: colorScheme.surfaceContainerHighest,
           minHeight: 10,
           borderRadius: BorderRadius.circular(AppSizes.r8),
         ),

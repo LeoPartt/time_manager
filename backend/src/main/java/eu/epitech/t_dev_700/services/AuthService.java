@@ -3,6 +3,7 @@ package eu.epitech.t_dev_700.services;
 import eu.epitech.t_dev_700.entities.AccountEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.models.AuthModels;
+import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import eu.epitech.t_dev_700.services.exceptions.DeletedUser;
 import eu.epitech.t_dev_700.services.exceptions.InvalidCredentials;
 import jakarta.persistence.EntityManager;
@@ -23,6 +24,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserService userService;
     private final EntityManager entityManager;
+    private final PasswordResetService passwordResetService;
 
     public String authenticate(AuthModels.LoginRequest input) {
         Authentication authentication;
@@ -53,5 +55,13 @@ public class AuthService {
         } finally {
             session.enableFilter("deletedUserFilter");
         }
+    }
+
+    public void resetPassword() {
+        passwordResetService.createResetToken(UserAuthorization.getCurrentUser());
+    }
+
+    public void changePassword(AuthModels.ChangeRequest body) {
+        passwordResetService.changePassword(body.code(), body.password());
     }
 }

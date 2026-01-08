@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:time_manager/core/exceptions/network_exception.dart';
 import 'package:time_manager/data/services/auth_header_service.dart';
@@ -7,9 +8,11 @@ import 'package:time_manager/initialization/environment.dart';
 /// Centralized HTTP client for the app.
 
 class ApiClient {
+  final BuildContext? context;
+ 
   final AuthHeaderService authHeaderService;
 
-  ApiClient({required this.authHeaderService});
+  ApiClient({required this.authHeaderService, this.context});
 
   String get _baseUrl => Environment.baseUrl;
 
@@ -54,7 +57,7 @@ class ApiClient {
     final response = await http.delete(Uri.parse('$_baseUrl$endpoint'), headers: headers);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw NetworkException.fromStatusCode(response.statusCode);
+      throw NetworkException.fromStatusCode(context!, response.statusCode);
     }
   }
 
@@ -75,7 +78,7 @@ dynamic _handleResponse(http.Response response) {
     }
   }
 
-  throw NetworkException.fromStatusCode(response.statusCode);
+  throw NetworkException.fromStatusCode(context!, response.statusCode);
 }
 
 }

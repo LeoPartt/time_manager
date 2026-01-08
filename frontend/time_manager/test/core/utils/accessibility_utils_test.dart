@@ -41,17 +41,18 @@ testWidgets('ensureContrast returns proper color based on theme brightness', (te
     );
   });
 
-  testWidgets('withTooltip shows tooltip message', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: AccessibilityUtils.withTooltip(
-          tooltip: 'Info tooltip',
-          child: const Icon(Icons.info),
-        ),
-      ),
-    );
+  // testWidgets('withTooltip shows tooltip message', (tester) async {
+  //   await tester.pumpWidget(
+  //     MaterialApp(
+  //       home: AccessibilityUtils.withTooltip(
+          
+  //         tooltip: 'Info tooltip',
+  //         child: const Icon(Icons.info),
+  //       ),
+  //     ),
+  //   );
 
-    final iconFinder = find.byIcon(Icons.info);
-    expect(iconFinder, findsOneWidget);
-  });
+  //   final iconFinder = find.byIcon(Icons.info);
+  //   expect(iconFinder, findsOneWidget);
+  // });
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_manager/core/constants/app_sizes.dart';
 //import 'app_colors.dart';
 
 import '../constants/app_colors.dart';
@@ -12,10 +13,15 @@ class AppTheme {
   // ───────────────────────────────
   static ThemeData get lightTheme => ThemeData(
         brightness: Brightness.light,
+                useMaterial3: true,
+
         colorScheme: const ColorScheme.light(
           primary: AppColors.primary,
           secondary: AppColors.accent,
           surface: Colors.white,
+          onSurface: Colors.black,
+          shadow: AppColors.shadow,
+
           error: AppColors.error,
         ),
         scaffoldBackgroundColor: AppColors.backgroundLight,
@@ -28,16 +34,8 @@ class AppTheme {
         inputDecorationTheme: _inputTheme(isDark: false),
         cardColor: AppColors.cardLight,
         iconTheme: const IconThemeData(color: AppColors.primary),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-          ),
-        ),
+        elevatedButtonTheme:_buttonTheme(isDark: false),
+         
       );
 
   // ───────────────────────────────
@@ -45,12 +43,17 @@ class AppTheme {
   // ───────────────────────────────
   static ThemeData get darkTheme => ThemeData(
         brightness: Brightness.dark,
+               useMaterial3: true,
+
         colorScheme: const ColorScheme.dark(
           primary: AppColors.primary,
           secondary: AppColors.secondary,
           surface: AppColors.cardDark,
+                    onSurface: Colors.white,
+shadow:AppColors.shadowDark ,
           error: AppColors.error,
         ),
+       
         scaffoldBackgroundColor: AppColors.backgroundDark,
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.secondary,
@@ -80,20 +83,20 @@ class AppTheme {
         displayLarge: TextStyle(
           color: isDark ? AppColors.textLight : AppColors.textPrimary,
           fontWeight: FontWeight.bold,
-          fontSize: 32,
+          fontSize: AppSizes.textDisplay,
         ),
         headlineMedium: TextStyle(
           color: isDark ? AppColors.textLight : AppColors.textPrimary,
           fontWeight: FontWeight.w600,
-          fontSize: 20,
+          fontSize: AppSizes.textXxl,
         ),
         bodyLarge: TextStyle(
           color: isDark ? AppColors.textLight : AppColors.textPrimary,
-          fontSize: 16,
+          fontSize: AppSizes.textLg,
         ),
         bodyMedium: TextStyle(
           color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
-          fontSize: 14,
+          fontSize: AppSizes.textMd,
         ),
       );
 
@@ -106,26 +109,44 @@ class AppTheme {
         fillColor:
             isDark ? AppColors.cardDark : AppColors.backgroundLight,
         contentPadding:
-            const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            const EdgeInsets.symmetric(vertical: AppSizes.p12, horizontal: AppSizes.p16),
         border: OutlineInputBorder(
           borderSide: BorderSide(
             color: isDark ? AppColors.primary : AppColors.accent,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.r12),
         ),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(
             color: isDark ? AppColors.accent : AppColors.borderLight,
           ),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.r12),
         ),
         focusedBorder: OutlineInputBorder(
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(AppSizes.r12
+          ),
         ),
         hintStyle: TextStyle(
           color: isDark ? AppColors.accent : AppColors.textSecondary,
         ),
       );
+
+      // ───────────────────────────────
+  //  BUTTON THEME
+  // ───────────────────────────────
+  static ElevatedButtonThemeData _buttonTheme({required bool isDark}) =>
+     ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.primary,
+            foregroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(AppSizes.r8),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: AppSizes.p12, horizontal: AppSizes.p24),
+            
+          ),
+          
+        );
 }
 

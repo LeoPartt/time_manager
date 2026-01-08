@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:time_manager/core/constants/app_colors.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 
 class Header extends StatelessWidget {
@@ -16,30 +15,29 @@ class Header extends StatelessWidget {
     final isLandscape = size.width > size.height;
     final w = AppSizes.responsiveWidth(context, 0.9 * MediaQuery.of(context).size.width);
     final h = AppSizes.responsiveHeight(context, isLandscape ? 0.1 * MediaQuery.of(context).size.height : 0.06 * MediaQuery.of(context).size.height );
-
+final theme = Theme.of(context);
+        final colorScheme = theme.colorScheme;
     return Container(   
       width: w,
       height: h,
       decoration: BoxDecoration(
-        color: AppColors.accent,
-        boxShadow: const [
-                        BoxShadow(
-                          color: Color.fromRGBO(0, 0, 0, 0.25),
-                          offset: Offset(0, 4),
-                          blurRadius: 12,
-                        ),]
+        color: theme.colorScheme.secondary,
+         boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha: 0.25),
+            offset: const Offset(0, 4),
+            blurRadius: AppSizes.r12,
+          ),
+        ],
       ),
-      margin: EdgeInsets.only(top : AppSizes.responsiveHeight(context, 0.03 * MediaQuery.of(context).size.height)),
+      margin: EdgeInsets.only(top : AppSizes.responsiveHeight(context, 0.03 * size.height)),
       child: Center(
         child: FittedBox(
           fit: BoxFit.scaleDown,
           child: Text(
             label,
-            style: TextStyle(
-              fontSize: size.width * 0.08,
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimary,
-            ),
+            style: Theme.of(context).textTheme.displayLarge?.copyWith(fontSize: size.width * 0.08,)
+           
           ),
         ),
       )

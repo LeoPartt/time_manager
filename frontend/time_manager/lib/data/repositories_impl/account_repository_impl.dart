@@ -14,29 +14,25 @@ class AccountRepositoryImpl implements AccountRepository {
   @override
   Future<User> login(String username, String password) async {
     final response = await api.login(username, password);
-    print("🔐 LOGIN RESPONSE: $response");
 
-    // Parse the response as an AccountModel (token + expirationTime)
     final account = AccountModel.fromJson(response);
 
     if (account.token.isNotEmpty) {
       await storage.saveToken(account.token);
     }
 
-    // Return a minimal User domain entity (no full profile info yet)
-    // The full user info can later be fetched via `GetUserProfile`
     return User(
-      id: 0, // placeholder (since backend doesn't return it)
+      id: 0, 
       username: username,
       email: '', 
       firstName: '', 
-      lastName: '', // unknown for now
+      lastName: '', 
      // token: account.token,
     );
   }
 
   // ─────────────────────────────────────────────
-  // 🔹 REGISTER
+  //  REGISTER
   // ─────────────────────────────────────────────
   @override
   Future<User> register(String username, String email, String password) async {
@@ -46,7 +42,7 @@ class AccountRepositoryImpl implements AccountRepository {
   }
 
   // ─────────────────────────────────────────────
-  // 🔹 LOGOUT
+  //  LOGOUT
   // ─────────────────────────────────────────────
   @override
   Future<void> logout() async {
@@ -60,12 +56,7 @@ class AccountRepositoryImpl implements AccountRepository {
     }
     await storage.clear();
   }
+  
 
-  @override
-  Future<User?> getCurrentUser() async {
-    final token = await storage.getToken();
-    if (token == null) return null;
-    // Could later decode token or call /api/users/me
-    return null;
-  }
+ 
 }

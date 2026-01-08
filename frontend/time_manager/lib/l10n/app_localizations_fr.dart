@@ -18,7 +18,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get logout => 'Déconnexion';
 
   @override
-  String get settings => 'PARAMETRES';
+  String get settings => 'PARAMÈTRES';
 
   @override
   String get darkMode => 'Mode sombre';
@@ -42,35 +42,144 @@ class AppLocalizationsFr extends AppLocalizations {
   String get me => 'MOI';
 
   @override
-  String get modify => 'modifier';
+  String get modify => 'Modifier';
 
   @override
-  String get delete => 'supprimer';
+  String get successful => 'avec succés';
 
   @override
-  String get clockin => 'POINTAGE ARRIVEE';
+  String get delete => 'Supprimer';
+
+  @override
+  String get clockin => 'POINTAGE ARRIVÉE';
 
   @override
   String get clockout => 'POINTAGE SORTIE';
 
   @override
-  String get validate => 'valider';
+  String get validate => 'Valider';
 
   @override
-  String get arrival => 'heure d\'arrivée';
+  String get arrival => 'Heure d\'arrivée';
 
   @override
-  String get departure => 'heure de départ';
+  String get registerTitle => 'Créer un utilisateur';
 
   @override
-  String get management => 'MANAGEMENT';
+  String get welcome => 'Bienvenue';
 
   @override
-  String get addanewuser => 'nouveau utilisateur';
+  String get teams => 'Équipes';
 
   @override
-  String get addanewteam => 'nouvelle équipe';
+  String get teamDetails => 'Détails de l\'équipe';
+
+  @override
+  String get reports => 'Rapports';
+
+  @override
+  String get kpiTitle => 'Indicateurs de performance';
+
+  @override
+  String get loading => 'Chargement...';
+
+  @override
+  String get error => 'Une erreur est survenue';
+
+  @override
+  String get emailLabel => 'Adresse e-mail';
+
+  @override
+  String get passwordLabel => 'Mot de passe';
+
+  @override
+  String get userNameLabel => 'Nom d\'utilisateur';
+
+  @override
+  String get firstNameLabel => 'Prénom';
+
+  @override
+  String get phoneNumberLabel => 'Numéro de téléphone';
+
+  @override
+  String get lastNameLabel => 'Nom';
+
+  @override
+  String get loginButton => 'Se connecter';
+
+  @override
+  String get registerButton => 'Créer';
+
+  @override
+  String get emailRequired => 'L\'adresse e-mail est obligatoire';
+
+  @override
+  String get invalidEmail => 'Adresse e-mail invalide';
+
+  @override
+  String get passwordRequired => 'Le mot de passe est obligatoire';
+
+  @override
+  String get shortPassword => 'Le mot de passe doit comporter au moins 6 caractères';
+
+  @override
+  String get fieldRequired => 'Le champ ne peut pas être vide';
+
+  @override
+  String get departure => 'Heure de départ';
+
+  @override
+  String get badRequest => 'Requête invalide (400)';
+
+  @override
+  String get unauthorized => 'Accès non autorisé (401)';
+
+  @override
+  String get notFound => 'Ressource non trouvée (404)';
+
+  @override
+  String get serverError => 'Erreur du serveur (500)';
+
+  @override
+  String get forgotPassword => 'Mot de passe oublié ?';
+
+  @override
+  String get management => 'GESTION';
+
+  @override
+  String get addanewuser => 'Nouvel utilisateur';
+
+  @override
+  String get addanewteam => 'Nouvelle équipe';
 
   @override
   String get searchbarhint => 'Utilisateur ou équipe...';
+
+  @override
+  String networkError(int code) {
+    return 'Erreur réseau ($code)';
+  }
+
+  @override
+  String fieldIsRequired(String field) {
+    return 'Le champ \'$field\' est obligatoire.';
+  }
+
+  @override
+  String get toggleThemeHint => 'Active ou désactive le mode sombre';
+
+  @override
+  String get languageSelectionHint => 'Choisir la langue de l’application';
+
+  @override
+  String get accessibilityInfo => 'Ces paramètres améliorent l’accessibilité et la lisibilité pour tous les utilisateurs.';
+
+  @override
+  String get invalidPhoneNumber => 'Numéro de téléphone invalide';
+
+  @override
+  String get phoneNumberRequired => 'Le numéro de téléphone est requis';
+
+  @override
+  String get phoneFormatHint => 'Exemple : +33 6 12 34 56 78';
 }

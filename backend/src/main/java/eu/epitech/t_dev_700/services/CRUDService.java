@@ -30,9 +30,13 @@ public abstract class CRUDService<E, M, C, R, U> {
     }
 
     @Transactional(readOnly = true)
+    public List<E> getAll() {
+        return repository.findAll();
+    }
+
+    @Transactional(readOnly = true)
     public M[] list() {
-        List<E> entities = repository.findAll();
-        return CRUDMapper.listEntity(entities);
+        return CRUDMapper.listEntity(this.getAll());
     }
 
     @Transactional(readOnly = true)

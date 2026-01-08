@@ -3,7 +3,7 @@
   "dashboard": "Tableau de bord",
   "login": "Connexion",
   "logout": "Déconnexion",
-  "settings": "PARAMETRES",
+  "settings": "PARAMÈTRES",
   "darkMode": "Mode sombre",
   "currentThemeDark": "Thème actuel : sombre",
   "currentThemeLight": "Thème actuel : clair",
@@ -11,15 +11,71 @@
   "english": "Anglais",
   "french": "Français",
   "me": "MOI",
-  "modify": "modifier",
-  "delete": "supprimer",
-  "clockin": "POINTAGE ARRIVEE",
+  "modify": "Modifier",
+  "successful": "avec succés",
+  "delete": "Supprimer",
+  "clockin": "POINTAGE ARRIVÉE",
   "clockout": "POINTAGE SORTIE",
-  "validate": "valider",
-  "arrival": "heure d'arrivée",
-  "departure": "heure de départ",
-  "management": "MANAGEMENT",
-  "addanewuser": "nouveau utilisateur",
-  "addanewteam": "nouvelle équipe",
-  "searchbarhint": "Utilisateur ou équipe..."
+  "validate": "Valider",
+  "arrival": "Heure d'arrivée",
+  "registerTitle": "Créer un utilisateur",
+  "welcome": "Bienvenue",
+  "teams": "Équipes",
+  "teamDetails": "Détails de l'équipe",
+  "reports": "Rapports",
+  "kpiTitle": "Indicateurs de performance",
+  "loading": "Chargement...",
+  "error": "Une erreur est survenue",
+  "emailLabel": "Adresse e-mail",
+  "passwordLabel": "Mot de passe",
+  "userNameLabel": "Nom d'utilisateur",
+  "firstNameLabel": "Prénom",
+  "lastNameLabel": "Nom",
+  "phoneNumberLabel": "Numéro de téléphone",
+  "loginButton": "Se connecter",
+  "registerButton": "Créer",
+  "emailRequired": "L'adresse e-mail est obligatoire",
+  "invalidEmail": "Adresse e-mail invalide",
+  "passwordRequired": "Le mot de passe est obligatoire",
+  "shortPassword": "Le mot de passe doit comporter au moins 6 caractères",
+  "fieldRequired": "Le champ ne peut pas être vide",
+  "departure": "Heure de départ",
+  "badRequest": "Requête invalide (400)",
+  "unauthorized": "Accès non autorisé (401)",
+  "notFound": "Ressource non trouvée (404)",
+  "serverError": "Erreur du serveur (500)",
+  "forgotPassword": "Mot de passe oublié ?",
+  "management": "GESTION",
+  "addanewuser": "Nouvel utilisateur",
+  "addanewteam": "Nouvelle équipe",
+  "searchbarhint": "Utilisateur ou équipe...",
+  
+  "networkError": "Erreur réseau ({code})",
+  "@networkError": {
+    "description": "Affiché lorsqu'une erreur réseau se produit.",
+    "placeholders": {
+      "code": {
+        "type": "int",
+        "example": "401"
+      }
+    }
+  },
+
+  "fieldIsRequired": "Le champ '{field}' est obligatoire.",
+  "@fieldIsRequired": {
+    "description": "Message d’erreur lorsqu’un champ requis est manquant.",
+    "placeholders": {
+      "field": {
+        "type": "String",
+        "example": "adresse e-mail"
+      }
+    }
+  },
+  "invalidPhoneNumber": "Numéro de téléphone invalide",
+  "phoneNumberRequired": "Le numéro de téléphone est requis",
+  "phoneFormatHint": "Exemple : +33 6 12 34 56 78",
+   "toggleThemeHint": "Active ou désactive le mode sombre",
+  "languageSelectionHint": "Choisir la langue de l’application",
+  "accessibilityInfo": "Ces paramètres améliorent l’accessibilité et la lisibilité pour tous les utilisateurs."
+
 }

@@ -2,10 +2,7 @@ package eu.epitech.t_dev_700.controllers;
 
 import eu.epitech.t_dev_700.entities.AccountEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
-import eu.epitech.t_dev_700.services.ClockService;
-import eu.epitech.t_dev_700.services.MembershipService;
-import eu.epitech.t_dev_700.services.TeamService;
-import eu.epitech.t_dev_700.services.UserService;
+import eu.epitech.t_dev_700.services.*;
 import org.junit.jupiter.api.BeforeEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +29,9 @@ abstract class AbstractAuthTest {
 
     @MockitoBean
     MembershipService membershipService;
+
+    @MockitoBean
+    PlanningService planningService;
 
     @MockitoBean
     UserService userService;
@@ -63,15 +63,36 @@ abstract class AbstractAuthTest {
 
         when(membershipService.isUserManager(memberUser)).thenReturn(false);
         when(membershipService.isUserMemberOfTeam(memberUser, 1L)).thenReturn(true);
-        when(membershipService.isUserManagerOfTeam(memberUser, 1L)).thenReturn(false);
         when(membershipService.isUserMemberOfTeam(memberUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfTeam(memberUser, 1L)).thenReturn(false);
+        when(membershipService.isUserManagerOfTeam(memberUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfOther(memberUser, 1L)).thenReturn(false);
         when(membershipService.isUserManagerOfOther(memberUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfOther(memberUser, 3L)).thenReturn(false);
 
         when(membershipService.isUserManager(managerUser)).thenReturn(true);
         when(membershipService.isUserMemberOfTeam(managerUser, 1L)).thenReturn(true);
-        when(membershipService.isUserManagerOfTeam(managerUser, 1L)).thenReturn(true);
         when(membershipService.isUserMemberOfTeam(managerUser, 2L)).thenReturn(false);
+        when(membershipService.isUserManagerOfTeam(managerUser, 1L)).thenReturn(true);
+        when(membershipService.isUserManagerOfTeam(managerUser, 2L)).thenReturn(false);
         when(membershipService.isUserManagerOfOther(managerUser, 1L)).thenReturn(true);
+        when(membershipService.isUserManagerOfOther(managerUser, 2L)).thenReturn(true);
+        when(membershipService.isUserManagerOfOther(managerUser, 3L)).thenReturn(false);
+
+        when(planningService.isOwner(memberUser, 1L)).thenReturn(true);
+        when(planningService.isOwner(memberUser, 2L)).thenReturn(false);
+        when(planningService.isManagerOfOwner(memberUser, 1L)).thenReturn(false);
+        when(planningService.isManagerOfOwner(memberUser, 2L)).thenReturn(false);
+
+        when(planningService.isOwner(managerUser, 1L)).thenReturn(false);
+        when(planningService.isOwner(managerUser, 2L)).thenReturn(false);
+        when(planningService.isManagerOfOwner(managerUser, 1L)).thenReturn(true);
+        when(planningService.isManagerOfOwner(managerUser, 2L)).thenReturn(false);
+
+        when(planningService.isOwner(otherUser, 1L)).thenReturn(false);
+        when(planningService.isOwner(otherUser, 2L)).thenReturn(true);
+        when(planningService.isManagerOfOwner(otherUser, 1L)).thenReturn(false);
+        when(planningService.isManagerOfOwner(otherUser, 2L)).thenReturn(false);
     }
 
     // -------- helpers to build Authentication like at runtime --------
@@ -93,7 +114,7 @@ abstract class AbstractAuthTest {
         return token(principal(true), new ArrayList<>());
     }
 
-    protected Authentication authForMember() {
+    protected Authentication authForUser() {
         return token(principal(memberUser), new ArrayList<>());
     }
 

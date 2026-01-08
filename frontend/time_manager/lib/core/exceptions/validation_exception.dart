@@ -1,16 +1,22 @@
-import 'package:time_manager/core/constants/app_strings.dart';
+import 'package:flutter/material.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'app_exception.dart';
 
-/// Thrown when data validation fails (e.g., empty fields, bad email, etc.).
 class ValidationException extends AppException {
   ValidationException(super.message, {super.details});
 
-  static ValidationException emptyField(String field) =>
-      ValidationException(AppStrings.fieldIsRequired(field));
+  static ValidationException emptyField(BuildContext context, String field) {
+    final tr = AppLocalizations.of(context)!;
+    return ValidationException(tr.fieldIsRequired(field));
+  }
 
-  static ValidationException invalidEmail() =>
-      ValidationException(AppStrings.invalidEmail);
+  static ValidationException invalidEmail(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    return ValidationException(tr.invalidEmail);
+  }
 
-  static ValidationException shortPassword() =>
-      ValidationException(AppStrings.shortPassword);
+  static ValidationException shortPassword(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    return ValidationException(tr.shortPassword);
+  }
 }

@@ -1,6 +1,7 @@
 package eu.epitech.t_dev_700.controllers;
 
 import eu.epitech.t_dev_700.services.MembershipService;
+import eu.epitech.t_dev_700.services.PlanningService;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -36,8 +37,8 @@ public class TeamAuthTest extends AbstractAuthTest {
     @EnableMethodSecurity(proxyTargetClass = true)
     public static class MethodSecurityTestConfig {
         @Bean
-        UserAuthorization userAuth(MembershipService membershipService) {
-            return new UserAuthorization(membershipService);
+        UserAuthorization userAuth(MembershipService membershipService, PlanningService planningService) {
+            return new UserAuthorization(membershipService, planningService);
         }
 
         @Bean
@@ -60,7 +61,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_getTeams_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 get("/teams"),
                 status().isOk());
     }
@@ -84,7 +85,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_getTeam_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 get("/teams/1"),
                 status().isOk());
     }
@@ -92,7 +93,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_getTeam_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 get("/teams/2"),
                 status().isOk());
     }
@@ -124,7 +125,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_postTeam_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 post("/teams").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
                 status().isForbidden());
     }
@@ -148,7 +149,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_putTeam_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 put("/teams/1").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
                 status().isForbidden());
     }
@@ -156,7 +157,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_putTeam_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 put("/teams/2").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
                 status().isForbidden());
     }
@@ -188,7 +189,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_patchTeam_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 patch("/teams/1").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
                 status().isForbidden());
     }
@@ -196,7 +197,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_patchTeam_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 patch("/teams/2").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
                 status().isForbidden());
     }
@@ -229,7 +230,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_deleteTeam_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 delete("/teams/1"),
                 status().isForbidden());
     }
@@ -237,7 +238,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_deleteTeam_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 delete("/teams/2"),
                 status().isForbidden());
     }
@@ -269,7 +270,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_getMembers_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 get("/teams/1/members"),
                 status().isOk());
     }
@@ -277,7 +278,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_getMembers_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 get("/teams/2/members"),
                 status().isOk());
     }
@@ -309,7 +310,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_postMember_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 post("/teams/1/members/3"),
                 status().isForbidden());
     }
@@ -317,7 +318,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_postMember_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 post("/teams/2/members/3"),
                 status().isForbidden());
     }
@@ -349,7 +350,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_deleteMember_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 delete("/teams/1/members/3"),
                 status().isForbidden());
     }
@@ -357,7 +358,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_deleteMember_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 delete("/teams/2/members/3"),
                 status().isForbidden());
     }
@@ -390,7 +391,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_getManager_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 get("/teams/1/manager"),
                 status().isOk());
     }
@@ -398,7 +399,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_getManager_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 get("/teams/2/manager"),
                 status().isOk());
     }
@@ -430,7 +431,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_patchManager_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 patch("/teams/1/manager/3"),
                 status().isForbidden());
     }
@@ -438,7 +439,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_patchManager_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 patch("/teams/2/manager/3"),
                 status().isForbidden());
     }
@@ -470,7 +471,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_deleteManager_self_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 delete("/teams/1/manager"),
                 status().isForbidden());
     }
@@ -478,7 +479,7 @@ public class TeamAuthTest extends AbstractAuthTest {
     @Test
     void testAuth_deleteManager_other_member() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForMember(),
+                authForUser(),
                 delete("/teams/2/manager"),
                 status().isForbidden());
     }

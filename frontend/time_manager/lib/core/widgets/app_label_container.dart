@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:time_manager/core/constants/app_colors.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 
 class AppLabelContainer extends StatelessWidget {
@@ -27,15 +26,22 @@ class AppLabelContainer extends StatelessWidget {
     final h = AppSizes.responsiveHeight(context, fullSize ? 60 : 48);
 
     final r = BorderRadius.circular(AppSizes.r16);
+    final theme = Theme.of(context);
+
+    final colorScheme = theme.colorScheme;
+    final textTheme = theme.textTheme;
+
+    final backgroundColor = colorScheme.primary;
+    final borderColor = colorScheme.secondary;
 
     return Container(
       width: w,
       height: h,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.symmetric(horizontal: AppSizes.p16),
       decoration: BoxDecoration(
-        color: AppColors.primary,
+        color: backgroundColor,
         borderRadius: r,
-        border: Border.all(color: AppColors.secondary, width: 4),
+        border: Border.all(color: borderColor, width: 4),
       ),
       alignment: Alignment.center,
       child: editable
@@ -43,13 +49,13 @@ class AppLabelContainer extends StatelessWidget {
               controller: controller,
               onChanged: onChanged,
               keyboardType: keyboardType,
-              style: TextStyle(
-                fontSize: fullSize ? AppSizes.textDisplay : AppSizes.textXxl,
-                fontWeight: FontWeight.bold,
-                color: AppColors.textPrimary,
+              style: textTheme.bodyLarge?.copyWith(
+                fontSize: fullSize ? AppSizes.textXxl : AppSizes.textLg,
+             
               ),
               decoration: InputDecoration(
                 hintText: label,
+              
                 isCollapsed: true,
                 border: InputBorder.none,
               ),
@@ -59,10 +65,9 @@ class AppLabelContainer extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: fullSize ? AppSizes.textDisplay : AppSizes.textXxl,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimary,
+                style: textTheme.bodyLarge?.copyWith(
+                  fontSize: fullSize ? AppSizes.textXxl : AppSizes.textLg,
+                  
                 ),
               ),
             ),

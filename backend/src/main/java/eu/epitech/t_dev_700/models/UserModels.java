@@ -39,9 +39,9 @@ public class UserModels {
 
             @Schema(description = "User's phone number", example = "+1234567890")
             String phoneNumber
-    ) implements User, HasId {}
+    ) implements User, HasId {
+    }
 
-    //REQUESTS
     @Schema(description = "Request body for creating a new user")
     public record PostUserRequest(
             @Schema(description = "Username for the new user", example = "john.doe")
@@ -57,7 +57,7 @@ public class UserModels {
             @NotBlank String lastName,
 
             @Schema(description = "Email address of the user", example = "john.doe@example.com")
-            @NotNull @Email String email,
+            @NotBlank @Email String email,
 
             @Schema(description = "Phone number of the user", example = "+1234567890")
             @NotNull String phoneNumber
@@ -76,7 +76,7 @@ public class UserModels {
             @NotBlank String lastName,
 
             @Schema(description = "Email address", example = "john.doe@example.com")
-            @NotNull String email,
+            @NotBlank String email,
 
             @Schema(description = "Phone number", example = "+1234567890")
             @NotNull String phoneNumber

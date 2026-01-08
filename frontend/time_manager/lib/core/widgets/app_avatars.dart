@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:time_manager/core/constants/app_sizes.dart';
 
 /// A reusable circular avatar widget for user profile images or icons.
 class AppAvatar extends StatelessWidget {
@@ -13,7 +14,7 @@ class AppAvatar extends StatelessWidget {
   const AppAvatar({
     super.key,
     this.imageUrl,
-    this.radius = 40,
+    this.radius = AppSizes.r32,
     this.fallbackIcon = Icons.person_outline,
     this.backgroundColor,
     this.iconColor,
@@ -26,7 +27,7 @@ class AppAvatar extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     final bgColor = backgroundColor ?? colorScheme.surface;
-    final borderColor = colorScheme.primary.withOpacity(0.3);
+    final borderColor = colorScheme.primary.withValues(alpha:0.3);
     final iconCol = iconColor ?? colorScheme.primary;
 
     final avatar = CircleAvatar(
@@ -47,9 +48,9 @@ class AppAvatar extends StatelessWidget {
                 shape: BoxShape.circle,
                 
                 border: Border.all(color: borderColor, width: 2),
-                boxShadow: const [
+                boxShadow:  [
                                     BoxShadow(
-                                      color: Color.fromRGBO(0, 0, 0, 0.35),
+                                      color: colorScheme.shadow.withValues(alpha: 0.2),
                                       offset: Offset(0, 2),
                                       blurRadius: 6,
                                     ),

@@ -3,19 +3,16 @@ package eu.epitech.t_dev_700.services;
 import eu.epitech.t_dev_700.entities.ScheduleEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.models.ClockModels;
+import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.repositories.ScheduleRepository;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import eu.epitech.t_dev_700.services.components.UserComponent;
 import eu.epitech.t_dev_700.services.exceptions.InvalidClocking;
-import eu.epitech.t_dev_700.utils.SelectorSupplier;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 import static eu.epitech.t_dev_700.models.ClockModels.ClockAction;
@@ -27,15 +24,25 @@ public class ClockService {
     private final UserComponent userComponent;
     private final ScheduleRepository scheduleRepository;
 
-    public Long[] getUserClocks(Long id, Optional<Long> from, Optional<Long> to) {
+    public Long[] getUserClocks(Long id, UserScheduleQuery query) {
         UserEntity user = userComponent.getUser(id);
-        return getUserClocks(new SelectorSupplier<Long, List<ScheduleEntity>>()
-                .ifBoth((f, t) -> scheduleRepository.findByUserAndDepartureTsAfterAndArrivalTsBefore(user, getDT(f), getDT(t)))
-                .ifLeft(f -> scheduleRepository.findByUserAndDepartureTsAfter(user, getDT(f)))
-                .ifRight(t -> scheduleRepository.findByUserAndArrivalTsBefore(user, getDT(t)))
-                .ifNone(() -> scheduleRepository.findByUser(user))
-                .apply(from, to)
-        );
+
+        List<ScheduleEntity> scheduleEntityList;
+        OffsetDateTime from = query.getFrom();
+        OffsetDateTime to = query.getTo();
+
+        if (query.getCurrent())
+            scheduleEntityList = scheduleRepository.findCurrentSchedules(user, OffsetDateTime.now());
+        else if (from != null && to != null)
+            scheduleEntityList = scheduleRepository.findOverlapping(user, from, to);
+        else if (from != null)
+            scheduleEntityList = scheduleRepository.findFrom(user, from);
+        else if (to != null)
+            scheduleEntityList = scheduleRepository.findUntil(user, to);
+        else
+            scheduleEntityList = scheduleRepository.findByUser(user);
+
+        return getUserClocks(scheduleEntityList);
     }
 
     public Long[] getUserClocks(List<ScheduleEntity> supplier) {
@@ -61,8 +68,7 @@ public class ClockService {
                     .findByUserAndDepartureTsIsNull(user)
                     .ifPresentOrElse(
                             new InvalidClocking(ClockAction.OUT),
-                            () -> scheduleRepository.save(scheduleRepository
-                                    .createFromUserAndArrivalTs(user, body.timestamp())));
+                            () -> scheduleRepository.save(new ScheduleEntity(user, body.timestamp())));
             case ClockAction.OUT -> scheduleRepository
                     .findByUserAndDepartureTsIsNull(user)
                     .ifPresentOrElse(
@@ -72,10 +78,6 @@ public class ClockService {
                             },
                             new InvalidClocking(ClockAction.IN));
         }
-    }
-
-    private static OffsetDateTime getDT(Long timestamp) {
-        return OffsetDateTime.of(LocalDateTime.ofEpochSecond(timestamp, 0, ZoneOffset.UTC), ZoneOffset.UTC);
     }
 
 }

@@ -10,6 +10,8 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.context.request.WebRequest;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.Map;
 
 public class ErrorModels {
 
@@ -58,11 +60,15 @@ public class ErrorModels {
         }
 
         public ErrorResponse(HttpStatus status, String detail, WebRequest request) {
-            this(status, detail, request, new Object());
+            this(status, detail, request, Collections.emptyMap());
+        }
+
+        public ErrorResponse(HttpStatus status, String detail, WebRequest request, Exception exception) {
+            this(status, detail, request, Map.of("type", exception.getClass(),  "message", exception.getMessage()));
         }
 
         public ErrorResponse(HttpStatus status, Exception ex, WebRequest request) {
-            this(status, ex.getMessage(), request, (ex instanceof HasDetails<?> hasDetails)?hasDetails.details():new Object());
+            this(status, ex.getMessage(), request, (ex instanceof HasDetails<?> hasDetails)?hasDetails.details():Collections.emptyMap());
         }
 
         public ResponseEntity<Object> toResponse() {
