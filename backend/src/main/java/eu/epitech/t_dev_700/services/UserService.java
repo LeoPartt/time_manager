@@ -11,6 +11,8 @@ import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Service
 public class UserService extends CRUDService<
         UserEntity,
@@ -61,5 +63,10 @@ public class UserService extends CRUDService<
     @Transactional()
     public PlanningModels.PlanningResponse createPlanning(PlanningModels.PostPlanningRequest body) {
         return planningService.create(body);
+    }
+
+    public boolean checkIfUserDeleted(UserEntity user) {
+        Optional<UserEntity> userOpt = ((UserRepository) repository).findByIdIncludeDeleted(user.getId());
+        return (userOpt.isPresent() && userOpt.get().isDeleted());
     }
 }

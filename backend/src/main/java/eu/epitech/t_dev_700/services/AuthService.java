@@ -1,15 +1,11 @@
 package eu.epitech.t_dev_700.services;
 
 import eu.epitech.t_dev_700.entities.AccountEntity;
-import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.models.AuthModels;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import eu.epitech.t_dev_700.services.exceptions.DeletedUser;
 import eu.epitech.t_dev_700.services.exceptions.InvalidCredentials;
-import eu.epitech.t_dev_700.utils.FiltersHelper;
-import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Session;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +19,7 @@ import org.springframework.stereotype.Service;
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final EntityManager entityManager;
+    private final UserService userService;
     private final PasswordResetService passwordResetService;
 
     public String authenticate(AuthModels.LoginRequest input) {
@@ -41,15 +37,8 @@ public class AuthService {
             throw new InvalidCredentials("Invalid username", input.username(), ex);
         }
         AccountEntity account = (AccountEntity) authentication.getPrincipal();
-        verifyIfDeletedUser(account);
+        if (userService.checkIfUserDeleted(account.getUser())) throw new DeletedUser(account.getUsername());;
         return jwtService.generateToken(account);
-    }
-
-    private void verifyIfDeletedUser(AccountEntity account) {
-        FiltersHelper.without(entityManager.unwrap(Session.class), FiltersHelper.DELETED_USER, () -> {
-            UserEntity user = account.getUser();
-            if (user != null && user.getDeletedAt() != null) throw new DeletedUser(account.getUsername());
-        });
     }
 
     public void resetPassword() {

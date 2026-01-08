@@ -1,14 +1,12 @@
 package eu.epitech.t_dev_700.entities;
 
-import eu.epitech.t_dev_700.utils.FiltersHelper;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
@@ -25,9 +23,8 @@ import java.util.Set;
                 @Index(name = "idx_team_name", columnList = "name")
         }
 )
+@SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE team SET deleted_at = now() WHERE id = ?")
-@FilterDef(name = FiltersHelper.DELETED_TEAM, autoEnabled = true)
-@Filter(name = FiltersHelper.DELETED_TEAM, condition = "deleted_at IS NULL")
 public class TeamEntity {
 
     @Id
@@ -47,6 +44,8 @@ public class TeamEntity {
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MembershipEntity> memberships = new LinkedHashSet<>();
+
+    public boolean isDeleted() { return deletedAt != null; }
 
     public void addMembership(MembershipEntity m) {
         memberships.add(m);
