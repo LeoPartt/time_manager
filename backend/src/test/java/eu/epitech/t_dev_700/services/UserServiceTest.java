@@ -18,8 +18,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -64,7 +63,9 @@ class UserServiceTest {
                 "John",
                 "Doe",
                 "john.doe@example.com",
-                "+1234567890"
+                "+1234567890",
+                false,
+                false
         );
 
         postRequest = new UserModels.PostUserRequest(

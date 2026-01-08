@@ -1,5 +1,8 @@
 package eu.epitech.t_dev_700.utils;
 
+import lombok.Getter;
+
+@Getter
 public enum AuthRole {
 
     SELF("Self"),
@@ -12,9 +15,5 @@ public enum AuthRole {
 
     AuthRole(String role) {
         this.role = role;
-    }
-
-    public String getRole() {
-        return role;
     }
 }
