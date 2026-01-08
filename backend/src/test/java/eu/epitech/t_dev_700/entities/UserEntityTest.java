@@ -41,14 +41,14 @@ class UserEntityTest {
     }
 
     @Test
-    void testIsActive_whenNotDeleted_shouldReturnTrue() {
-        assertThat(user.isActive()).isTrue();
+    void testIsDeleted_whenNotDeleted_shouldReturnFalse() {
+        assertThat(user.isDeleted()).isFalse();
     }
 
     @Test
-    void testIsActive_whenDeleted_shouldReturnFalse() {
+    void testIsDeleted_whenDeleted_shouldReturnTrue() {
         user.setDeletedAt(OffsetDateTime.now());
-        assertThat(user.isActive()).isFalse();
+        assertThat(user.isDeleted()).isTrue();
     }
 
     @Test
@@ -128,6 +128,6 @@ class UserEntityTest {
         user.setDeletedAt(deletionTime);
 
         assertThat(user.getDeletedAt()).isEqualTo(deletionTime);
-        assertThat(user.isActive()).isFalse();
+        assertThat(user.isDeleted()).isTrue();
     }
 }

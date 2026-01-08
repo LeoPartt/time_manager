@@ -5,9 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
-import org.hibernate.annotations.Filter;
-import org.hibernate.annotations.FilterDef;
 import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.OffsetDateTime;
 import java.util.LinkedHashSet;
@@ -25,9 +24,8 @@ import java.util.Set;
                 @Index(name = "idx_user_last", columnList = "last_name")
         }
 )
+@SQLRestriction("deleted_at IS NULL")
 @SQLDelete(sql = "UPDATE tm_user SET deleted_at = now() WHERE id = ?")
-@FilterDef(name = "deletedUserFilter", autoEnabled = true)
-@Filter(name = "deletedUserFilter", condition = "deleted_at IS NULL")
 public class UserEntity {
 
     @Id
@@ -65,7 +63,13 @@ public class UserEntity {
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PlanningEntity> plannings = new LinkedHashSet<>();
 
-    public boolean isActive() { return deletedAt == null; }
+    @Transient
+    public boolean isManager() {
+        return memberships.stream()
+                .anyMatch(m -> m.getRole() == MembershipEntity.TeamRole.MANAGER);
+    }
+
+    public boolean isDeleted() { return deletedAt != null; }
 
     @Override
     public boolean equals(Object o) {

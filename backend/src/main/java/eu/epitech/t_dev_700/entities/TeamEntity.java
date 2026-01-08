@@ -18,12 +18,13 @@ import java.util.Set;
 @Setter
 @Table(
         name = "team",
+        uniqueConstraints = @UniqueConstraint(name = "ux_team_name", columnNames = {"name"}),
         indexes = {
                 @Index(name = "idx_team_name", columnList = "name")
         }
 )
-@SQLDelete(sql = "UPDATE team SET deleted_at = now() WHERE id = ?")
 @SQLRestriction("deleted_at IS NULL")
+@SQLDelete(sql = "UPDATE team SET deleted_at = now() WHERE id = ?")
 public class TeamEntity {
 
     @Id
@@ -43,6 +44,8 @@ public class TeamEntity {
 
     @OneToMany(mappedBy = "team", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MembershipEntity> memberships = new LinkedHashSet<>();
+
+    public boolean isDeleted() { return deletedAt != null; }
 
     public void addMembership(MembershipEntity m) {
         memberships.add(m);

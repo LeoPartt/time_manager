@@ -10,12 +10,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.time.*;
+import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalAdjusters;
 import java.time.temporal.WeekFields;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 
 @Service
 @RequiredArgsConstructor
@@ -27,158 +27,283 @@ public class ReportsService {
     private final MembershipService membershipService;
     private final PlanningService planningService;
 
+    private final ZoneId businessZone = ZoneId.of("Europe/Paris");
     private final Clock clock = Clock.systemDefaultZone();
 
-    public ReportModels.GlobalReportResponse getGlobalReports() {
-        ReportModels.Report averages = computeGlobalWorkAverages();
-        ReportModels.Report punctuality = computeGlobalPunctualityRates();
-        ReportModels.Report attendance = computeGlobalAttendanceRates();
+    /* -------------------------
+     * Public API
+     * ------------------------- */
 
-        return new ReportModels.GlobalReportResponse(
-                averages,
-                punctuality,
-                attendance
+    public ReportModels.DashboardResponse getGlobalDashboard(ReportModels.Mode mode, OffsetDateTime at) {
+        PeriodRange range = resolveRange(mode, at);
+
+        float punctuality = computeGlobalPunctualityRate(range.from(), range.to());
+        float attendance = computeGlobalAttendanceRate(range.from(), range.to());
+
+        ReportModels.WorkSeries work = computeGlobalWorkSeries(mode, range.from(), range.to());
+
+        return new ReportModels.DashboardResponse(
+                mode,
+                new ReportModels.DateRange(range.from(), range.to()),
+                new ReportModels.PercentKpi(punctuality),
+                new ReportModels.PercentKpi(attendance),
+                work
         );
     }
 
-    public ReportModels.UserReportResponse getUserReports(Long userId) {
+    public ReportModels.UserDashboardResponse getUserDashboard(Long userId, ReportModels.Mode mode, OffsetDateTime at) {
         UserEntity user = userService.findEntityOrThrow(userId);
+        PeriodRange range = resolveRange(mode, at);
 
-        ReportModels.Report averages = computeUserWorkAverages(user);
-        ReportModels.Report punctuality = computeUserPunctualityRates(user);
-        ReportModels.Report attendance = computeUserAttendanceRates(user);
+        float punctuality = computeUserPunctualityRate(user, range.from(), range.to());
+        float attendance = computeUserAttendanceRate(user, range.from(), range.to());
 
-        return new ReportModels.UserReportResponse(
+        ReportModels.WorkSeries work = computeUserWorkSeries(user, mode, range.from(), range.to());
+
+        return new ReportModels.UserDashboardResponse(
                 userId,
-                averages,
-                punctuality,
-                attendance
+                new ReportModels.DashboardResponse(
+                        mode,
+                        new ReportModels.DateRange(range.from(), range.to()),
+                        new ReportModels.PercentKpi(punctuality),
+                        new ReportModels.PercentKpi(attendance),
+                        work
+                )
         );
     }
 
-    public ReportModels.TeamReportResponse getTeamReports(Long teamId) {
+    public ReportModels.TeamDashboardResponse getTeamDashboard(Long teamId, ReportModels.Mode mode, OffsetDateTime at) {
         TeamEntity team = teamService.findEntityOrThrow(teamId);
+        PeriodRange range = resolveRange(mode, at);
 
-        ReportModels.Report averages = computeTeamWorkAverages(team);
-        ReportModels.Report punctuality = computeTeamPunctualityRates(team);
-        ReportModels.Report attendance = computeTeamAttendanceRates(team);
+        float punctuality = computeTeamPunctualityRate(team, range.from(), range.to());
+        float attendance = computeTeamAttendanceRate(team, range.from(), range.to());
 
-        return new ReportModels.TeamReportResponse(
+        ReportModels.WorkSeries work = computeTeamWorkSeries(team, mode, range.from(), range.to());
+
+        return new ReportModels.TeamDashboardResponse(
                 teamId,
-                averages,
-                punctuality,
-                attendance
+                new ReportModels.DashboardResponse(
+                        mode,
+                        new ReportModels.DateRange(range.from(), range.to()),
+                        new ReportModels.PercentKpi(punctuality),
+                        new ReportModels.PercentKpi(attendance),
+                        work
+                )
         );
     }
 
     /* -------------------------
-     * Time windows helpers
+     * Period resolution
      * ------------------------- */
 
     private OffsetDateTime now() {
         return OffsetDateTime.now(clock);
     }
 
-    private OffsetDateTime weekFrom(OffsetDateTime now) {
-        // Rolling last 7 days (simple, timezone-safe enough for KPI)
-        return now.minusDays(7);
+    /**
+     * Computes the "current" period for the given mode, anchored to Europe/Paris:
+     * - W: ISO week (Mon 00:00 -> next Mon 00:00)
+     * - M: calendar month (1st 00:00 -> 1st next month 00:00)
+     * - Y: calendar year (Jan 1st 00:00 -> Jan 1st next year 00:00)
+     *
+     * 'at' is optional; if null => now().
+     */
+    private PeriodRange resolveRange(ReportModels.Mode mode, OffsetDateTime at) {
+        OffsetDateTime anchor = (at != null) ? at : now();
+
+        ZonedDateTime zdt = anchor.atZoneSameInstant(businessZone);
+
+        return switch (mode) {
+            case W -> {
+                // ISO week starts Monday
+                ZonedDateTime start = zdt
+                        .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
+                        .truncatedTo(ChronoUnit.DAYS);
+                ZonedDateTime end = start.plusWeeks(1);
+                yield new PeriodRange(start.toOffsetDateTime(), end.toOffsetDateTime());
+            }
+            case M -> {
+                ZonedDateTime start = zdt.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
+                ZonedDateTime end = start.plusMonths(1);
+                yield new PeriodRange(start.toOffsetDateTime(), end.toOffsetDateTime());
+            }
+            case Y -> {
+                ZonedDateTime start = zdt.withDayOfYear(1).truncatedTo(ChronoUnit.DAYS);
+                ZonedDateTime end = start.plusYears(1);
+                yield new PeriodRange(start.toOffsetDateTime(), end.toOffsetDateTime());
+            }
+        };
     }
 
-    private OffsetDateTime monthFrom(OffsetDateTime now) {
-        // From first day of current month (local offset)
-        return now.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
-    }
-
-    private OffsetDateTime yearFrom(OffsetDateTime now) {
-        return now.minusYears(1);
+    private record PeriodRange(OffsetDateTime from, OffsetDateTime to) {
+        PeriodRange {
+            if (from == null || to == null) throw new IllegalArgumentException("Range bounds must not be null");
+            if (!from.isBefore(to)) throw new IllegalArgumentException("Range 'from' must be strictly before 'to'");
+        }
     }
 
     /* -------------------------
-     * Work averages (hours)
+     * Work series (bucketed)
      * ------------------------- */
 
-    private ReportModels.Report computeGlobalWorkAverages() {
-        OffsetDateTime n = now();
-        return computeWorkAveragesForRange(yearFrom(n), n,
-                scheduleRepository.findByDepartureTsIsNotNullAndArrivalTsBetween(yearFrom(n), n))
-                .orElse(ReportModels.Report.EMPTY);
+    private ReportModels.WorkSeries computeGlobalWorkSeries(ReportModels.Mode mode, OffsetDateTime from, OffsetDateTime to) {
+        List<ScheduleEntity> schedules =
+                scheduleRepository.findByDepartureTsIsNotNullAndArrivalTsBetween(from, to);
+        return bucketWork(mode, from, to, schedules);
     }
 
-    private ReportModels.Report computeUserWorkAverages(UserEntity user) {
-        OffsetDateTime n = now();
-        return computeWorkAveragesForRange(yearFrom(n), n,
-                scheduleRepository.findByUserAndDepartureTsIsNotNullAndArrivalTsBetween(user, yearFrom(n), n))
-                .orElse(ReportModels.Report.EMPTY);
+    private ReportModels.WorkSeries computeUserWorkSeries(UserEntity user, ReportModels.Mode mode, OffsetDateTime from, OffsetDateTime to) {
+        List<ScheduleEntity> schedules =
+                scheduleRepository.findByUserAndDepartureTsIsNotNullAndArrivalTsBetween(user, from, to);
+        return bucketWork(mode, from, to, schedules);
     }
 
-    private ReportModels.Report computeTeamWorkAverages(TeamEntity team) {
-        OffsetDateTime n = now();
+    private ReportModels.WorkSeries computeTeamWorkSeries(TeamEntity team, ReportModels.Mode mode, OffsetDateTime from, OffsetDateTime to) {
         List<Long> userIds = membershipService.getMembershipsOfTeam(team).stream()
                 .map(m -> m.getUser().getId())
                 .toList();
+        if (userIds.isEmpty()) {
+            return ReportModels.WorkSeries.empty(bucketForMode(mode));
+        }
 
-        return computeWorkAveragesForRange(yearFrom(n), n,
-                scheduleRepository.findByUserIdInAndDepartureTsIsNotNullAndArrivalTsBetween(userIds, yearFrom(n), n))
-                .orElse(ReportModels.Report.EMPTY);
+        List<ScheduleEntity> schedules =
+                scheduleRepository.findByUserIdInAndDepartureTsIsNotNullAndArrivalTsBetween(userIds, from, to);
+
+        return bucketWork(mode, from, to, schedules);
     }
 
-    /**
-     * Computes:
-     * - weekly average = totalHours / number of distinct ISO weeks in the range that have work
-     * - monthly average = totalHours / number of distinct months in the range that have work
-     * - yearly average = totalHours (over the range)  (or totalHours / 1 if you prefer)
-     */
-    private Optional<ReportModels.Report> computeWorkAveragesForRange(OffsetDateTime from, OffsetDateTime to, List<ScheduleEntity> schedules) {
-        if (schedules.isEmpty()) return Optional.empty();
+    private ReportModels.WorkBucket bucketForMode(ReportModels.Mode mode) {
+        return switch (mode) {
+            case W -> ReportModels.WorkBucket.DAY;
+            case M -> ReportModels.WorkBucket.WEEK;
+            case Y -> ReportModels.WorkBucket.MONTH;
+        };
+    }
 
+    private ReportModels.WorkSeries bucketWork(
+            ReportModels.Mode mode,
+            OffsetDateTime from,
+            OffsetDateTime to,
+            List<ScheduleEntity> schedules
+    ) {
+        ReportModels.WorkBucket bucket = bucketForMode(mode);
+
+        if (schedules.isEmpty()) {
+            return ReportModels.WorkSeries.empty(bucket);
+        }
+
+        // ---- total hours over the period ----
         double totalHours = schedules.stream()
                                     .mapToLong(s -> Duration.between(s.getArrivalTs(), s.getDepartureTs()).toMinutes())
                                     .sum() / 60.0;
 
-        WeekFields wf = WeekFields.ISO;
-        long weekCount = schedules.stream()
-                .map(s -> s.getArrivalTs().toLocalDate())
-                .map(d -> d.get(wf.weekBasedYear()) + "-" + d.get(wf.weekOfWeekBasedYear()))
-                .distinct()
-                .count();
+        // ---- compute average (first-class KPI) ----
+        float average = computeAverage(mode, schedules, totalHours);
 
-        long monthCount = schedules.stream()
-                .map(s -> YearMonth.from(s.getArrivalTs()))
-                .distinct()
-                .count();
+        // ---- bucket for chart ----
+        Map<BucketKey, Double> hoursByBucket = new HashMap<>();
+        for (ScheduleEntity s : schedules) {
+            BucketKey key = bucketKey(bucket, s.getArrivalTs());
+            double hours = Duration.between(s.getArrivalTs(), s.getDepartureTs()).toMinutes() / 60.0;
+            hoursByBucket.merge(key, hours, Double::sum);
+        }
 
-        float weekly = weekCount == 0 ? 0f : (float) (totalHours / weekCount);
-        float monthly = monthCount == 0 ? 0f : (float) (totalHours / monthCount);
-        float yearly = (float) totalHours;
+        List<ReportModels.WorkPoint> points = hoursByBucket.entrySet().stream()
+                .sorted(Comparator.comparing(e -> e.getKey().start))
+                .map(e -> new ReportModels.WorkPoint(
+                        e.getKey().label,
+                        e.getKey().start,
+                        (float) (double) e.getValue()
+                ))
+                .toList();
 
-        return Optional.of(new ReportModels.Report(weekly, monthly, yearly));
+        return new ReportModels.WorkSeries("hours", bucket, points, average);
     }
 
-    private ReportModels.Report computeGlobalPunctualityRates() {
+    private float computeAverage(
+            ReportModels.Mode mode,
+            List<ScheduleEntity> schedules,
+            double totalHours
+    ) {
+        switch (mode) {
+            case W -> {
+                long workedDays = schedules.stream()
+                        .map(s -> s.getArrivalTs()
+                                .atZoneSameInstant(businessZone)
+                                .toLocalDate())
+                        .distinct()
+                        .count();
+                return workedDays == 0 ? 0f : (float) (totalHours / workedDays);
+            }
+
+            case M -> {
+                WeekFields wf = WeekFields.ISO;
+                long workedWeeks = schedules.stream()
+                        .map(s -> {
+                            LocalDate d = s.getArrivalTs()
+                                    .atZoneSameInstant(businessZone)
+                                    .toLocalDate();
+                            return d.get(wf.weekBasedYear()) + "-" + d.get(wf.weekOfWeekBasedYear());
+                        })
+                        .distinct()
+                        .count();
+                return workedWeeks == 0 ? 0f : (float) (totalHours / workedWeeks);
+            }
+
+            case Y -> {
+                long workedMonths = schedules.stream()
+                        .map(s -> YearMonth.from(
+                                s.getArrivalTs().atZoneSameInstant(businessZone)))
+                        .distinct()
+                        .count();
+                return workedMonths == 0 ? 0f : (float) (totalHours / workedMonths);
+            }
+        }
+        return 0f;
+    }
+
+    private BucketKey bucketKey(ReportModels.WorkBucket bucket, OffsetDateTime ts) {
+        ZonedDateTime z = ts.atZoneSameInstant(businessZone);
+
+        return switch (bucket) {
+            case DAY -> {
+                ZonedDateTime start = z.truncatedTo(ChronoUnit.DAYS);
+                String label = z.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH); // Mon/Tue...
+                yield new BucketKey(start.toOffsetDateTime(), label);
+            }
+            case WEEK -> {
+                // ISO week start (Monday), label "W<weekOfYear>"
+                ZonedDateTime start = z.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
+                WeekFields wf = WeekFields.ISO;
+                int week = start.toLocalDate().get(wf.weekOfWeekBasedYear());
+                String label = "W" + week;
+                yield new BucketKey(start.toOffsetDateTime(), label);
+            }
+            case MONTH -> {
+                ZonedDateTime start = z.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
+                String label = z.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH); // Jan/Feb...
+                yield new BucketKey(start.toOffsetDateTime(), label);
+            }
+        };
+    }
+
+    private record BucketKey(OffsetDateTime start, String label) {}
+
+    /* -------------------------
+     * Punctuality (percent on period)
+     * ------------------------- */
+
+    private float computeGlobalPunctualityRate(OffsetDateTime from, OffsetDateTime to) {
         List<UserEntity> users = userService.getAll();
-        if (users.isEmpty()) return ReportModels.Report.EMPTY;
-
-        return averageRates(users.stream().map(this::computeUserPunctualityRates));
+        if (users.isEmpty()) return 0f;
+        return average(users.stream().map(u -> computeUserPunctualityRate(u, from, to)));
     }
 
-    private ReportModels.Report computeTeamPunctualityRates(TeamEntity team) {
+    private float computeTeamPunctualityRate(TeamEntity team, OffsetDateTime from, OffsetDateTime to) {
         List<UserEntity> users = membershipService.getUsersOfTeam(team);
-        if (users.isEmpty()) return ReportModels.Report.EMPTY;
-
-        return averageRates(users.stream().map(this::computeUserPunctualityRates));
-    }
-
-    private ReportModels.Report computeUserPunctualityRates(UserEntity user) {
-        OffsetDateTime n = now();
-        OffsetDateTime wFrom = weekFrom(n);
-        OffsetDateTime mFrom = monthFrom(n);
-        OffsetDateTime yFrom = yearFrom(n);
-
-        return new ReportModels.Report(
-                computeUserPunctualityRate(user, wFrom, n),
-                computeUserPunctualityRate(user, mFrom, n),
-                computeUserPunctualityRate(user, yFrom, n)
-        );
+        if (users.isEmpty()) return 0f;
+        return average(users.stream().map(u -> computeUserPunctualityRate(u, from, to)));
     }
 
     private float computeUserPunctualityRate(UserEntity user, OffsetDateTime from, OffsetDateTime to) {
@@ -194,9 +319,9 @@ public class ReportsService {
 
         long onTimeCount = schedules.stream()
                 .filter(s -> {
-                    LocalDateTime arrival = s.getArrivalTs().toLocalDateTime();
-                    LocalTime expectedStart = plannedStartTimes.get(arrival.getDayOfWeek());
-                    return expectedStart != null && !arrival.toLocalTime().isAfter(expectedStart);
+                    ZonedDateTime arrivalZ = s.getArrivalTs().atZoneSameInstant(businessZone);
+                    LocalTime expectedStart = plannedStartTimes.get(arrivalZ.getDayOfWeek());
+                    return expectedStart != null && !arrivalZ.toLocalTime().isAfter(expectedStart);
                 })
                 .count();
 
@@ -204,34 +329,19 @@ public class ReportsService {
     }
 
     /* -------------------------
-     * Attendance rates
+     * Attendance (percent on period)
      * ------------------------- */
 
-    private ReportModels.Report computeGlobalAttendanceRates() {
+    private float computeGlobalAttendanceRate(OffsetDateTime from, OffsetDateTime to) {
         List<UserEntity> users = userService.getAll();
-        if (users.isEmpty()) return ReportModels.Report.EMPTY;
-
-        return averageRates(users.stream().map(this::computeUserAttendanceRates));
+        if (users.isEmpty()) return 0f;
+        return average(users.stream().map(u -> computeUserAttendanceRate(u, from, to)));
     }
 
-    private ReportModels.Report computeTeamAttendanceRates(TeamEntity team) {
+    private float computeTeamAttendanceRate(TeamEntity team, OffsetDateTime from, OffsetDateTime to) {
         List<UserEntity> users = membershipService.getUsersOfTeam(team);
-        if (users.isEmpty()) return ReportModels.Report.EMPTY;
-
-        return averageRates(users.stream().map(this::computeUserAttendanceRates));
-    }
-
-    private ReportModels.Report computeUserAttendanceRates(UserEntity user) {
-        OffsetDateTime n = now();
-        OffsetDateTime wFrom = weekFrom(n);
-        OffsetDateTime mFrom = monthFrom(n);
-        OffsetDateTime yFrom = yearFrom(n);
-
-        return new ReportModels.Report(
-                computeUserAttendanceRate(user, wFrom, n),
-                computeUserAttendanceRate(user, mFrom, n),
-                computeUserAttendanceRate(user, yFrom, n)
-        );
+        if (users.isEmpty()) return 0f;
+        return average(users.stream().map(u -> computeUserAttendanceRate(u, from, to)));
     }
 
     private float computeUserAttendanceRate(UserEntity user, OffsetDateTime from, OffsetDateTime to) {
@@ -239,11 +349,16 @@ public class ReportsService {
         if (plannings.isEmpty()) return 0f;
 
         List<ScheduleEntity> schedules = scheduleRepository.findByUserAndArrivalTsBetween(user, from, to);
+
+        // We consider presence by distinct local dates (business timezone)
         Set<LocalDate> presentDays = schedules.stream()
-                .map(s -> s.getArrivalTs().toLocalDate())
+                .map(s -> s.getArrivalTs().atZoneSameInstant(businessZone).toLocalDate())
                 .collect(Collectors.toSet());
 
-        long expectedDays = computeExpectedWorkingDays(plannings, from.toLocalDate(), to.toLocalDate());
+        long expectedDays = computeExpectedWorkingDays(plannings,
+                from.atZoneSameInstant(businessZone).toLocalDate(),
+                to.atZoneSameInstant(businessZone).toLocalDate());
+
         if (expectedDays == 0) return 0f;
 
         float rate = (float) presentDays.size() / expectedDays * 100f;
@@ -261,27 +376,12 @@ public class ReportsService {
     }
 
     /* -------------------------
-     * Small helpers
+     * Small helper
      * ------------------------- */
 
-    private ReportModels.Report averageRates(Stream<ReportModels.Report> ratesStream) {
-        DoubleSummaryStatistics w = new DoubleSummaryStatistics();
-        DoubleSummaryStatistics m = new DoubleSummaryStatistics();
-        DoubleSummaryStatistics y = new DoubleSummaryStatistics();
-
-        ratesStream.forEach(r -> {
-            w.accept(r.weekly());
-            m.accept(r.monthly());
-            y.accept(r.yearly());
-        });
-
-        if (w.getCount() == 0) return ReportModels.Report.EMPTY;
-
-        return new ReportModels.Report(
-                (float) w.getAverage(),
-                (float) m.getAverage(),
-                (float) y.getAverage()
-        );
+    private float average(java.util.stream.Stream<Float> stream) {
+        DoubleSummaryStatistics stats = new DoubleSummaryStatistics();
+        stream.forEach(stats::accept);
+        return stats.getCount() == 0 ? 0f : (float) stats.getAverage();
     }
-
 }
