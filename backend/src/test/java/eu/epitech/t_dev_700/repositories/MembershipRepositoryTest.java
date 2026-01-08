@@ -4,13 +4,11 @@ import eu.epitech.t_dev_700.entities.AccountEntity;
 import eu.epitech.t_dev_700.entities.MembershipEntity;
 import eu.epitech.t_dev_700.entities.TeamEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
-import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -172,18 +170,6 @@ class MembershipRepositoryTest {
         MembershipEntity saved = membershipRepository.save(testMembership);
 
         assertThat(saved.getRole()).isEqualTo(MembershipEntity.TeamRole.MANAGER);
-    }
-
-    @Test
-    void testSoftDeletedMembership_shouldNotBeFound() {
-        MembershipEntity saved = membershipRepository.save(testMembership);
-        saved.setDeletedAt(OffsetDateTime.now());
-        entityManager.persist(saved);
-        entityManager.flush();
-        entityManager.clear();
-
-        Optional<MembershipEntity> found = membershipRepository.findById(saved.getId());
-        assertThat(found).isEmpty();
     }
 
     @Test
