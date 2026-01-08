@@ -35,7 +35,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
     context.read<UserCubit>().getUsers();
 
     /// 🔑 IMPORTANT : on recharge la team depuis le Cubit
-    /// widget.team ne sert QUE pour l’id initial
+    /// widget.team ne sert QUE pour l’id initial pas plus !! O_O
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TeamCubit>().getTeam(widget.team.id);
     });
@@ -61,6 +61,11 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
         BlocListener<TeamCubit, TeamState>(
           listener: (context, state) {
             state.whenOrNull(
+              loaded: (_) {
+                if (mounted && _isAddingMember) {
+                  setState(() {}); // Pour rebuild après suppr
+                }
+              },
               error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
                   backgroundColor: Colors.redAccent,
@@ -71,8 +76,11 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                   ),
                 ),
               ),
+              initial: () {
+                context.router.pop();
+              },
             );
-          },
+          }
         ),
       ],
       child: Scaffold(
@@ -238,7 +246,15 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                 });
               },
             ),
-            AppButton(label: "Delete", onPressed: () {}),
+            AppButton(label: "Delete", onPressed: 
+              () async {
+                final confirmed = await _confirmDelete(context);
+
+                if (confirmed && mounted) {
+                  context.read<TeamCubit>().deleteTeam(team.id);
+                }
+              }
+            ),
           ],
         ),
 
@@ -249,13 +265,18 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
 
   /// --- PANEL AJOUT ---
   Widget _buildAddMemberPanel(BuildContext context, Team team) {
-    final filteredUsers = _allUsers.where((u) {
-      final q = _query.toLowerCase();
-      return q.isEmpty ||
-          u.firstName.toLowerCase().contains(q) ||
-          u.lastName.toLowerCase().contains(q) ||
-          u.email.toLowerCase().contains(q);
-    }).toList();
+  final teamMemberIds = team.members.map((m) => m.id).toSet();
+
+  final filteredUsers = _allUsers
+      .where((u) => !teamMemberIds.contains(u.id)) // 🔑 clé
+      .where((u) {
+        final q = _query.toLowerCase();
+        return q.isEmpty ||
+            u.firstName.toLowerCase().contains(q) ||
+            u.lastName.toLowerCase().contains(q) ||
+            u.email.toLowerCase().contains(q);
+      })
+      .toList();
 
     return Container(
       margin: const EdgeInsets.only(top: 12),
@@ -313,4 +334,32 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
       ),
     );
   }
+}
+
+Future<bool> _confirmDelete(BuildContext context) async {
+  return await showDialog<bool>(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Delete team'),
+            content: const Text(
+              'Are you sure you want to delete this team? This action is irreversible.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.redAccent,
+                ),
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Delete'),
+              ),
+            ],
+          );
+        },
+      ) ??
+      false;
 }

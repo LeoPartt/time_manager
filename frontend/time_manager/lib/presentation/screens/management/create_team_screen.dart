@@ -8,6 +8,7 @@ import 'package:time_manager/core/widgets/app_card.dart';
 import 'package:time_manager/core/widgets/app_input_field.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_state.dart';
+import 'package:time_manager/presentation/routes/app_router.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 
@@ -37,6 +38,7 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
             name: _nameController.text.trim(),
             description: _descController.text.trim(),
           );
+      context.router.replace(const ManagementRoute());
     }
   }
 
