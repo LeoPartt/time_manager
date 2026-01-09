@@ -42,6 +42,9 @@ abstract class AbstractAuthTest {
     @MockitoBean
     TeamService teamService;
 
+    @MockitoBean
+    ReportsService reportsService;
+
     protected UserEntity memberUser;
     protected UserEntity managerUser;
     protected UserEntity otherUser;

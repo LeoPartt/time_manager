@@ -31,4 +31,8 @@ public class UserScheduleQuery {
             example = "true"
     )
     private Boolean current = false;
+
+    public boolean isCurrent() {
+        return Boolean.TRUE.equals(current);
+    }
 }

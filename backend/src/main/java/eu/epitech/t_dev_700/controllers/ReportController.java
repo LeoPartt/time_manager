@@ -42,7 +42,7 @@ public class ReportController {
     @Operation(summary = "Get user dashboard (punctuality, attendance, work chart) for current week/month/year")
     @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     @ApiErrorResponse(ResourceNotFound.class)
-    @PreAuthorize("@userAuth.isSelfOrManager(authentication, #id)")
+    @PreAuthorize("@userAuth.isSelfOrManagerOfUser(authentication, #id)")
     @GetMapping("/users/{id}/dashboard")
     public ResponseEntity<ReportModels.UserDashboardResponse> getUserDashboard(
             @PathVariable Long id,

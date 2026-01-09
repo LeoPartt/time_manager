@@ -15,11 +15,9 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-@org.springframework.context.annotation.Profile("!test")
 public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
-    private final UserService userService;
     private final PasswordResetService passwordResetService;
 
     public String authenticate(AuthModels.LoginRequest input) {
