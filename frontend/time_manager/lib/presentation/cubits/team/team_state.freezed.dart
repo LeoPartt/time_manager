@@ -131,12 +131,12 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Team team)?  loaded,TResult Function( List<Team> teams)?  loadedTeams,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( Team team,  int? managerId)?  loaded,TResult Function( List<Team> teams)?  loadedTeams,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case TeamInitial() when initial != null:
 return initial();case TeamLoading() when loading != null:
 return loading();case TeamLoaded() when loaded != null:
-return loaded(_that.team);case TeamsLoaded() when loadedTeams != null:
+return loaded(_that.team,_that.managerId);case TeamsLoaded() when loadedTeams != null:
 return loadedTeams(_that.teams);case TeamError() when error != null:
 return error(_that.message);case _:
   return orElse();
@@ -156,12 +156,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Team team)  loaded,required TResult Function( List<Team> teams)  loadedTeams,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( Team team,  int? managerId)  loaded,required TResult Function( List<Team> teams)  loadedTeams,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case TeamInitial():
 return initial();case TeamLoading():
 return loading();case TeamLoaded():
-return loaded(_that.team);case TeamsLoaded():
+return loaded(_that.team,_that.managerId);case TeamsLoaded():
 return loadedTeams(_that.teams);case TeamError():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
@@ -180,12 +180,12 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Team team)?  loaded,TResult? Function( List<Team> teams)?  loadedTeams,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( Team team,  int? managerId)?  loaded,TResult? Function( List<Team> teams)?  loadedTeams,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case TeamInitial() when initial != null:
 return initial();case TeamLoading() when loading != null:
 return loading();case TeamLoaded() when loaded != null:
-return loaded(_that.team);case TeamsLoaded() when loadedTeams != null:
+return loaded(_that.team,_that.managerId);case TeamsLoaded() when loadedTeams != null:
 return loadedTeams(_that.teams);case TeamError() when error != null:
 return error(_that.message);case _:
   return null;
@@ -263,10 +263,11 @@ String toString() {
 
 
 class TeamLoaded implements TeamState {
-  const TeamLoaded(this.team);
+  const TeamLoaded(this.team, this.managerId);
   
 
  final  Team team;
+ final  int? managerId;
 
 /// Create a copy of TeamState
 /// with the given fields replaced by the non-null parameter values.
@@ -278,16 +279,16 @@ $TeamLoadedCopyWith<TeamLoaded> get copyWith => _$TeamLoadedCopyWithImpl<TeamLoa
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is TeamLoaded&&(identical(other.team, team) || other.team == team));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TeamLoaded&&(identical(other.team, team) || other.team == team)&&(identical(other.managerId, managerId) || other.managerId == managerId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,team);
+int get hashCode => Object.hash(runtimeType,team,managerId);
 
 @override
 String toString() {
-  return 'TeamState.loaded(team: $team)';
+  return 'TeamState.loaded(team: $team, managerId: $managerId)';
 }
 
 
@@ -298,7 +299,7 @@ abstract mixin class $TeamLoadedCopyWith<$Res> implements $TeamStateCopyWith<$Re
   factory $TeamLoadedCopyWith(TeamLoaded value, $Res Function(TeamLoaded) _then) = _$TeamLoadedCopyWithImpl;
 @useResult
 $Res call({
- Team team
+ Team team, int? managerId
 });
 
 
@@ -315,10 +316,11 @@ class _$TeamLoadedCopyWithImpl<$Res>
 
 /// Create a copy of TeamState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') $Res call({Object? team = null,}) {
+@pragma('vm:prefer-inline') $Res call({Object? team = null,Object? managerId = freezed,}) {
   return _then(TeamLoaded(
 null == team ? _self.team : team // ignore: cast_nullable_to_non_nullable
-as Team,
+as Team,freezed == managerId ? _self.managerId : managerId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
