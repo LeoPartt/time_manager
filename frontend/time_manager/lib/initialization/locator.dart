@@ -25,6 +25,7 @@ import 'package:time_manager/domain/repositories/user_repository.dart';
 import 'package:time_manager/domain/usecases/account/login_user.dart';
 import 'package:time_manager/domain/usecases/account/logout_user.dart';
 import 'package:time_manager/domain/usecases/account/register_account.dart';
+import 'package:time_manager/domain/usecases/dashboard/get_global_report.dart';
 import 'package:time_manager/domain/usecases/dashboard/get_team_report.dart';
 import 'package:time_manager/domain/usecases/dashboard/get_user_report.dart';
 import 'package:time_manager/domain/usecases/planning/create_planning.dart';
@@ -197,16 +198,16 @@ locator.registerFactory(() => ClockCubit(
 
    locator.registerLazySingleton<DashboardApi>(() => DashboardApi(locator<ApiClient>()));
     locator.registerLazySingleton<DashboardRepository>(
-    () => DashboardRepositoryImpl(api: locator<DashboardApi>(), storage: locator<LocalStorageService>()),
+    () => DashboardRepositoryImpl(api: locator<DashboardApi>()),
   );
 
-  locator.registerFactory(() => GetUserReport(locator<DashboardRepository>()));
-  locator.registerFactory(() => GetTeamReport(locator<DashboardRepository>()));
+  locator.registerFactory(() => GetUserDashboard(locator<DashboardRepository>()));
+  locator.registerFactory(() => GetUserDashboard(locator<DashboardRepository>()));
+  locator.registerFactory(() => GetGlobalDashboard(locator<DashboardRepository>()));
 
 
   locator.registerFactory(() => DashboardCubit(
-     getUserReportUseCase: locator<GetUserReport>(), 
-     getTeamReportUseCase: locator<GetTeamReport>()
+     getUserDashboardUseCase: locator<GetUserDashboard>(), getTeamDashboardUseCase: locator<GetTeamDashboard>(), getGlobalDashboardUseCase: locator<GetGlobalDashboard>()
     ));
 
 

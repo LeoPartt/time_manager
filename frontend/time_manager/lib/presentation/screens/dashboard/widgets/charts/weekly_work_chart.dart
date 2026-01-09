@@ -1,21 +1,24 @@
-// 📁 lib/presentation/widgets/charts/weekly_work_chart.dart
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/domain/entities/dashboard_report.dart';
 
 class WeeklyWorkChart extends StatelessWidget {
-  final double totalHours;
+  final WorkSeries workSeries;
   
   const WeeklyWorkChart({
     super.key,
-    required this.totalHours,
+    required this.workSeries,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final weekData = _generateWeekData(totalHours);
+    
+    // ✅ Convertir les WorkPoints en FlSpots
+    final weekData = workSeries.series.asMap().entries.map((entry) {
+      return FlSpot(entry.key.toDouble(), entry.value.value);
+    }).toList();
 
     return Container(
       height: 300,
@@ -50,7 +53,7 @@ class WeeklyWorkChart extends StatelessWidget {
                   ),
                   SizedBox(height: AppSizes.p4),
                   Text(
-                    '7 derniers jours',
+                    'Moyenne : ${workSeries.average.toStringAsFixed(1)}h/jour',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -68,7 +71,7 @@ class WeeklyWorkChart extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSizes.r8),
                 ),
                 child: Text(
-                  '${totalHours.toStringAsFixed(1)}h',
+                  '${_calculateTotal().toStringAsFixed(1)}h',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -90,18 +93,21 @@ class WeeklyWorkChart extends StatelessWidget {
                     getTooltipColor: (_) => colorScheme.inverseSurface,
                     tooltipPadding: const EdgeInsets.all(8),
                     tooltipBorderRadius: BorderRadius.all(Radius.circular(8)),
-
                     getTooltipItems: (spots) {
                       return spots.map((spot) {
-                        final day = _getDayName(spot.x.toInt());
-                        return LineTooltipItem(
-                          '$day\n${spot.y.toStringAsFixed(1)}h',
-                          TextStyle(
-                            color: colorScheme.onInverseSurface,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        );
+                        final index = spot.x.toInt();
+                        if (index >= 0 && index < workSeries.series.length) {
+                          final label = workSeries.series[index].label;
+                          return LineTooltipItem(
+                            '$label\n${spot.y.toStringAsFixed(1)}h',
+                            TextStyle(
+                              color: colorScheme.onInverseSurface,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          );
+                        }
+                        return null;
                       }).toList();
                     },
                   ),
@@ -124,11 +130,14 @@ class WeeklyWorkChart extends StatelessWidget {
                       showTitles: true,
                       interval: 1,
                       getTitlesWidget: (value, meta) {
-                        if (value < 0 || value > 6) return const SizedBox();
+                        final index = value.toInt();
+                        if (index < 0 || index >= workSeries.series.length) {
+                          return const SizedBox();
+                        }
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
-                            _getDayShortName(value.toInt()),
+                            workSeries.series[index].label,
                             style: TextStyle(
                               fontSize: 11,
                               fontWeight: FontWeight.w600,
@@ -203,34 +212,13 @@ class WeeklyWorkChart extends StatelessWidget {
     );
   }
 
-  List<FlSpot> _generateWeekData(double totalHours) {
-    // TODO: Remplacer par vraies données de l'API
-    // Pour l'instant, simulation réaliste
-    final avgPerDay = totalHours / 5; // 5 jours ouvrés
-    
-    return [
-      FlSpot(0, avgPerDay * 0.95),  // Lundi
-      FlSpot(1, avgPerDay * 1.1),   // Mardi
-      FlSpot(2, avgPerDay * 1.05),  // Mercredi
-      FlSpot(3, avgPerDay * 0.9),   // Jeudi
-      FlSpot(4, avgPerDay * 1.0),   // Vendredi
-      FlSpot(5, 0),                 // Samedi
-      FlSpot(6, 0),                 // Dimanche
-    ];
+  double _calculateTotal() {
+    return workSeries.series.fold(0.0, (sum, point) => sum + point.value);
   }
 
   double _getMaxY(List<FlSpot> data) {
+    if (data.isEmpty) return 10;
     final max = data.map((e) => e.y).reduce((a, b) => a > b ? a : b);
     return (max * 1.3).ceilToDouble();
-  }
-
-  String _getDayName(int day) {
-    const days = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-    return days[day];
-  }
-
-  String _getDayShortName(int day) {
-    const days = ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
-    return days[day];
   }
 }

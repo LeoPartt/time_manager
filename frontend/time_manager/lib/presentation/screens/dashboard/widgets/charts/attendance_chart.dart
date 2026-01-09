@@ -1,18 +1,18 @@
 // 📁 lib/presentation/widgets/charts/attendance_chart.dart
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/domain/entities/dashboard_report.dart';
 
 class AttendanceChart extends StatelessWidget {
-  final double punctualityRate;
-  final double attendanceRate;
+  final PercentKpi punctuality;
+  final PercentKpi attendance;
   final String period;
 
   const AttendanceChart({
     super.key,
-    required this.punctualityRate,
-    required this.attendanceRate,
+    required this.punctuality,
+    required this.attendance,
     required this.period,
   });
 
@@ -77,14 +77,14 @@ class AttendanceChart extends StatelessWidget {
               _buildGauge(
                 context,
                 'Ponctualité',
-                punctualityRate,
+                punctuality.percent,
                 colorScheme.primary,
                 Icons.access_time,
               ),
               _buildGauge(
                 context,
                 'Assiduité',
-                attendanceRate,
+                attendance.percent,
                 colorScheme.secondary,
                 Icons.check_circle,
               ),

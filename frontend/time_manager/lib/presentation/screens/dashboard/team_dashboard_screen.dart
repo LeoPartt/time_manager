@@ -8,53 +8,53 @@ import 'package:time_manager/initialization/locator.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_state.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/charts/attendance_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/monthly_work_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/weekly_work_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/yearly_work_chart.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/charts/attendance_chart.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 
 enum ReportPeriod { week, month, year }
 
 @RoutePage()
-class GlobalDashboardScreen extends StatelessWidget {
-  const GlobalDashboardScreen({super.key});
+class TeamDashboardScreen extends StatelessWidget {
+  const TeamDashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => locator<DashboardCubit>(),
-      child: const _GlobalDashboardView(),
+      child: const _TeamDashboardView(),
     );
   }
 }
 
-class _GlobalDashboardView extends StatefulWidget {
-  const _GlobalDashboardView();
+class _TeamDashboardView extends StatefulWidget {
+  const _TeamDashboardView();
 
   @override
-  State<_GlobalDashboardView> createState() => _GlobalDashboardViewState();
+  State<_TeamDashboardView> createState() => _TeamDashboardViewState();
 }
 
-class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
+class _TeamDashboardViewState extends State<_TeamDashboardView> {
+  int? _selectedTeamId;
   ReportPeriod _selectedPeriod = ReportPeriod.week;
 
-  @override
-  void initState() {
-    super.initState();
-
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted) {
-        _loadDashboard();
-      }
-    });
-  }
+  // TODO: Récupérer la liste des équipes depuis l'API
+  final List<Map<String, dynamic>> _teams = [
+    {'id': 1, 'name': 'Team Marguerite'},
+    {'id': 2, 'name': 'Team Alpha'},
+    {'id': 3, 'name': 'Team Beta'},
+  ];
 
   void _loadDashboard() {
+    if (_selectedTeamId == null) return;
+
     final mode = _getModeString(_selectedPeriod);
-    context.read<DashboardCubit>().loadGlobalDashboard(
+    context.read<DashboardCubit>().loadTeamDashboard(
       context,
+      teamId: _selectedTeamId!,
       mode: mode,
     );
   }
@@ -87,11 +87,11 @@ class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
             padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p24)),
             child: Column(
               children: [
-                Header(label: 'Dashboard Global'),
+                Header(label: 'Dashboard Team'),
                 SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
-                // Info card
-                _buildInfoCard(context, colorScheme),
+                // 🔽 Sélecteur d'équipe
+                _buildTeamSelector(colorScheme),
                 SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
                 // 📊 Affichage du rapport
@@ -103,8 +103,11 @@ class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
                   },
                   builder: (context, state) {
                     return state.when(
-                      initial: () => const Center(
-                        child: CircularProgressIndicator(),
+                      initial: () => _buildEmptyState(
+                        context,
+                        colorScheme,
+                        'Sélectionnez une équipe',
+                        'Choisissez une équipe pour voir son dashboard',
                       ),
                       loading: () => Center(
                         child: Column(
@@ -113,19 +116,19 @@ class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
                             const CircularProgressIndicator(),
                             const SizedBox(height: 16),
                             Text(
-                              'Chargement du dashboard global...',
+                              'Chargement du dashboard...',
                               style: TextStyle(color: Colors.grey[600]),
                             ),
                           ],
                         ),
                       ),
                       userLoaded: (_) => const SizedBox(),
-                      teamLoaded: (_) => const SizedBox(),
-                      globalLoaded: (report) => _buildDashboardContent(
+                      teamLoaded: (report) => _buildDashboardContent(
                         context,
                         report.dashboard,
                         colorScheme,
                       ),
+                      globalLoaded: (_) => const SizedBox(),
                       error: (msg) => _buildError(context, msg, colorScheme),
                     );
                   },
@@ -138,66 +141,54 @@ class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
     );
   }
 
-  Widget _buildInfoCard(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildTeamSelector(ColorScheme colorScheme) {
     return Container(
-      padding: EdgeInsets.all(AppSizes.p16),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppSizes.p16,
+        vertical: AppSizes.p4,
+      ),
       decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            colorScheme.tertiary,
-            colorScheme.tertiary.withOpacity(0.8),
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
+        color: colorScheme.surface,
         borderRadius: BorderRadius.circular(AppSizes.r16),
+        border: Border.all(color: colorScheme.outline),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.tertiary.withOpacity(0.3),
+            color: colorScheme.shadow.withOpacity(0.1),
             blurRadius: 8,
-            offset: const Offset(0, 4),
+            offset: const Offset(0, 2),
           ),
         ],
       ),
-      child: Row(
-        children: [
-          Container(
-            padding: EdgeInsets.all(AppSizes.p12),
-            decoration: BoxDecoration(
-              color: Colors.white.withOpacity(0.2),
-              borderRadius: BorderRadius.circular(AppSizes.r12),
-            ),
-            child: const Icon(
-              Icons.business,
-              size: 32,
-              color: Colors.white,
-            ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<int>(
+          value: _selectedTeamId,
+          hint: Row(
+            children: [
+              Icon(Icons.group, color: colorScheme.primary),
+              SizedBox(width: AppSizes.p12),
+              const Text('Sélectionner une équipe'),
+            ],
           ),
-          SizedBox(width: AppSizes.p16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Vue d\'ensemble de l\'entreprise',
-                  style: TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                  ),
-                ),
-                SizedBox(height: AppSizes.p4),
-                Text(
-                  'Statistiques globales de tous les employés',
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: Colors.white.withOpacity(0.9),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+          isExpanded: true,
+          items: _teams.map((team) {
+            return DropdownMenuItem<int>(
+              value: team['id'],
+              child: Row(
+                children: [
+                  Icon(Icons.group_outlined, color: colorScheme.primary, size: 20),
+                  SizedBox(width: AppSizes.p12),
+                  Text(team['name']),
+                ],
+              ),
+            );
+          }).toList(),
+          onChanged: (teamId) {
+            if (teamId != null) {
+              setState(() => _selectedTeamId = teamId);
+              _loadDashboard();
+            }
+          },
+        ),
       ),
     );
   }
@@ -287,7 +278,7 @@ class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
           horizontal: AppSizes.p16,
         ),
         decoration: BoxDecoration(
-          color: isSelected ? colorScheme.tertiary : Colors.transparent,
+          color: isSelected ? colorScheme.primary : Colors.transparent,
           borderRadius: BorderRadius.circular(AppSizes.r8),
         ),
         child: Text(
@@ -296,7 +287,7 @@ class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
           style: TextStyle(
             fontSize: 14,
             fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? colorScheme.onTertiary : colorScheme.onSurface,
+            color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
           ),
         ),
       ),
@@ -316,6 +307,54 @@ class _GlobalDashboardViewState extends State<_GlobalDashboardView> {
       case ReportPeriod.year:
         return YearlyWorkChart(workSeries: workSeries);
     }
+  }
+
+  Widget _buildEmptyState(
+    BuildContext context,
+    ColorScheme colorScheme,
+    String title,
+    String subtitle,
+  ) {
+    return Center(
+      child: Padding(
+        padding: EdgeInsets.all(48),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              padding: EdgeInsets.all(AppSizes.p24),
+              decoration: BoxDecoration(
+                color: colorScheme.primaryContainer.withOpacity(0.3),
+                shape: BoxShape.circle,
+              ),
+              child: Icon(
+                Icons.group,
+                size: 64,
+                color: colorScheme.primary,
+              ),
+            ),
+            SizedBox(height: AppSizes.p24),
+            Text(
+              title,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: colorScheme.onSurface,
+              ),
+            ),
+            SizedBox(height: AppSizes.p12),
+            Text(
+              subtitle,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                color: Colors.grey[600],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   Widget _buildError(BuildContext context, String msg, ColorScheme colorScheme) {

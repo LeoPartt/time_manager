@@ -4,9 +4,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-import 'package:time_manager/core/utils/accessibility_utils.dart';
 import 'package:time_manager/core/utils/extensions/context_extensions.dart';
 import 'package:time_manager/core/widgets/app_button.dart';
+import 'package:time_manager/domain/entities/dashboard_report.dart';
 import 'package:time_manager/initialization/locator.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
@@ -17,7 +17,7 @@ import 'package:time_manager/presentation/routes/app_router.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/monthly_work_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/weekly_work_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/yearly_work_chart.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/team_selector.dart';
+import 'package:time_manager/presentation/screens/dashboard/widgets/charts/attendance_chart.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 
@@ -48,7 +48,7 @@ class _DashboardView extends StatefulWidget {
 }
 
 class _DashboardViewState extends State<_DashboardView> {
-  ReportPeriod _selectedPeriod = ReportPeriod.year;
+  ReportPeriod _selectedPeriod = ReportPeriod.week;
 
   @override
   void initState() {
@@ -63,9 +63,14 @@ class _DashboardViewState extends State<_DashboardView> {
 
   void _loadDashboard() {
     final cubit = context.read<DashboardCubit>();
+    final mode = _getModeString(_selectedPeriod);
 
     if (widget.userId != null) {
-      cubit.loadUserReport(context, widget.userId!);
+      cubit.loadUserDashboard(
+        context,
+        userId: widget.userId!,
+        mode: mode,
+      );
       return;
     }
 
@@ -73,7 +78,11 @@ class _DashboardViewState extends State<_DashboardView> {
 
     userState.when(
       loaded: (user) {
-        cubit.loadUserReport(context, user.id);
+        cubit.loadUserDashboard(
+          context,
+          userId: user.id,
+          mode: mode,
+        );
       },
       initial: () {},
       loading: () {},
@@ -81,11 +90,26 @@ class _DashboardViewState extends State<_DashboardView> {
         context.showSnack("⚠️ $msg", isError: true);
       },
       updated: (user) {
-        cubit.loadUserReport(context, user.id);
+        cubit.loadUserDashboard(
+          context,
+          userId: user.id,
+          mode: mode,
+        );
       },
       deleted: () {},
       listLoaded: (_) {},
     );
+  }
+
+  String _getModeString(ReportPeriod period) {
+    switch (period) {
+      case ReportPeriod.week:
+        return 'w';
+      case ReportPeriod.month:
+        return 'm';
+      case ReportPeriod.year:
+        return 'y';
+    }
   }
 
   @override
@@ -117,7 +141,12 @@ class _DashboardViewState extends State<_DashboardView> {
                           final dashboardState = context.read<DashboardCubit>().state;
 
                           if (dashboardState is Initial) {
-                            context.read<DashboardCubit>().loadUserReport(context, user.id);
+                            final mode = _getModeString(_selectedPeriod);
+                            context.read<DashboardCubit>().loadUserDashboard(
+                              context,
+                              userId: user.id,
+                              mode: mode,
+                            );
                           }
                         }
                       },
@@ -160,11 +189,13 @@ class _DashboardViewState extends State<_DashboardView> {
                                 ],
                               ),
                             ),
-                            loaded: (report) => _buildDashboardContent(
+                            userLoaded: (report) => _buildDashboardContent(
                               context,
-                              report,
+                              report.dashboard,
                               colorScheme,
                             ),
+                            teamLoaded: (_) => const SizedBox(),
+                            globalLoaded: (_) => const SizedBox(),
                             error: (msg) => Center(
                               child: SingleChildScrollView(
                                 child: Padding(
@@ -229,42 +260,35 @@ class _DashboardViewState extends State<_DashboardView> {
     );
   }
 
- Widget _buildDashboardContent(
-  BuildContext context,
-  report,
-  ColorScheme colorScheme,
-) {
-  return Column(
-    children: [
-      // Sélecteur de période
-      _buildPeriodSelector(context, colorScheme),
-      SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
+  Widget _buildDashboardContent(
+    BuildContext context,
+    DashboardReport report,
+    ColorScheme colorScheme,
+  ) {
+    return Column(
+      children: [
+        // ✅ Sélecteur de période
+        _buildPeriodSelector(context, colorScheme),
+        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
-      // Chart Attendance/Punctuality
-      AttendanceChart(
-        punctualityRate: _getRateForPeriod(report.punctualityRates),
-        attendanceRate: _getRateForPeriod(report.attendanceRates),
-        period: _getPeriodLabel(),
-      ),
+        // ✅ Chart Attendance/Punctuality
+        AttendanceChart(
+          punctuality: report.punctuality,
+          attendance: report.attendance,
+          period: _getPeriodLabel(),
+        ),
 
-      SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
+        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
-      // ✅ Work Chart dynamique selon la période
-      _buildWorkChartForPeriod(
-        context,
-        report.workAverages,
-        colorScheme,
-      ),
+        // ✅ Work Chart dynamique selon la période
+        _buildWorkChartForPeriod(context, report.work, colorScheme),
 
-      SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
+        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
-      // Boutons navigation
-      Row(
-        children: [
-          Expanded(
-            child: AccessibilityUtils.withTooltip(
-              context,
-              tooltip: 'Calendar',
+        // Boutons navigation
+        Row(
+          children: [
+            Expanded(
               child: AppButton(
                 label: "Calendar",
                 fullSize: true,
@@ -273,17 +297,13 @@ class _DashboardViewState extends State<_DashboardView> {
                 ),
               ),
             ),
-          ),
-          SizedBox(
-            width: AppSizes.responsiveWidth(
-              context,
-              AppSizes.p16,
+            SizedBox(
+              width: AppSizes.responsiveWidth(
+                context,
+                AppSizes.p16,
+              ),
             ),
-          ),
-          Expanded(
-            child: AccessibilityUtils.withTooltip(
-              context,
-              tooltip: "Team",
+            Expanded(
               child: AppButton(
                 label: "Team",
                 fullSize: true,
@@ -292,34 +312,11 @@ class _DashboardViewState extends State<_DashboardView> {
                 ),
               ),
             ),
-          ),
-        ],
-      ),
-    ],
-  );
-}
-
-// ✅ Nouveau: Sélectionne le bon chart selon la période
-Widget _buildWorkChartForPeriod(
-  BuildContext context,
-  dynamic workAverages,
-  ColorScheme colorScheme,
-) {
-  switch (_selectedPeriod) {
-    case ReportPeriod.week:
-      return WeeklyWorkChart(
-        totalHours: workAverages.weekly,
-      );
-    case ReportPeriod.month:
-      return MonthlyWorkChart(
-        totalHours: workAverages.monthly,
-      );
-    case ReportPeriod.year:
-      return YearlyWorkChart(
-        totalHours: workAverages.yearly,
-      );
+          ],
+        ),
+      ],
+    );
   }
-}
 
   Widget _buildPeriodSelector(BuildContext context, ColorScheme colorScheme) {
     return Container(
@@ -372,6 +369,7 @@ Widget _buildWorkChartForPeriod(
         setState(() {
           _selectedPeriod = period;
         });
+        _loadDashboard();
       },
       child: Container(
         padding: EdgeInsets.symmetric(
@@ -395,67 +393,18 @@ Widget _buildWorkChartForPeriod(
     );
   }
 
-  Widget _buildWorkCard(
+  Widget _buildWorkChartForPeriod(
     BuildContext context,
-    String period,
-    double hours,
+    WorkSeries workSeries,
     ColorScheme colorScheme,
   ) {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p20)),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppSizes.r16),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Travail $period',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p12)),
-          Text(
-            '${hours.toStringAsFixed(1)} heures',
-            style: TextStyle(
-              fontSize: 32,
-              fontWeight: FontWeight.bold,
-              color: colorScheme.primary,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  // Helpers pour extraire les bonnes données selon la période
-  double _getRateForPeriod(dynamic reportRates) {
     switch (_selectedPeriod) {
       case ReportPeriod.week:
-        return reportRates.weekly;
+        return WeeklyWorkChart(workSeries: workSeries);
       case ReportPeriod.month:
-        return reportRates.monthly;
+        return MonthlyWorkChart(workSeries: workSeries);
       case ReportPeriod.year:
-        return reportRates.yearly;
-    }
-  }
-
-  double _getWorkAverageForPeriod(dynamic workAverages) {
-    switch (_selectedPeriod) {
-      case ReportPeriod.week:
-        return workAverages.weekly;
-      case ReportPeriod.month:
-        return workAverages.monthly;
-      case ReportPeriod.year:
-        return workAverages.yearly;
+        return YearlyWorkChart(workSeries: workSeries);
     }
   }
 
