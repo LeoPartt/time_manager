@@ -221,6 +221,12 @@ abstract class AppLocalizations {
   /// **'Teams'**
   String get teams;
 
+  /// No description provided for @team.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get team;
+
   /// No description provided for @teamDetails.
   ///
   /// In en, this message translates to:
@@ -484,6 +490,282 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add members'**
   String get addMembers;
+
+  /// No description provided for @calendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendar;
+
+  /// No description provided for @loadingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your profile...'**
+  String get loadingProfile;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day'**
+  String get day;
+
+  /// No description provided for @week.
+  ///
+  /// In en, this message translates to:
+  /// **'Week'**
+  String get week;
+
+  /// No description provided for @month.
+  ///
+  /// In en, this message translates to:
+  /// **'month'**
+  String get month;
+
+  /// No description provided for @year.
+  ///
+  /// In en, this message translates to:
+  /// **'Year'**
+  String get year;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @work.
+  ///
+  /// In en, this message translates to:
+  /// **'Work'**
+  String get work;
+
+  /// No description provided for @hours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours'**
+  String get hours;
+
+  /// No description provided for @weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @yearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get yearly;
+
+  /// No description provided for @dashboardLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashboard is loading...'**
+  String get dashboardLoading;
+
+  /// No description provided for @planningCalendar.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning calendar'**
+  String get planningCalendar;
+
+  /// No description provided for @planning.
+  ///
+  /// In en, this message translates to:
+  /// **'Schedule'**
+  String get planning;
+
+  /// No description provided for @noPlanningForToday.
+  ///
+  /// In en, this message translates to:
+  /// **'No schedule for today'**
+  String get noPlanningForToday;
+
+  /// No description provided for @planningWeekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly schedule'**
+  String get planningWeekly;
+
+  /// No description provided for @noConfigPlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'No schedule configured'**
+  String get noConfigPlanning;
+
+  /// No description provided for @planningLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading planning...'**
+  String get planningLoading;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
+
+  /// No description provided for @january.
+  ///
+  /// In en, this message translates to:
+  /// **'January'**
+  String get january;
+
+  /// No description provided for @february.
+  ///
+  /// In en, this message translates to:
+  /// **'February'**
+  String get february;
+
+  /// No description provided for @march.
+  ///
+  /// In en, this message translates to:
+  /// **'March'**
+  String get march;
+
+  /// No description provided for @april.
+  ///
+  /// In en, this message translates to:
+  /// **'April'**
+  String get april;
+
+  /// No description provided for @may.
+  ///
+  /// In en, this message translates to:
+  /// **'May'**
+  String get may;
+
+  /// No description provided for @june.
+  ///
+  /// In en, this message translates to:
+  /// **'June'**
+  String get june;
+
+  /// No description provided for @july.
+  ///
+  /// In en, this message translates to:
+  /// **'July'**
+  String get july;
+
+  /// No description provided for @august.
+  ///
+  /// In en, this message translates to:
+  /// **'August'**
+  String get august;
+
+  /// No description provided for @september.
+  ///
+  /// In en, this message translates to:
+  /// **'September'**
+  String get september;
+
+  /// No description provided for @october.
+  ///
+  /// In en, this message translates to:
+  /// **'October'**
+  String get october;
+
+  /// No description provided for @november.
+  ///
+  /// In en, this message translates to:
+  /// **'November'**
+  String get november;
+
+  /// No description provided for @december.
+  ///
+  /// In en, this message translates to:
+  /// **'December'**
+  String get december;
+
+  /// No description provided for @dashboardTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Team dashboard'**
+  String get dashboardTeam;
+
+  /// No description provided for @selectEquip.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a team'**
+  String get selectEquip;
+
+  /// No description provided for @ponctuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Ponctuality'**
+  String get ponctuality;
+
+  /// No description provided for @assiduity.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get assiduity;
+
+  /// No description provided for @performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get performance;
+
+  /// No description provided for @excellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get excellent;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @atUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'At improve'**
+  String get atUpgrade;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

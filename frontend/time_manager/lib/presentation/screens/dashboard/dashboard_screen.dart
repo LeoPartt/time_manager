@@ -135,7 +135,7 @@ class _DashboardViewState extends State<_DashboardView> {
                                   const CircularProgressIndicator(),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Chargement de votre profil...',
+                                    tr.loadingProfile,
                                     style: TextStyle(color: Colors.grey[600]),
                                   ),
                                 ],
@@ -154,7 +154,7 @@ class _DashboardViewState extends State<_DashboardView> {
                                   const CircularProgressIndicator(),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Chargement du dashboard...',
+                                    tr.dashboardLoading,
                                     style: TextStyle(color: Colors.blue),
                                   ),
                                 ],
@@ -179,7 +179,7 @@ class _DashboardViewState extends State<_DashboardView> {
                                       ),
                                       SizedBox(height: AppSizes.p16),
                                       Text(
-                                        'Erreur',
+                                        tr.error,
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -208,7 +208,7 @@ class _DashboardViewState extends State<_DashboardView> {
                                       ElevatedButton.icon(
                                         onPressed: _loadDashboard,
                                         icon: const Icon(Icons.refresh),
-                                        label: const Text('Réessayer'),
+                                        label: Text(tr.retry),
                                       ),
                                     ],
                                   ),
@@ -234,6 +234,7 @@ class _DashboardViewState extends State<_DashboardView> {
   report,
   ColorScheme colorScheme,
 ) {
+  final tr = AppLocalizations.of(context)!;
   return Column(
     children: [
       // Sélecteur de période
@@ -264,9 +265,9 @@ class _DashboardViewState extends State<_DashboardView> {
           Expanded(
             child: AccessibilityUtils.withTooltip(
               context,
-              tooltip: 'Calendar',
+              tooltip: tr.calendar,
               child: AppButton(
-                label: "Calendar",
+                label: tr.calendar,
                 fullSize: true,
                 onPressed: () => context.pushRoute(
                   PlanningCalendarRoute(),
@@ -283,9 +284,9 @@ class _DashboardViewState extends State<_DashboardView> {
           Expanded(
             child: AccessibilityUtils.withTooltip(
               context,
-              tooltip: "Team",
+              tooltip: tr.team,
               child: AppButton(
-                label: "Team",
+                label: tr.team,
                 fullSize: true,
                 onPressed: () => context.pushRoute(
                   TeamDashboardRoute(),
@@ -322,6 +323,7 @@ Widget _buildWorkChartForPeriod(
 }
 
   Widget _buildPeriodSelector(BuildContext context, ColorScheme colorScheme) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(AppSizes.p4),
       decoration: BoxDecoration(
@@ -333,7 +335,7 @@ Widget _buildWorkChartForPeriod(
           Expanded(
             child: _buildPeriodButton(
               context,
-              'Semaine',
+              tr.week,
               ReportPeriod.week,
               colorScheme,
             ),
@@ -341,7 +343,7 @@ Widget _buildWorkChartForPeriod(
           Expanded(
             child: _buildPeriodButton(
               context,
-              'Mois',
+              tr.month,
               ReportPeriod.month,
               colorScheme,
             ),
@@ -349,7 +351,7 @@ Widget _buildWorkChartForPeriod(
           Expanded(
             child: _buildPeriodButton(
               context,
-              'Année',
+              tr.year,
               ReportPeriod.year,
               colorScheme,
             ),
@@ -401,6 +403,7 @@ Widget _buildWorkChartForPeriod(
     double hours,
     ColorScheme colorScheme,
   ) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p20)),
@@ -419,12 +422,12 @@ Widget _buildWorkChartForPeriod(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Travail $period',
+            '${tr.work} $period',
             style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p12)),
           Text(
-            '${hours.toStringAsFixed(1)} heures',
+            '${hours.toStringAsFixed(1)} ${tr.hours}',
             style: TextStyle(
               fontSize: 32,
               fontWeight: FontWeight.bold,
@@ -460,13 +463,14 @@ Widget _buildWorkChartForPeriod(
   }
 
   String _getPeriodLabel() {
+    final tr = AppLocalizations.of(context)!;
     switch (_selectedPeriod) {
       case ReportPeriod.week:
-        return 'Hebdomadaire';
+        return tr.weekly;
       case ReportPeriod.month:
-        return 'Mensuel';
+        return tr.monthly;
       case ReportPeriod.year:
-        return 'Annuel';
+        return tr.yearly;
     }
   }
 }
