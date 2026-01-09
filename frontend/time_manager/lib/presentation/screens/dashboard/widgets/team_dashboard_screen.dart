@@ -6,7 +6,6 @@ import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_state.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/dashboard_chart.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 

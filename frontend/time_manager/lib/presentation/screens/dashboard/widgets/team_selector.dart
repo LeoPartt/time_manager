@@ -1,6 +1,5 @@
 // 📁 lib/presentation/widgets/charts/attendance_chart.dart
 
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 
