@@ -35,8 +35,9 @@ public class UserAuthorization {
 
     @ApiAuthRoles(AuthRole.MEMBER_OF)
     public boolean isMemberOfTeam(Authentication authentication, Long teamId) {
+        UserEntity currentUser = getCurrentUser(authentication);
         return isAdministrator(authentication)
-               || membershipService.isUserMemberOfTeam(getCurrentUser(authentication), teamId);
+               || membershipService.isUserMemberOfTeam(currentUser, teamId);
     }
 
     @ApiAuthRoles({AuthRole.MEMBER_OF, AuthRole.MANAGER})
@@ -49,14 +50,16 @@ public class UserAuthorization {
 
     @ApiAuthRoles(AuthRole.MANAGER_OF)
     public boolean isManagerOfTeam(Authentication authentication, Long teamId) {
+        UserEntity currentUser = getCurrentUser(authentication);
         return isAdministrator(authentication)
-               || membershipService.isUserManagerOfTeam(getCurrentUser(authentication), teamId);
+               || membershipService.isUserManagerOfTeam(currentUser, teamId);
     }
 
     @ApiAuthRoles(AuthRole.MANAGER)
     public boolean isManager(Authentication authentication) {
+        UserEntity currentUser = getCurrentUser(authentication);
         return isAdministrator(authentication)
-               || membershipService.isUserManager(getCurrentUser(authentication));
+               || membershipService.isUserManager(currentUser);
     }
 
     @ApiAuthRoles({AuthRole.SELF, AuthRole.MANAGER})
@@ -64,7 +67,7 @@ public class UserAuthorization {
         UserEntity currentUser = getCurrentUser(authentication);
         return isAdministrator(authentication)
                || isSelf(currentUser, userId)
-               || membershipService.isUserManager(getCurrentUser(authentication));
+               || membershipService.isUserManager(currentUser);
     }
 
     @ApiAuthRoles({AuthRole.SELF, AuthRole.MANAGER_OF})
@@ -84,7 +87,8 @@ public class UserAuthorization {
 
     @ApiAuthRoles(AuthRole.SELF)
     public boolean isSelf(Authentication authentication, Long userId) {
-        return isSelf(getCurrentUser(authentication), userId);
+        UserEntity currentUser = getCurrentUser(authentication);
+        return isSelf(currentUser, userId);
     }
 
     @ApiAuthRoles(AuthRole.MANAGER_OF)

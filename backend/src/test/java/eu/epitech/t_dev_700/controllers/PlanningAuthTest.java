@@ -46,7 +46,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_admin() throws Exception {
+    void testAuth_getPlannings_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/plannings"),
@@ -54,7 +54,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_user() throws Exception {
+    void testAuth_getPlannings_user_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/plannings"),
@@ -62,7 +62,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_manager() throws Exception {
+    void testAuth_getPlannings_manager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/plannings"),
@@ -70,7 +70,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlanning_admin() throws Exception {
+    void testAuth_getPlanning_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/plannings/1"),
@@ -78,7 +78,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlanning_own() throws Exception {
+    void testAuth_getPlanning_own_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/plannings/1"),
@@ -86,15 +86,15 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlanning_other() throws Exception {
+    void testAuth_getPlanning_other_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
-                authForManager(),
+                authForUser(),
                 get("/plannings/2"),
                 status().isForbidden());
     }
 
     @Test
-    void testAuth_getPlanning_manager() throws Exception {
+    void testAuth_getPlanning_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/plannings/1"),
@@ -102,7 +102,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlanning_nonManager() throws Exception {
+    void testAuth_getPlanning_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/plannings/2"),
@@ -110,7 +110,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlanning_admin() throws Exception {
+    void testAuth_postPlanning_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 post("/plannings").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -118,7 +118,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlanning_owner() throws Exception {
+    void testAuth_postPlanning_owner_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 post("/plannings").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -126,7 +126,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlanning_manager() throws Exception {
+    void testAuth_postPlanning_manager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/plannings").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -134,7 +134,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putPlanning_admin() throws Exception {
+    void testAuth_putPlanning_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 put("/plannings/1").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -142,7 +142,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putPlanning_own() throws Exception {
+    void testAuth_putPlanning_own_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 put("/plannings/1").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -150,7 +150,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putPlanning_other() throws Exception {
+    void testAuth_putPlanning_other_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 put("/plannings/2").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -158,7 +158,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putPlanning_manager() throws Exception {
+    void testAuth_putPlanning_manager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 put("/plannings/1").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -166,7 +166,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putPlanning_nonManager() throws Exception {
+    void testAuth_putPlanning_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 put("/plannings/2").contentType(MediaType.APPLICATION_JSON).content(REQUEST_BODY),
@@ -174,7 +174,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchPlanning_admin() throws Exception {
+    void testAuth_patchPlanning_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 patch("/plannings/1").contentType(MediaType.APPLICATION_JSON).content("{\"weekDay\": 1}"),
@@ -182,7 +182,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchPlanning_own() throws Exception {
+    void testAuth_patchPlanning_own_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 patch("/plannings/1").contentType(MediaType.APPLICATION_JSON).content("{\"weekDay\": 1}"),
@@ -190,7 +190,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchPlanning_other() throws Exception {
+    void testAuth_patchPlanning_other_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 patch("/plannings/2").contentType(MediaType.APPLICATION_JSON).content("{\"weekDay\": 1}"),
@@ -198,7 +198,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchPlanning_manager() throws Exception {
+    void testAuth_patchPlanning_manager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 patch("/plannings/1").contentType(MediaType.APPLICATION_JSON).content("{\"weekDay\": 1}"),
@@ -206,7 +206,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchPlanning_nonManager() throws Exception {
+    void testAuth_patchPlanning_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 patch("/plannings/2").contentType(MediaType.APPLICATION_JSON).content("{\"weekDay\": 1}"),
@@ -214,7 +214,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deletePlanning_admin() throws Exception {
+    void testAuth_deletePlanning_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 delete("/plannings/1"),
@@ -222,7 +222,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deletePlanning_own() throws Exception {
+    void testAuth_deletePlanning_own_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 delete("/plannings/1"),
@@ -230,7 +230,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deletePlanning_other() throws Exception {
+    void testAuth_deletePlanning_other_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 delete("/plannings/2"),
@@ -238,7 +238,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deletePlanning_manager() throws Exception {
+    void testAuth_deletePlanning_manager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 delete("/plannings/1"),
@@ -246,7 +246,7 @@ public class PlanningAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deletePlanning_nonManager() throws Exception {
+    void testAuth_deletePlanning_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 delete("/plannings/2"),

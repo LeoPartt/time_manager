@@ -66,7 +66,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUsers_admin() throws Exception {
+    void testAuth_getUsers_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/users"),
@@ -74,7 +74,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUsers_member() throws Exception {
+    void testAuth_getUsers_member_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users"),
@@ -82,7 +82,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUsers_manager() throws Exception {
+    void testAuth_getUsers_manager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users"),
@@ -90,7 +90,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUser_admin() throws Exception {
+    void testAuth_getUser_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/users/1"),
@@ -98,7 +98,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUser_self_member() throws Exception {
+    void testAuth_getUser_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/1"),
@@ -106,7 +106,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUser_other_member() throws Exception {
+    void testAuth_getUser_otherMember_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/3"),
@@ -114,7 +114,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUser_self_manager() throws Exception {
+    void testAuth_getUser_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/2"),
@@ -122,7 +122,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUser_managed_manager() throws Exception {
+    void testAuth_getUser_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/1"),
@@ -130,7 +130,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getUser_other_manager() throws Exception {
+    void testAuth_getUser_otherManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/3"),
@@ -138,7 +138,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getMe_admin() throws Exception {
+    void testAuth_getMe_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/users/me"),
@@ -146,7 +146,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getMe_member() throws Exception {
+    void testAuth_getMe_member_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/me"),
@@ -154,7 +154,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getMe_manager() throws Exception {
+    void testAuth_getMe_manager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/me"),
@@ -162,7 +162,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postUser_admin() throws Exception {
+    void testAuth_postUser_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 post("/users").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -170,7 +170,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postUser_member() throws Exception {
+    void testAuth_postUser_member_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 post("/users").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -178,7 +178,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postUser_manager() throws Exception {
+    void testAuth_postUser_manager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/users").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -186,7 +186,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putUser_admin() throws Exception {
+    void testAuth_putUser_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 put("/users/1").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
@@ -194,7 +194,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putUser_self_member() throws Exception {
+    void testAuth_putUser_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 put("/users/1").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
@@ -202,7 +202,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putUser_other_member() throws Exception {
+    void testAuth_putUser_otherMember_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 put("/users/3").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
@@ -210,7 +210,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putUser_self_manager() throws Exception {
+    void testAuth_putUser_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 put("/users/2").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
@@ -218,7 +218,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putUser_managed_manager() throws Exception {
+    void testAuth_putUser_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 put("/users/1").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
@@ -226,7 +226,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_putUser_other_manager() throws Exception {
+    void testAuth_putUser_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 put("/users/3").contentType(MediaType.APPLICATION_JSON).content(PUT_REQUEST_BODY),
@@ -234,7 +234,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchUser_admin() throws Exception {
+    void testAuth_patchUser_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 patch("/users/1").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
@@ -242,7 +242,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchUser_self_member() throws Exception {
+    void testAuth_patchUser_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 patch("/users/1").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
@@ -250,7 +250,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchUser_other_member() throws Exception {
+    void testAuth_patchUser_otherMember_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 patch("/users/3").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
@@ -258,7 +258,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchUser_self_manager() throws Exception {
+    void testAuth_patchUser_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 patch("/users/2").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
@@ -266,7 +266,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchUser_managed_manager() throws Exception {
+    void testAuth_patchUser_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 patch("/users/1").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
@@ -274,7 +274,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_patchUser_other_manager() throws Exception {
+    void testAuth_patchUser_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 patch("/users/3").contentType(MediaType.APPLICATION_JSON).content("{\"firstName\": \"John\"}"),
@@ -282,7 +282,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deleteUser_admin() throws Exception {
+    void testAuth_deleteUser_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 delete("/users/1"),
@@ -290,7 +290,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deleteUser_self_member() throws Exception {
+    void testAuth_deleteUser_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 delete("/users/1"),
@@ -298,7 +298,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deleteUser_other_member() throws Exception {
+    void testAuth_deleteUser_otherMember_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 delete("/users/3"),
@@ -306,7 +306,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deleteUser_self_manager() throws Exception {
+    void testAuth_deleteUser_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 delete("/users/2"),
@@ -314,7 +314,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deleteUser_managed_manager() throws Exception {
+    void testAuth_deleteUser_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 delete("/users/1"),
@@ -322,7 +322,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_deleteUser_other_manager() throws Exception {
+    void testAuth_deleteUser_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 delete("/users/3"),
@@ -330,7 +330,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getClocks_admin() throws Exception {
+    void testAuth_getClocks_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/users/1/clocks"),
@@ -338,7 +338,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getClocks_self_member() throws Exception {
+    void testAuth_getClocks_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/1/clocks"),
@@ -346,7 +346,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getClocks_other_member() throws Exception {
+    void testAuth_getClocks_otherMember_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/3/clocks"),
@@ -354,7 +354,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getClocks_self_manager() throws Exception {
+    void testAuth_getClocks_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/2/clocks"),
@@ -362,7 +362,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getClocks_managed_manager() throws Exception {
+    void testAuth_getClocks_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/1/clocks"),
@@ -370,7 +370,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getClocks_other_manager() throws Exception {
+    void testAuth_getClocks_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/3/clocks"),
@@ -378,7 +378,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getTeams_admin() throws Exception {
+    void testAuth_getTeams_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/users/1/teams"),
@@ -386,7 +386,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getTeams_self_member() throws Exception {
+    void testAuth_getTeams_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/1/teams"),
@@ -394,7 +394,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getTeams_other_member() throws Exception {
+    void testAuth_getTeams_otherMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/3/teams"),
@@ -402,7 +402,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getTeams_self_manager() throws Exception {
+    void testAuth_getTeams_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/2/teams"),
@@ -410,7 +410,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getTeams_managed_manager() throws Exception {
+    void testAuth_getTeams_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/1/teams"),
@@ -418,7 +418,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getTeams_other_manager() throws Exception {
+    void testAuth_getTeams_otherManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/3/teams"),
@@ -426,7 +426,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_admin() throws Exception {
+    void testAuth_getPlannings_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 get("/users/1/teams"),
@@ -434,7 +434,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_self_member() throws Exception {
+    void testAuth_getPlannings_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/1/teams"),
@@ -442,7 +442,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_other_member() throws Exception {
+    void testAuth_getPlannings_otherMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 get("/users/3/teams"),
@@ -450,7 +450,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_self_manager() throws Exception {
+    void testAuth_getPlannings_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/2/teams"),
@@ -458,7 +458,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_managed_manager() throws Exception {
+    void testAuth_getPlannings_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/1/teams"),
@@ -466,7 +466,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_getPlannings_other_manager() throws Exception {
+    void testAuth_getPlannings_otherManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 get("/users/3/teams"),
@@ -474,7 +474,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlannings_admin() throws Exception {
+    void testAuth_postPlannings_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 post("/users/1/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
@@ -482,7 +482,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlannings_self_member() throws Exception {
+    void testAuth_postPlannings_selfMember_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 post("/users/1/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
@@ -490,7 +490,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlannings_other_member() throws Exception {
+    void testAuth_postPlannings_otherMember_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 post("/users/3/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
@@ -498,7 +498,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlannings_self_manager() throws Exception {
+    void testAuth_postPlannings_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/users/2/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
@@ -506,7 +506,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlannings_managed_manager() throws Exception {
+    void testAuth_postPlannings_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/users/1/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
@@ -514,7 +514,7 @@ public class UserAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postPlannings_other_manager() throws Exception {
+    void testAuth_postPlannings_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/users/3/plannings").contentType(MediaType.APPLICATION_JSON).content(POST_PLANNING_REQUEST_BODY),
