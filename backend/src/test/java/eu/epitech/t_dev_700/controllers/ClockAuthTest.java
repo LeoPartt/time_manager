@@ -44,7 +44,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClock_admin() throws Exception {
+    void testAuth_postClock_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 post("/clocks").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -52,7 +52,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClock_self_user() throws Exception {
+    void testAuth_postClock_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 post("/clocks").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -60,7 +60,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClock_self_manager() throws Exception {
+    void testAuth_postClock_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/clocks").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -68,7 +68,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClockFor_admin() throws Exception {
+    void testAuth_postClockFor_admin_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForAdmin(),
                 post("/clocks/1").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -76,7 +76,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClockFor_self_user() throws Exception {
+    void testAuth_postClockFor_selfMember_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 post("/clocks/1").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -84,7 +84,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClockFor_other_user() throws Exception {
+    void testAuth_postClockFor_otherUser_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForUser(),
                 post("/clocks/3").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -92,7 +92,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClockFor_self_manager() throws Exception {
+    void testAuth_postClockFor_selfManager_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/clocks/2").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -100,7 +100,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClockFor_managed_manager() throws Exception {
+    void testAuth_postClockFor_managerOf_shouldReturnOk() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/clocks/2").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
@@ -108,7 +108,7 @@ public class ClockAuthTest extends AbstractAuthTest {
     }
 
     @Test
-    void testAuth_postClockFor_other_manager() throws Exception {
+    void testAuth_postClockFor_otherManager_shouldReturnForbidden() throws Exception {
         doTestRequestForAuthExpectCode(
                 authForManager(),
                 post("/clocks/3").contentType(MediaType.APPLICATION_JSON).content(POST_REQUEST_BODY),
