@@ -29,6 +29,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
   List<User> _allUsers = [];
   bool _isAddingMember = false;
   String _query = '';
+  int? _managerId;
 
   @override
   void initState() {
@@ -64,9 +65,15 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
         BlocListener<TeamCubit, TeamState>(
           listener: (context, state) {
             state.whenOrNull(
-              loaded: (_) {
+              loaded: (team, managerId) {
+                if (mounted) {
+                  setState(() {
+                    _managerId = managerId;
+                  });
+                }
+
                 if (mounted && _isAddingMember) {
-                  setState(() {}); // Pour rebuild après suppr
+                  setState(() {}); // rebuild après update
                 }
               },
               error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
@@ -80,10 +87,10 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                 ),
               ),
               initial: () {
-                context.router.push(const ManagementRoute());
+                context.router.replace(const ManagementRoute());
               },
             );
-          }
+          },
         ),
       ],
       child: Scaffold(
@@ -123,11 +130,11 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                                   TextStyle(color: AppColors.textPrimary),
                             ),
                           ),
-                          loaded: (team) =>
-                              _buildTeamContent(context, team),
+                          loaded: (team, managerId) =>
+                              _buildTeamContent(context, team, managerId),
                           orElse: () => Center(
                             child: Text(
-                              "Schould not happen",
+                              "^^",
                               style:
                                   TextStyle(color: AppColors.textPrimary),
                             ),
@@ -146,7 +153,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
   }
 
   /// --- UI principale ---
-  Widget _buildTeamContent(BuildContext context, Team team) {
+  Widget _buildTeamContent(BuildContext context, Team team, int? managerId) {
     final members = team.members; // 🔒 source unique
     final tr = AppLocalizations.of(context)!;
 
@@ -223,12 +230,34 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                             ),
                           ],
                         ),
-                        IconButton(
-                          onPressed: () => context
-                              .read<TeamCubit>()
-                              .removeMember(team.id, member.id),
-                          icon: const Icon(Icons.close_rounded,
-                              color: Colors.redAccent),
+                        Row(
+                          children: [
+                            // ───── Icône manager ─────
+                            IconButton(
+                              icon: Icon(
+                                Icons.workspace_premium, 
+                                color: _managerId == member.id
+                                    ? Colors.amber
+                                    : Colors.grey.withValues(alpha: 0.5),
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                context.read<TeamCubit>().setTeamManager(
+                                      teamId: team.id,
+                                      userId: member.id,
+                                    );
+                              },
+                            ),
+
+                            // ───── Icône suppression membre ─────
+                            IconButton(
+                              onPressed: () => context.read<TeamCubit>().removeMember(
+                                    team.id,
+                                    member.id,
+                                  ),
+                              icon: const Icon(Icons.close_rounded, color: Colors.redAccent),
+                            ),
+                          ],
                         ),
                       ],
                     );
