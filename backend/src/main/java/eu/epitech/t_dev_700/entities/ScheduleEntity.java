@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.Check;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 
@@ -23,12 +25,15 @@ public class ScheduleEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(optional = false) @JoinColumn(name = "user_id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity user;
 
+    @JdbcTypeCode(SqlTypes.TIMESTAMP_WITH_TIMEZONE)
     @Column(name = "arrival_ts", nullable = false)
     private OffsetDateTime arrivalTs;
 
+    @JdbcTypeCode(SqlTypes.TIMESTAMP_WITH_TIMEZONE)
     @Column(name = "departure_ts")
     private OffsetDateTime departureTs;
 

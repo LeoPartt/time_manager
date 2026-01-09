@@ -1,5 +1,6 @@
 package eu.epitech.t_dev_700.controllers;
 
+import eu.epitech.t_dev_700.config.filters.JwtAuthenticationFilter;
 import eu.epitech.t_dev_700.services.MembershipService;
 import eu.epitech.t_dev_700.services.PlanningService;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
@@ -7,6 +8,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,7 +19,13 @@ import org.springframework.security.web.SecurityFilterChain;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(PlanningController.class)
+@WebMvcTest(
+        controllers = PlanningController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JwtAuthenticationFilter.class
+        )
+)
 public class PlanningAuthTest extends AbstractAuthTest {
 
     static String REQUEST_BODY = """

@@ -1,5 +1,6 @@
 package eu.epitech.t_dev_700.controllers;
 
+import eu.epitech.t_dev_700.config.filters.JwtAuthenticationFilter;
 import eu.epitech.t_dev_700.models.ClockModels;
 import eu.epitech.t_dev_700.services.ClockService;
 import eu.epitech.t_dev_700.services.exceptions.ForbiddenFutureClocking;
@@ -9,6 +10,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -25,7 +28,13 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ClockController.class)
+@WebMvcTest(
+        controllers = ClockController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JwtAuthenticationFilter.class
+        )
+)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 class ClockControllerTest {

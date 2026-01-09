@@ -1,5 +1,6 @@
 package eu.epitech.t_dev_700.controllers;
 
+import eu.epitech.t_dev_700.config.filters.JwtAuthenticationFilter;
 import eu.epitech.t_dev_700.models.ReportModels;
 import eu.epitech.t_dev_700.services.ReportsService;
 import org.junit.jupiter.api.BeforeEach;
@@ -8,6 +9,8 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -20,7 +23,13 @@ import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(ReportController.class)
+@WebMvcTest(
+        controllers = ReportController.class,
+        excludeFilters = @ComponentScan.Filter(
+                type = FilterType.ASSIGNABLE_TYPE,
+                classes = JwtAuthenticationFilter.class
+        )
+)
 @ActiveProfiles("test")
 @AutoConfigureMockMvc(addFilters = false)
 public class ReportControllerTest {
@@ -35,10 +44,6 @@ public class ReportControllerTest {
     private ReportModels.UserDashboardResponse userDashboardW;
     private ReportModels.TeamDashboardResponse teamDashboardW;
 
-    private OffsetDateTime from;
-    private OffsetDateTime to;
-    private OffsetDateTime pointStart;
-
     // IMPORTANT: match exactly what Jackson outputs in your logs
     private String fromJson;
     private String toJson;
@@ -46,9 +51,9 @@ public class ReportControllerTest {
 
     @BeforeEach
     void setUp() {
-        from = OffsetDateTime.parse("2026-01-05T00:00:00Z");
-        to = OffsetDateTime.parse("2026-01-12T00:00:00Z");
-        pointStart = OffsetDateTime.parse("2026-01-05T00:00:00Z");
+        OffsetDateTime from = OffsetDateTime.parse("2026-01-05T00:00:00Z");
+        OffsetDateTime to = OffsetDateTime.parse("2026-01-12T00:00:00Z");
+        OffsetDateTime pointStart = OffsetDateTime.parse("2026-01-05T00:00:00Z");
 
         // Use the same string representation as the response body you showed
         fromJson = "2026-01-05T00:00:00Z";

@@ -2,6 +2,9 @@ package eu.epitech.t_dev_700.entities;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.core.GrantedAuthority;
+
+import java.util.Collection;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -119,7 +122,7 @@ class AccountEntityTest {
     }
 
     @Test
-    void testBidirectionalRelationship() {
+    void testSetUser_shouldUpdateUserReference() {
         UserEntity linkedUser = new UserEntity();
         linkedUser.setId(2L);
 
@@ -127,4 +130,95 @@ class AccountEntityTest {
 
         assertThat(account.getUser()).isEqualTo(linkedUser);
     }
+
+    @Test
+    void testAccountMayHaveNoUser_adminAccountCase() {
+        account.setUser(null);
+        assertThat(account.getUser()).isNull();
+    }
+    @Test
+    void testHasFlag_whenFlagsIsZero_shouldBeFalse() {
+        account.setFlags((byte) 0);
+
+        assertThat(account.hasFlag(AccountEntity.FLAG_ADMIN)).isFalse();
+    }
+
+    @Test
+    void testHasFlag_whenAdminFlagSet_shouldBeTrue() {
+        account.setFlags(AccountEntity.FLAG_ADMIN);
+
+        assertThat(account.hasFlag(AccountEntity.FLAG_ADMIN)).isTrue();
+    }
+
+    @Test
+    void testIsAdmin_shouldReflectAdminFlag() {
+        account.setFlags((byte) 0);
+        assertThat(account.isAdmin()).isFalse();
+
+        account.setFlags(AccountEntity.FLAG_ADMIN);
+        assertThat(account.isAdmin()).isTrue();
+    }
+
+    @Test
+    void testHasFlag_withAdditionalFlags_shouldStillDetectAdmin() {
+        // simulate multiple flags: admin + another bit (0x02)
+        byte otherFlag = 0x02;
+        account.setFlags((byte) (AccountEntity.FLAG_ADMIN | otherFlag));
+
+        assertThat(account.hasFlag(AccountEntity.FLAG_ADMIN)).isTrue();
+        assertThat(account.hasFlag(otherFlag)).isTrue();
+    }
+
+    @Test
+    void testHasFlag_whenAllBitsSet_shouldBeTrueForAdmin() {
+        // 0xFF as a byte == -1, meaning all bits are set
+        account.setFlags((byte) -1);
+
+        assertThat(account.hasFlag(AccountEntity.FLAG_ADMIN)).isTrue();
+        assertThat(account.isAdmin()).isTrue();
+    }
+
+    @Test
+    void testHasFlag_whenCheckingTwoBitMask_shouldWork() {
+        byte flagA = 0x01; // admin
+        byte flagB = 0x02;
+
+        account.setFlags((byte) (flagA | flagB));
+
+        // hasFlag checks (flags & mask) == mask, so a multi-bit mask should work
+        assertThat(account.hasFlag((byte) (flagA | flagB))).isTrue();
+
+        // but if only one bit is set, two-bit mask should fail
+        account.setFlags(flagA);
+        assertThat(account.hasFlag((byte) (flagA | flagB))).isFalse();
+    }
+
+    @Test
+    void testGetAuthorities_shouldReturnEmptyCollection() {
+        Collection<? extends GrantedAuthority> authorities = account.getAuthorities();
+
+        assertThat(authorities).isNotNull();
+        assertThat(authorities).isEmpty();
+    }
+
+    @Test
+    void testIsAccountNonExpired_shouldBeTrueByDefault() {
+        assertThat(account.isAccountNonExpired()).isTrue();
+    }
+
+    @Test
+    void testIsAccountNonLocked_shouldBeTrueByDefault() {
+        assertThat(account.isAccountNonLocked()).isTrue();
+    }
+
+    @Test
+    void testIsCredentialsNonExpired_shouldBeTrueByDefault() {
+        assertThat(account.isCredentialsNonExpired()).isTrue();
+    }
+
+    @Test
+    void testIsEnabled_shouldBeTrueByDefault() {
+        assertThat(account.isEnabled()).isTrue();
+    }
+
 }

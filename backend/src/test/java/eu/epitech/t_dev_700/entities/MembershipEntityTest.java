@@ -3,8 +3,7 @@ package eu.epitech.t_dev_700.entities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
-
+import static eu.epitech.t_dev_700.entities.MembershipEntity.TeamRole.MEMBER;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class MembershipEntityTest {
@@ -17,7 +16,7 @@ class MembershipEntityTest {
     void setUp() {
         membership = new MembershipEntity();
         membership.setId(1L);
-        membership.setRole(MembershipEntity.TeamRole.MEMBER);
+        membership.setRole(MEMBER);
 
         user = new UserEntity();
         user.setId(1L);
@@ -37,13 +36,37 @@ class MembershipEntityTest {
         assertThat(membership.getId()).isEqualTo(1L);
         assertThat(membership.getUser()).isEqualTo(user);
         assertThat(membership.getTeam()).isEqualTo(team);
-        assertThat(membership.getRole()).isEqualTo(MembershipEntity.TeamRole.MEMBER);
+        assertThat(membership.getRole()).isEqualTo(MEMBER);
+    }
+
+    @Test
+    void testNoArgsConstructor_initialState() {
+        MembershipEntity m = new MembershipEntity();
+
+        // Entity defines no defaults, so everything should be null initially.
+        assertThat(m.getId()).isNull();
+        assertThat(m.getUser()).isNull();
+        assertThat(m.getTeam()).isNull();
+        assertThat(m.getRole()).isNull();
+    }
+
+    @Test
+    void testAllArgsConstructor_setsFields() {
+        MembershipEntity m = new MembershipEntity(
+                user,
+                team,
+                MembershipEntity.TeamRole.MANAGER
+        );
+
+        assertThat(m.getUser()).isEqualTo(user);
+        assertThat(m.getTeam()).isEqualTo(team);
+        assertThat(m.getRole()).isEqualTo(MembershipEntity.TeamRole.MANAGER);
     }
 
     @Test
     void testSetRole_MEMBER() {
-        membership.setRole(MembershipEntity.TeamRole.MEMBER);
-        assertThat(membership.getRole()).isEqualTo(MembershipEntity.TeamRole.MEMBER);
+        membership.setRole(MEMBER);
+        assertThat(membership.getRole()).isEqualTo(MEMBER);
     }
 
     @Test
@@ -57,15 +80,17 @@ class MembershipEntityTest {
         MembershipEntity.TeamRole[] roles = MembershipEntity.TeamRole.values();
         assertThat(roles).hasSize(2);
         assertThat(roles).containsExactlyInAnyOrder(
-                MembershipEntity.TeamRole.MEMBER,
+                MEMBER,
                 MembershipEntity.TeamRole.MANAGER
         );
     }
 
     @Test
     void testTeamRoleEnum_valueOf() {
-        assertThat(MembershipEntity.TeamRole.valueOf("MEMBER")).isEqualTo(MembershipEntity.TeamRole.MEMBER);
-        assertThat(MembershipEntity.TeamRole.valueOf("MANAGER")).isEqualTo(MembershipEntity.TeamRole.MANAGER);
+        assertThat(MembershipEntity.TeamRole.valueOf("MEMBER"))
+                .isEqualTo(MEMBER);
+        assertThat(MembershipEntity.TeamRole.valueOf("MANAGER"))
+                .isEqualTo(MembershipEntity.TeamRole.MANAGER);
     }
 
     @Test
@@ -92,4 +117,11 @@ class MembershipEntityTest {
         assertThat(membership.getTeam().getName()).isEqualTo("QA Team");
     }
 
+    @Test
+    void equals_shouldMatchSameUserAndTeam() {
+        MembershipEntity m1 = new MembershipEntity(user, team, MEMBER);
+        MembershipEntity m2 = new MembershipEntity(user, team, MEMBER);
+
+        assertThat(m1).isEqualTo(m2);
+    }
 }

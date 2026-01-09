@@ -1,9 +1,9 @@
 package eu.epitech.t_dev_700.entities;
 
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import java.time.OffsetDateTime;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,6 +37,37 @@ class UserEntityTest {
         assertThat(user.getEmail()).isEqualTo("john.doe@example.com");
         assertThat(user.getPhoneNumber()).isEqualTo("+1234567890");
         assertThat(user.getAccount()).isEqualTo(account);
+
+        // Added: initialized collections exist and are empty
+        assertThat(user.getMemberships()).isNotNull().isEmpty();
+        assertThat(user.getPlannings()).isNotNull().isEmpty();
+    }
+
+    @Test
+    void testIsManager_noMemberships_shouldBeFalse() {
+        assertThat(user.isManager()).isFalse();
+    }
+
+    @Test
+    void testIsManager_withMemberRole_shouldBeFalse() {
+        MembershipEntity membership = new MembershipEntity();
+        membership.setRole(MembershipEntity.TeamRole.MEMBER);
+        membership.setUser(user);
+
+        user.getMemberships().add(membership);
+
+        assertThat(user.isManager()).isFalse();
+    }
+
+    @Test
+    void testIsManager_withManagerRole_shouldBeTrue() {
+        MembershipEntity membership = new MembershipEntity();
+        membership.setRole(MembershipEntity.TeamRole.MANAGER);
+        membership.setUser(user);
+
+        user.getMemberships().add(membership);
+
+        assertThat(user.isManager()).isTrue();
     }
 
     @Test
@@ -108,4 +139,19 @@ class UserEntityTest {
         assertThat(toString).contains("lastName='Doe'");
     }
 
+    @Test
+    void testValidation_accountIsRequired() {
+        Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+
+        UserEntity u = new UserEntity();
+        u.setFirstName("John");
+        u.setLastName("Doe");
+        u.setEmail("john.doe@example.com");
+        u.setAccount(null);
+
+        var violations = validator.validate(u);
+
+        assertThat(violations)
+                .anyMatch(v -> v.getPropertyPath().toString().equals("account"));
+    }
 }

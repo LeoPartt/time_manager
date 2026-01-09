@@ -35,9 +35,8 @@ public interface TeamMapper extends CRUDMapper<
     TeamEntity createEntity(TeamModels.PostTeamRequest req);
 
     @Override
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     @Mapping(target = "id", ignore = true)
-    
     void replaceEntity(@MappingTarget TeamEntity entity, TeamModels.PutTeamRequest body);
 
     @Override

@@ -26,7 +26,6 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
-@org.springframework.context.annotation.Profile("!test")
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;

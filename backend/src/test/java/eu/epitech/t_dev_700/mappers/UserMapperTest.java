@@ -5,24 +5,31 @@ import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.models.UserModels;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.util.Arrays;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ActiveProfiles("test")
+@ExtendWith(SpringExtension.class)
+@ContextConfiguration(classes = {
+        UserMapperImpl.class,
+        PasswordMapperImpl.class
+})
 class UserMapperTest {
 
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
+    @MockitoBean
     private PasswordEncoder passwordEncoder;
 
     private UserEntity userEntity;
@@ -41,8 +48,12 @@ class UserMapperTest {
         userEntity.setLastName("Doe");
         userEntity.setEmail("john.doe@example.com");
         userEntity.setPhoneNumber("+1234567890");
+
         userEntity.setAccount(accountEntity);
         accountEntity.setUser(userEntity);
+
+        when(passwordEncoder.encode(anyString())).thenReturn("encoded");
+        when(passwordEncoder.matches(anyString(), anyString())).thenReturn(true);
     }
 
     @Test
@@ -56,6 +67,8 @@ class UserMapperTest {
         assertThat(model.lastName()).isEqualTo("Doe");
         assertThat(model.email()).isEqualTo("john.doe@example.com");
         assertThat(model.phoneNumber()).isEqualTo("+1234567890");
+        assertThat(model.isManager()).isEqualTo(userEntity.isManager());
+        assertThat(model.isAdministrator()).isEqualTo(accountEntity.isAdmin());
     }
 
     @Test
@@ -71,17 +84,25 @@ class UserMapperTest {
         account2.setId(2L);
         account2.setUsername("janesmith");
         account2.setPassword("password");
+
         user2.setAccount(account2);
+        account2.setUser(user2);
 
         List<UserEntity> entities = Arrays.asList(userEntity, user2);
 
         UserModels.UserResponse[] models = userMapper.listEntity(entities);
 
         assertThat(models).hasSize(2);
+
         assertThat(models[0].id()).isEqualTo(1L);
-        assertThat(models[0].firstName()).isEqualTo("John");
+        assertThat(models[0].username()).isEqualTo("johndoe");
+        assertThat(models[0].isManager()).isEqualTo(userEntity.isManager());
+        assertThat(models[0].isAdministrator()).isEqualTo(userEntity.getAccount().isAdmin());
+
         assertThat(models[1].id()).isEqualTo(2L);
-        assertThat(models[1].firstName()).isEqualTo("Jane");
+        assertThat(models[1].username()).isEqualTo("janesmith");
+        assertThat(models[1].isManager()).isEqualTo(user2.isManager());
+        assertThat(models[1].isAdministrator()).isEqualTo(user2.getAccount().isAdmin());
     }
 
     @Test
@@ -98,15 +119,16 @@ class UserMapperTest {
         UserEntity entity = userMapper.createEntity(request);
 
         assertThat(entity).isNotNull();
-        assertThat(entity.getId()).isNull(); // Not set by mapper
+        assertThat(entity.getId()).isNull();
         assertThat(entity.getFirstName()).isEqualTo("Alice");
         assertThat(entity.getLastName()).isEqualTo("Wonder");
         assertThat(entity.getEmail()).isEqualTo("alice@example.com");
         assertThat(entity.getPhoneNumber()).isEqualTo("+1112223333");
+
         assertThat(entity.getAccount()).isNotNull();
         assertThat(entity.getAccount().getUsername()).isEqualTo("newuser");
         assertThat(entity.getAccount().getPassword()).isNotBlank();
-        // Verify password is encoded
+
         assertThat(passwordEncoder.matches("plainPassword", entity.getAccount().getPassword())).isTrue();
     }
 
@@ -178,27 +200,24 @@ class UserMapperTest {
 
         userMapper.updateEntity(userEntity, request);
 
-        assertThat(userEntity.getFirstName()).isEqualTo("Jane"); // Updated
-        assertThat(userEntity.getLastName()).isEqualTo(originalLastName); // Not updated
-        assertThat(userEntity.getEmail()).isEqualTo("newemail@example.com"); // Updated
-        assertThat(userEntity.getPhoneNumber()).isEqualTo(originalPhone); // Not updated
-        assertThat(userEntity.getAccount().getUsername()).isEqualTo("newusername"); // Updated
+        assertThat(userEntity.getFirstName()).isEqualTo("Jane");
+        assertThat(userEntity.getLastName()).isEqualTo(originalLastName);
+        assertThat(userEntity.getEmail()).isEqualTo("newemail@example.com");
+        assertThat(userEntity.getPhoneNumber()).isEqualTo(originalPhone);
+        assertThat(userEntity.getAccount().getUsername()).isEqualTo("newusername");
     }
 
     @Test
-    void testUpdateEntity_withAllNulls_shouldNotChangeEntity() {
+    void testUpdateEntity_withAllNulls_shouldNotChangeEntity_includingUsername() {
         UserModels.PatchUserRequest request = new UserModels.PatchUserRequest(
-                null,
-                null,
-                null,
-                null,
-                null
+                null, null, null, null, null
         );
 
         String originalFirstName = userEntity.getFirstName();
         String originalLastName = userEntity.getLastName();
         String originalEmail = userEntity.getEmail();
         String originalPhone = userEntity.getPhoneNumber();
+        String originalUsername = userEntity.getAccount().getUsername();
 
         userMapper.updateEntity(userEntity, request);
 
@@ -206,20 +225,6 @@ class UserMapperTest {
         assertThat(userEntity.getLastName()).isEqualTo(originalLastName);
         assertThat(userEntity.getEmail()).isEqualTo(originalEmail);
         assertThat(userEntity.getPhoneNumber()).isEqualTo(originalPhone);
-    }
-
-    @Test
-    void testUpdateEntity_withUsername_shouldUpdateUsername() {
-        UserModels.PatchUserRequest request = new UserModels.PatchUserRequest(
-                "newusername",
-                null,
-                null,
-                null,
-                null
-        );
-
-        userMapper.updateEntity(userEntity, request);
-
-        assertThat(userEntity.getAccount().getUsername()).isEqualTo("newusername");
+        assertThat(userEntity.getAccount().getUsername()).isEqualTo(originalUsername);
     }
 }
