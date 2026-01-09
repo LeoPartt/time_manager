@@ -323,4 +323,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get december => 'December';
+
+  @override
+  String get dashboardTeam => 'Team dashboard';
+
+  @override
+  String get selectEquip => 'Select a team';
+
+  @override
+  String get ponctuality => 'Ponctuality';
+
+  @override
+  String get assiduity => 'Attendance';
+
+  @override
+  String get performance => 'Performance';
+
+  @override
+  String get excellent => 'Excellent';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get atUpgrade => 'At improve';
 }

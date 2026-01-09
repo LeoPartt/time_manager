@@ -3,6 +3,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 class WorkChart extends StatelessWidget {
   final double weeklyHours;
@@ -17,6 +18,7 @@ class WorkChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
 
     return Container(
       height: 200,
@@ -40,7 +42,7 @@ class WorkChart extends StatelessWidget {
             touchTooltipData: BarTouchTooltipData(
               getTooltipColor: (_) => colorScheme.inverseSurface,
               getTooltipItem: (group, groupIndex, rod, rodIndex) {
-                String label = groupIndex == 0 ? 'Hebdo' : 'Mensuel';
+                String label = groupIndex == 0 ? tr.weekly : tr.monthly;
                 return BarTooltipItem(
                   '$label\n${rod.toY.toStringAsFixed(1)}h',
                   TextStyle(color: colorScheme.onInverseSurface),
@@ -56,9 +58,9 @@ class WorkChart extends StatelessWidget {
                 getTitlesWidget: (value, meta) {
                   switch (value.toInt()) {
                     case 0:
-                      return Text('Hebdo', style: TextStyle(fontSize: 12));
+                      return Text(tr.weekly, style: TextStyle(fontSize: 12));
                     case 1:
-                      return Text('Mensuel', style: TextStyle(fontSize: 12));
+                      return Text(tr.monthly, style: TextStyle(fontSize: 12));
                     default:
                       return const SizedBox();
                   }

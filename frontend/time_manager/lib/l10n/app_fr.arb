@@ -128,5 +128,15 @@
   "september": "Septembre",
   "october": "Octobre",
   "november": "Novembre",
-  "december": "Décembre"  
+  "december": "Décembre",
+
+  "dashboardTeam" : "Dashboard d'équipe",
+  "selectEquip" : "Sélectionnez une équipe",
+  "ponctuality" : "Ponctualité",
+  "assiduity" : "Assiduité",
+  
+  "performance" : "Performance",
+  "excellent" : "Excellent",
+  "good" : "Bien",
+  "atUpgrade" : "À améliorer"
 }

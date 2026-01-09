@@ -323,4 +323,28 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get december => 'Décembre';
+
+  @override
+  String get dashboardTeam => 'Dashboard d\'équipe';
+
+  @override
+  String get selectEquip => 'Sélectionnez une équipe';
+
+  @override
+  String get ponctuality => 'Ponctualité';
+
+  @override
+  String get assiduity => 'Assiduité';
+
+  @override
+  String get performance => 'Performance';
+
+  @override
+  String get excellent => 'Excellent';
+
+  @override
+  String get good => 'Bien';
+
+  @override
+  String get atUpgrade => 'À améliorer';
 }

@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 class AttendanceChart extends StatelessWidget {
   final double punctualityRate;
@@ -18,6 +19,7 @@ class AttendanceChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final tr = AppLocalizations.of(context)!;
 
     return Container(
       padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p20)),
@@ -40,7 +42,7 @@ class AttendanceChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Performance',
+                tr.performance,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -75,14 +77,14 @@ class AttendanceChart extends StatelessWidget {
             children: [
               _buildGauge(
                 context,
-                'Ponctualité',
+                tr.ponctuality,
                 punctualityRate,
                 colorScheme.primary,
                 Icons.access_time,
               ),
               _buildGauge(
                 context,
-                'Assiduité',
+                tr.assiduity,
                 attendanceRate,
                 colorScheme.secondary,
                 Icons.check_circle,
@@ -186,6 +188,7 @@ class AttendanceChart extends StatelessWidget {
   }
 
   Widget _buildLegend(BuildContext context, ColorScheme colorScheme) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(AppSizes.p12),
       decoration: BoxDecoration(
@@ -195,9 +198,9 @@ class AttendanceChart extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildLegendItem('Excellent', Colors.green, '≥ 90%'),
-          _buildLegendItem('Bien', Colors.orange, '70-89%'),
-          _buildLegendItem('À améliorer', Colors.red, '< 70%'),
+          _buildLegendItem(tr.excellent, Colors.green, '≥ 90%'),
+          _buildLegendItem(tr.good, Colors.orange, '70-89%'),
+          _buildLegendItem(tr.atUpgrade, Colors.red, '< 70%'),
         ],
       ),
     );

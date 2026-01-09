@@ -718,6 +718,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'December'**
   String get december;
+
+  /// No description provided for @dashboardTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Team dashboard'**
+  String get dashboardTeam;
+
+  /// No description provided for @selectEquip.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a team'**
+  String get selectEquip;
+
+  /// No description provided for @ponctuality.
+  ///
+  /// In en, this message translates to:
+  /// **'Ponctuality'**
+  String get ponctuality;
+
+  /// No description provided for @assiduity.
+  ///
+  /// In en, this message translates to:
+  /// **'Attendance'**
+  String get assiduity;
+
+  /// No description provided for @performance.
+  ///
+  /// In en, this message translates to:
+  /// **'Performance'**
+  String get performance;
+
+  /// No description provided for @excellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get excellent;
+
+  /// No description provided for @good.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get good;
+
+  /// No description provided for @atUpgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'At improve'**
+  String get atUpgrade;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
