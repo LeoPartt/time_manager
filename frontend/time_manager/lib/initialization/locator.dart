@@ -35,11 +35,14 @@ import 'package:time_manager/domain/usecases/schedule/get_clock_in.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_out.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_status.dart';
 import 'package:time_manager/domain/usecases/team/add_member_to_team.dart';
+import 'package:time_manager/domain/usecases/team/assign_manager.dart';
 import 'package:time_manager/domain/usecases/team/create_team.dart';
 import 'package:time_manager/domain/usecases/team/delete_team.dart';
+import 'package:time_manager/domain/usecases/team/get_manager.dart';
 import 'package:time_manager/domain/usecases/team/get_team.dart';
 import 'package:time_manager/domain/usecases/team/get_team_members.dart';
 import 'package:time_manager/domain/usecases/team/get_teams.dart';
+import 'package:time_manager/domain/usecases/team/remove_manager.dart';
 import 'package:time_manager/domain/usecases/team/remove_member_from_team.dart';
 import 'package:time_manager/domain/usecases/user/create_user.dart';
 import 'package:time_manager/domain/usecases/user/delete_user.dart';
@@ -177,7 +180,9 @@ locator.registerFactory(() => ClockCubit(
   locator.registerFactory(() => GetTeamById(locator<TeamRepository>()));
   locator.registerFactory(() => GetTeamMembers(locator<TeamRepository>()));
   locator.registerFactory(() => DeleteTeam(locator<TeamRepository>()));
-
+  locator.registerFactory(() => GetTeamManager(locator<TeamRepository>()));
+  locator.registerFactory(() => AssignManager(locator<TeamRepository>()));
+  locator.registerFactory(() => RemoveManager(locator<TeamRepository>()));
 
 
   locator.registerFactory(() => TeamCubit(
@@ -188,8 +193,10 @@ locator.registerFactory(() => ClockCubit(
     getTeamByIdUseCase: locator<GetTeamById>(),
     getTeamMembersUseCase : locator<GetTeamMembers>(),
     deleteTeamUseCase: locator<DeleteTeam>(),
+    getTeamManagerUseCase: locator<GetTeamManager>(),
+    assignManagerUseCase: locator<AssignManager>(),
+    removeManagerUseCase: locator<RemoveManager>(),
     ));
-
 
   // ─────────────────────────────────────────────
   // DASHBOARD FEATURE

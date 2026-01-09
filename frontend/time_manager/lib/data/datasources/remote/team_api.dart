@@ -159,16 +159,20 @@ class TeamApi {
     try {
       final res = await client.get('/teams/$teamId/manager');
 
-      if (res.containsKey('data') && res['data'] is Map<String, dynamic>) {
-        return res['data'] as Map<String, dynamic>;
+      if (res == null) {
+        return {};
       }
 
-      return res;
+      if (res is Map<String, dynamic>) {
+        return res;
+      }
 
+      return {};
     } on NetworkException {
       rethrow;
     } catch (e) {
       throw NetworkException('Unexpected error fetching manager: $e');
     }
   }
+
 }

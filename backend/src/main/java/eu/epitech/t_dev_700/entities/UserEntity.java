@@ -49,17 +49,11 @@ public class UserEntity {
     @Column(name = "phone_number", length = 32)
     private String phoneNumber;
 
-    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<MembershipEntity> memberships = new LinkedHashSet<>();
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<PlanningEntity> plannings = new LinkedHashSet<>();
-
-    @Transient
-    public boolean isManager() {
-        return memberships.stream()
-                .anyMatch(m -> m.getRole() == MembershipEntity.TeamRole.MANAGER);
-    }
 
     @Override
     public boolean equals(Object o) {

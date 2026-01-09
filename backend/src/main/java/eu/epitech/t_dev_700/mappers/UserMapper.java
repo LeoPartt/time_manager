@@ -20,7 +20,7 @@ public interface UserMapper extends CRUDMapper<
 
     @Override
     @Mapping(target = "username", source = "account.username")
-    @Mapping(target = "isManager", source = "manager")
+    @Mapping(target = "isManager", expression = "java(membershipService.isUserManager(entity))")
     @Mapping(target = "isAdministrator", source = "account.admin")
     UserModels.UserResponse toModel(UserEntity entity);
 
