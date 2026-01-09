@@ -6,7 +6,6 @@ import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_state.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/dashboard_chart.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 
@@ -40,7 +39,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
           padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p24)),
           child: Column(
             children: [
-              Header(label: 'Dashboard Team'),
+              Header(label: tr.dashboardTeam),
               SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
     
               // 🔽 Sélecteur d'équipe
@@ -51,7 +50,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
               BlocBuilder<DashboardCubit, DashboardState>(
                 builder: (context, state) {
                   return state.when(
-                    initial: () => Center(child: Text('Sélectionnez une équipe')),
+                    initial: () => Center(child: Text(tr.selectEquip)),
                     loading: () => const Center(child: CircularProgressIndicator()),
                     loaded: (report) => Column(
                       children: [
@@ -75,6 +74,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
   }
 
   Widget _buildTeamSelector(ColorScheme colorScheme) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: AppSizes.p16),
       decoration: BoxDecoration(
@@ -85,7 +85,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
       child: DropdownButtonHideUnderline(
         child: DropdownButton<int>(
           value: selectedTeamId,
-          hint: const Text('Sélectionner une équipe'),
+          hint: Text(tr.selectEquip),
           isExpanded: true,
           items: teams.map((team) {
             return DropdownMenuItem<int>(
@@ -105,12 +105,13 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
   }
 
   Widget _buildKPIRow(BuildContext context, report, ColorScheme colorScheme) {
+    final tr = AppLocalizations.of(context)!;
     return Row(
       children: [
         Expanded(
           child: _buildKPICard(
             context,
-            'Ponctualité',
+            tr.ponctuality,
             '${report.punctualityRate.toStringAsFixed(1)}%',
             Icons.access_time,
             colorScheme.primary,
@@ -120,7 +121,7 @@ class _TeamDashboardScreenState extends State<TeamDashboardScreen> {
         Expanded(
           child: _buildKPICard(
             context,
-            'Assiduité',
+            tr.assiduity,
             '${report.attendanceRate.toStringAsFixed(1)}%',
             Icons.check_circle,
             colorScheme.secondary,

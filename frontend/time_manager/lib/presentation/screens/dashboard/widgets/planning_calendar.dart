@@ -76,7 +76,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Calendrier de planning'),
+        title: Text(tr.planningCalendar),
         backgroundColor: colorScheme.primary,
       ),
       bottomNavigationBar: const NavBar(),
@@ -90,7 +90,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
             padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p24)),
             child: Column(
               children: [
-                Header(label: 'Planning'),
+                Header(label: tr.planning),
                 SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
 
                 // Écoute UserCubit pour charger automatiquement
@@ -120,7 +120,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
                                   const CircularProgressIndicator(),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Chargement de votre profil...',
+                                    tr.loadingProfile,
                                     style: TextStyle(color: Colors.grey[600]),
                                   ),
                                 ],
@@ -139,7 +139,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
                                   const CircularProgressIndicator(),
                                   const SizedBox(height: 16),
                                   Text(
-                                    'Chargement du planning...',
+                                    tr.planningLoading,
                                     style: TextStyle(color: Colors.blue),
                                   ),
                                 ],
@@ -164,7 +164,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
                                       ),
                                       SizedBox(height: AppSizes.p16),
                                       Text(
-                                        'Erreur',
+                                        tr.error,
                                         style: TextStyle(
                                           fontSize: 18,
                                           fontWeight: FontWeight.bold,
@@ -181,7 +181,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
                                       ElevatedButton.icon(
                                         onPressed: _loadPlannings,
                                         icon: const Icon(Icons.refresh),
-                                        label: const Text('Réessayer'),
+                                        label: Text(tr.retry),
                                       ),
                                     ],
                                   ),
@@ -291,6 +291,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
   ) {
     final weekday = day.weekday;
     final schedules = events[weekday];
+    final tr = AppLocalizations.of(context)!;
 
     return Container(
       width: double.infinity,
@@ -340,7 +341,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
                 ))
           else
             Text(
-              'Aucun planning pour ce jour',
+              tr.noPlanningForToday,
               style: TextStyle(
                 fontSize: 16,
                 fontStyle: FontStyle.italic,
@@ -357,6 +358,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
     List<dynamic> plannings,
     ColorScheme colorScheme,
   ) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       width: double.infinity,
       padding: EdgeInsets.all(AppSizes.p20),
@@ -375,7 +377,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Planning hebdomadaire',
+            tr.planningWeekly,
             style: TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -396,7 +398,7 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
                     ),
                     SizedBox(height: AppSizes.p16),
                     Text(
-                      'Aucun planning configuré',
+                      tr.noConfigPlanning,
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey[600],
@@ -503,14 +505,15 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
   }
 
   String _getWeekDayName(int weekDay) {
-    const days = [
-      'Lundi',
-      'Mardi',
-      'Mercredi',
-      'Jeudi',
-      'Vendredi',
-      'Samedi',
-      'Dimanche',
+    final tr = AppLocalizations.of(context)!;
+    final days = [
+      tr.monday,
+      tr.tuesday,
+      tr.wednesday,
+      tr.thursday,
+      tr.friday,
+      tr.saturday,
+      tr.sunday,
     ];
     return days[weekDay];
   }
@@ -524,28 +527,29 @@ class _PlanningCalendarViewState extends State<_PlanningCalendarView> {
   }
 
   String _formatDate(DateTime date) {
-    const days = [
-      'Lundi',
-      'Mardi',
-      'Mercredi',
-      'Jeudi',
-      'Vendredi',
-      'Samedi',
-      'Dimanche',
+    final tr = AppLocalizations.of(context)!;
+    final days = [
+      tr.monday,
+      tr.tuesday,
+      tr.wednesday,
+      tr.thursday,
+      tr.friday,
+      tr.saturday,
+      tr.sunday,
     ];
-    const months = [
-      'Janvier',
-      'Février',
-      'Mars',
-      'Avril',
-      'Mai',
-      'Juin',
-      'Juillet',
-      'Août',
-      'Septembre',
-      'Octobre',
-      'Novembre',
-      'Décembre',
+    final months = [
+      tr.january,
+      tr.february,
+      tr.march,
+      tr.april,
+      tr.may,
+      tr.june,
+      tr.july,
+      tr.august,
+      tr.september,
+      tr.october,
+      tr.november,
+      tr.december,
     ];
 
     final dayName = days[date.weekday - 1];
