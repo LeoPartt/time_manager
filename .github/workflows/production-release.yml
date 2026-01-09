@@ -137,6 +137,12 @@ jobs:
           cd frontend/time_manager
           flutter pub get
 
+      - name: Generate code with build_runner
+        if: steps.compare.outputs.should_release == 'true'
+        run: |
+          cd frontend/time_manager
+          flutter pub run build_runner build --delete-conflicting-outputs
+
       - name: Build APK
         if: steps.compare.outputs.should_release == 'true'
         run: |
