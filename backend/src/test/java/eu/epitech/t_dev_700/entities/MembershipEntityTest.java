@@ -38,7 +38,6 @@ class MembershipEntityTest {
         assertThat(membership.getUser()).isEqualTo(user);
         assertThat(membership.getTeam()).isEqualTo(team);
         assertThat(membership.getRole()).isEqualTo(MembershipEntity.TeamRole.MEMBER);
-        assertThat(membership.getDeletedAt()).isNull();
     }
 
     @Test
@@ -70,16 +69,6 @@ class MembershipEntityTest {
     }
 
     @Test
-    void testSoftDelete() {
-        assertThat(membership.getDeletedAt()).isNull();
-
-        OffsetDateTime deletionTime = OffsetDateTime.now();
-        membership.setDeletedAt(deletionTime);
-
-        assertThat(membership.getDeletedAt()).isEqualTo(deletionTime);
-    }
-
-    @Test
     void testRelationshipWithUser() {
         UserEntity newUser = new UserEntity();
         newUser.setId(2L);
@@ -103,9 +92,4 @@ class MembershipEntityTest {
         assertThat(membership.getTeam().getName()).isEqualTo("QA Team");
     }
 
-    @Test
-    void testCreateMembershipWithoutDeletedAt() {
-        MembershipEntity newMembership = new MembershipEntity();
-        assertThat(newMembership.getDeletedAt()).isNull();
-    }
 }

@@ -154,48 +154,4 @@ class TeamRepositoryTest {
         }).isInstanceOf(ConstraintViolationException.class);
     }
 
-    @Test
-    void testSoftDeletedTeam_shouldHaveDeletedAtSet() {
-        TeamEntity saved = teamRepository.save(testTeam);
-        Long teamId = saved.getId();
-        entityManager.flush();
-        entityManager.clear();
-
-        // Reload entity and set deletedAt
-        TeamEntity managed = entityManager.find(TeamEntity.class, teamId);
-        managed.setDeletedAt(OffsetDateTime.now());
-        entityManager.persist(managed);
-        entityManager.flush();
-        entityManager.clear();
-
-        // Query without @SQLRestriction using native query
-        Object[] result = (Object[]) entityManager.getEntityManager()
-                .createNativeQuery("SELECT id, deleted_at FROM team WHERE id = ?1")
-                .setParameter(1, teamId)
-                .getSingleResult();
-
-        assertThat(result).isNotNull();
-        assertThat(result[1]).isNotNull(); // deleted_at column should be set
-    }
-
-    @Test
-    void testFindAll_shouldNotIncludeSoftDeletedTeams() {
-        TeamEntity team1 = teamRepository.save(testTeam);
-
-        TeamEntity team2 = new TeamEntity();
-        team2.setName("Deleted Team");
-        team2 = teamRepository.save(team2);
-        entityManager.flush();
-
-        // Soft delete team2
-        team2.setDeletedAt(OffsetDateTime.now());
-        entityManager.persist(team2);
-        entityManager.flush();
-        entityManager.clear();
-
-        List<TeamEntity> teams = teamRepository.findAll();
-
-        assertThat(teams).hasSize(1);
-        assertThat(teams.get(0).getId()).isEqualTo(team1.getId());
-    }
 }

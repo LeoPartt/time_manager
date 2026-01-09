@@ -37,7 +37,7 @@ public interface UserMapper extends CRUDMapper<
     @Override
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "account", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    
     @Mapping(target = "account.username", source = "username")
     @Mapping(target = "account.password", source = "password", qualifiedByName = "encodePassword")
     UserEntity createEntity(UserModels.PostUserRequest req);
@@ -45,7 +45,7 @@ public interface UserMapper extends CRUDMapper<
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    
     @Mapping(target = "account", ignore = true)
     void replaceEntity(@MappingTarget UserEntity entity, UserModels.PutUserRequest body);
 
@@ -57,7 +57,7 @@ public interface UserMapper extends CRUDMapper<
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "deletedAt", ignore = true)
+    
     @Mapping(target = "account", ignore = true)
     void updateEntity(@MappingTarget UserEntity entity, UserModels.PatchUserRequest body);
 

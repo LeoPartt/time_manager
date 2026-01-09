@@ -3,7 +3,7 @@ package eu.epitech.t_dev_700.services;
 import eu.epitech.t_dev_700.entities.AccountEntity;
 import eu.epitech.t_dev_700.models.AuthModels;
 import eu.epitech.t_dev_700.services.components.UserAuthorization;
-import eu.epitech.t_dev_700.services.exceptions.DeletedUser;
+import eu.epitech.t_dev_700.services.exceptions.UnknownUser;
 import eu.epitech.t_dev_700.services.exceptions.InvalidCredentials;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -37,7 +37,7 @@ public class AuthService {
             throw new InvalidCredentials("Invalid username", input.username(), ex);
         }
         AccountEntity account = (AccountEntity) authentication.getPrincipal();
-        if (userService.checkIfUserDeleted(account.getUser())) throw new DeletedUser(account.getUsername());;
+        if (account.getUser() == null && !account.isAdmin()) throw new UnknownUser(account.getUsername());;
         return jwtService.generateToken(account);
     }
 

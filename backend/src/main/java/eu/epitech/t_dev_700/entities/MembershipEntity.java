@@ -27,9 +27,6 @@ public class MembershipEntity {
     @JoinColumn(name = "team_id")
     private TeamEntity team;
 
-    @Column(name = "deleted_at")
-    private OffsetDateTime deletedAt;
-
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
     private TeamRole role;
