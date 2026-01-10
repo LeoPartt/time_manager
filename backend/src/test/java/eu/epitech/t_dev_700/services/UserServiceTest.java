@@ -1,17 +1,21 @@
 package eu.epitech.t_dev_700.services;
 
-import eu.epitech.t_dev_700.services.components.UserComponent;
-import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import eu.epitech.t_dev_700.entities.AccountEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.mappers.UserMapper;
+import eu.epitech.t_dev_700.models.PlanningModels;
+import eu.epitech.t_dev_700.models.TeamModels;
 import eu.epitech.t_dev_700.models.UserModels;
+import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.repositories.UserRepository;
+import eu.epitech.t_dev_700.services.components.UserAuthorization;
+import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
@@ -19,22 +23,21 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+    @Mock private UserRepository userRepository;
+    @Mock private UserMapper userMapper;
 
-    @Mock
-    private UserMapper userMapper;
+    // NEW: required by UserService constructor
+    @Mock private TeamService teamService;
+    @Mock private ClockService clockService;
+    @Mock private PlanningService planningService;
 
-    @InjectMocks
-    private UserService userService;
-    @InjectMocks
-    private UserComponent userComponent;
+    @InjectMocks private UserService userService;
 
     private UserEntity userEntity;
     private UserModels.UserResponse userResponse;
@@ -226,7 +229,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetOrThrow_whenUserExists_shouldReturnUser() {
+    void testFindEntityOrThrow_whenUserExists_shouldReturnUser() {
         when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
 
         UserEntity result = userService.findEntityOrThrow(1L);
@@ -236,7 +239,7 @@ class UserServiceTest {
     }
 
     @Test
-    void testGetOrThrow_whenUserNotExists_shouldThrowException() {
+    void testFindEntityOrThrow_whenUserNotExists_shouldThrowException() {
         when(userRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> userService.findEntityOrThrow(999L))
@@ -245,5 +248,77 @@ class UserServiceTest {
                 .hasMessageContaining("999");
 
         verify(userRepository).findById(999L);
+    }
+
+    // -----------------------------
+    // NEW TESTS for UserService API
+    // -----------------------------
+
+    @Test
+    void testGetCurrentUser_shouldReturnMappedUser() {
+        try (MockedStatic<UserAuthorization> mocked = mockStatic(UserAuthorization.class)) {
+            mocked.when(UserAuthorization::getCurrentUser).thenReturn(userEntity);
+            when(userMapper.toModel(userEntity)).thenReturn(userResponse);
+
+            UserModels.UserResponse result = userService.getCurrentUser();
+
+            assertThat(result).isEqualTo(userResponse);
+            mocked.verify(UserAuthorization::getCurrentUser);
+            verify(userMapper).toModel(userEntity);
+        }
+    }
+
+    @Test
+    void testGetTeams_shouldReturnTeamsForUser() {
+        TeamModels.TeamResponse[] teams = new TeamModels.TeamResponse[0];
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        when(teamService.getByUser(userEntity)).thenReturn(teams);
+
+        TeamModels.TeamResponse[] result = userService.getTeams(1L);
+
+        assertThat(result).isSameAs(teams);
+        verify(userRepository).findById(1L);
+        verify(teamService).getByUser(userEntity);
+    }
+
+    @Test
+    void testGetClocks_shouldDelegateToClockService() {
+        UserScheduleQuery query = new UserScheduleQuery();
+        Long[] clocks = new Long[]{1L, 2L};
+
+        when(clockService.getUserClocks(1L, query)).thenReturn(clocks);
+
+        Long[] result = userService.getClocks(1L, query);
+
+        assertThat(result).isSameAs(clocks);
+        verify(clockService).getUserClocks(1L, query);
+    }
+
+    @Test
+    void testGetPlannings_shouldReturnPlanningsForUser() {
+        PlanningModels.PlanningResponse[] plannings = new PlanningModels.PlanningResponse[0];
+
+        when(userRepository.findById(1L)).thenReturn(Optional.of(userEntity));
+        when(planningService.listForUser(userEntity)).thenReturn(plannings);
+
+        PlanningModels.PlanningResponse[] result = userService.getPlannings(1L);
+
+        assertThat(result).isSameAs(plannings);
+        verify(userRepository).findById(1L);
+        verify(planningService).listForUser(userEntity);
+    }
+
+    @Test
+    void testCreatePlanning_shouldDelegateToPlanningService() {
+        PlanningModels.PostPlanningRequest body = mock(PlanningModels.PostPlanningRequest.class);
+        PlanningModels.PlanningResponse created = mock(PlanningModels.PlanningResponse.class);
+
+        when(planningService.create(body)).thenReturn(created);
+
+        PlanningModels.PlanningResponse result = userService.createPlanning(body);
+
+        assertThat(result).isSameAs(created);
+        verify(planningService).create(body);
     }
 }

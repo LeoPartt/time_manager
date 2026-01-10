@@ -23,21 +23,23 @@ public class PasswordResetService {
 
     public void createResetToken(UserEntity user) {
         String token = RandomStringUtils.secure().nextNumeric(6);
-        TemporaryTokenEntity tempToken = new TemporaryTokenEntity();
-        tempToken.setAccount(user.getAccount());
-        tempToken.setAction(TemporaryTokenEntity.Action.CHANGE_PASSWORD);
-        tempToken.setToken(String.valueOf(Objects.hash(token)));
-        tempToken.setExpiresAt(LocalDateTime.now().plusMinutes(15));
+        TemporaryTokenEntity tempToken = new TemporaryTokenEntity(
+                String.valueOf(Objects.hash(token)),
+                TemporaryTokenEntity.Action.CHANGE_PASSWORD,
+                user.getAccount(),
+                LocalDateTime.now().plusMinutes(15)
+
+        );
 
         tempTokenRepository.save(tempToken);
         mailService.sendPasswordResetEmail(user.getEmail(), token);
     }
 
     public void changePassword(String token, String newPassword) {
-        TemporaryTokenEntity resetToken = tempTokenRepository.findByToken(String.valueOf(Objects.hash(token)))
+        TemporaryTokenEntity resetToken = tempTokenRepository.findByTokenHash(String.valueOf(Objects.hash(token)))
                 .orElseThrow(() -> new IllegalArgumentException("Invalid token"));
 
-        if (resetToken.isExpired()) {
+        if (resetToken.isExpired(LocalDateTime.now())) {
             throw new IllegalArgumentException("Token expired");
         }
 
@@ -45,7 +47,7 @@ public class PasswordResetService {
         account.setPassword(passwordEncoder.encode(newPassword));
         accountRepository.save(account);
 
-        tempTokenRepository.delete(resetToken);
+        resetToken.consume(LocalDateTime.now());
     }
 }
 

@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 @Configuration
 @RequiredArgsConstructor
-@org.springframework.context.annotation.Profile("!test")
 public class AuthenticationConfiguration {
 
     private final AccountRepository accountRepository;
@@ -26,9 +25,9 @@ public class AuthenticationConfiguration {
     }
 
     @Bean
-    AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
+    AuthenticationProvider authenticationProvider(UserDetailsService uds, PasswordEncoder passwordEncoder) {
+        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider(uds);
+        authProvider.setPasswordEncoder(passwordEncoder);
         authProvider.setHideUserNotFoundExceptions(false);
         return authProvider;
     }

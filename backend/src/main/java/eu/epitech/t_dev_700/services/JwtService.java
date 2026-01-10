@@ -16,7 +16,6 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Service
-@org.springframework.context.annotation.Profile("!test")
 public class JwtService {
     @Value("${security.jwt.secret-key}")
     private String secretKey;

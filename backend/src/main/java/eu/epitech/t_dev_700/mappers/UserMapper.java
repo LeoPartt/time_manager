@@ -3,7 +3,6 @@ package eu.epitech.t_dev_700.mappers;
 import eu.epitech.t_dev_700.entities.AccountEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.models.UserModels;
-import eu.epitech.t_dev_700.services.components.PasswordMapper;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -36,35 +35,45 @@ public interface UserMapper extends CRUDMapper<
 
     @Override
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "account", ignore = true)
-    
+    @Mapping(target = "account",  ignore = true)
     @Mapping(target = "account.username", source = "username")
     @Mapping(target = "account.password", source = "password", qualifiedByName = "encodePassword")
     UserEntity createEntity(UserModels.PostUserRequest req);
 
     @Override
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     @Mapping(target = "id", ignore = true)
-    
     @Mapping(target = "account", ignore = true)
     void replaceEntity(@MappingTarget UserEntity entity, UserModels.PutUserRequest body);
 
     @AfterMapping
     default void replaceAccountUsername(UserModels.PutUserRequest req, @MappingTarget UserEntity user) {
+        if (user == null) return;
         AccountEntity acc = user.getAccount();
+        if (acc == null) {
+            acc = new AccountEntity();
+            user.setAccount(acc);
+            acc.setUser(user);
+        }
         acc.setUsername(req.username());
     }
+
     @Override
     @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    
     @Mapping(target = "account", ignore = true)
     void updateEntity(@MappingTarget UserEntity entity, UserModels.PatchUserRequest body);
 
     @AfterMapping
     default void updateAccountUsername(UserModels.PatchUserRequest req, @MappingTarget UserEntity user) {
+        if (user == null) return;
+        if (req.username() == null) return;
         AccountEntity acc = user.getAccount();
+        if (acc == null) {
+            acc = new AccountEntity();
+            user.setAccount(acc);
+            acc.setUser(user);
+        }
         acc.setUsername(req.username());
     }
 }
-

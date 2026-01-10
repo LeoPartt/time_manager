@@ -3,9 +3,8 @@ package eu.epitech.t_dev_700.entities;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.time.OffsetDateTime;
-
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThatCode;
 
 class TeamEntityTest {
 
@@ -30,7 +29,6 @@ class TeamEntityTest {
     @Test
     void testAddMembership() {
         MembershipEntity membership = new MembershipEntity();
-        membership.setId(1L);
         membership.setRole(MembershipEntity.TeamRole.MEMBER);
 
         team.addMembership(membership);
@@ -42,13 +40,13 @@ class TeamEntityTest {
     @Test
     void testRemoveMembership() {
         MembershipEntity membership = new MembershipEntity();
-        membership.setId(1L);
         membership.setRole(MembershipEntity.TeamRole.MEMBER);
 
         team.addMembership(membership);
         assertThat(team.getMemberships()).hasSize(1);
 
         team.removeMembership(membership);
+
         assertThat(team.getMemberships()).isEmpty();
         assertThat(membership.getTeam()).isNull();
     }
@@ -56,19 +54,44 @@ class TeamEntityTest {
     @Test
     void testAddMultipleMemberships() {
         MembershipEntity membership1 = new MembershipEntity();
-        membership1.setId(1L);
         membership1.setRole(MembershipEntity.TeamRole.MEMBER);
 
         MembershipEntity membership2 = new MembershipEntity();
-        membership2.setId(2L);
         membership2.setRole(MembershipEntity.TeamRole.MANAGER);
 
         team.addMembership(membership1);
         team.addMembership(membership2);
 
-        assertThat(team.getMemberships()).hasSize(2).containsExactlyInAnyOrder(membership1, membership2);
+        assertThat(team.getMemberships())
+                .hasSize(2)
+                .containsExactlyInAnyOrder(membership1, membership2);
+
         assertThat(membership1.getTeam()).isEqualTo(team);
         assertThat(membership2.getTeam()).isEqualTo(team);
+    }
+
+    @Test
+    void testAddSameMembershipTwice_shouldStillHaveOne() {
+        MembershipEntity membership = new MembershipEntity();
+        membership.setRole(MembershipEntity.TeamRole.MEMBER);
+
+        team.addMembership(membership);
+        team.addMembership(membership);
+
+        assertThat(team.getMemberships()).hasSize(1).contains(membership);
+        assertThat(membership.getTeam()).isEqualTo(team);
+    }
+
+    @Test
+    void testAddMembership_null_shouldDoNothing() {
+        assertThatCode(() -> team.addMembership(null)).doesNotThrowAnyException();
+        assertThat(team.getMemberships()).isEmpty();
+    }
+
+    @Test
+    void testRemoveMembership_null_shouldDoNothing() {
+        assertThatCode(() -> team.removeMembership(null)).doesNotThrowAnyException();
+        assertThat(team.getMemberships()).isEmpty();
     }
 
     @Test
@@ -124,19 +147,21 @@ class TeamEntityTest {
     }
 
     @Test
-    void testHashCode_differentId_shouldHaveDifferentHashCode() {
-        TeamEntity team2 = new TeamEntity();
-        team2.setId(2L);
+    void testHashCode_shouldNotChangeWhenNameChanges_ifIdSame() {
+        int h1 = team.hashCode();
 
-        assertThat(team.hashCode()).isNotEqualTo(team2.hashCode());
+        team.setName("New name");
+
+        int h2 = team.hashCode();
+        assertThat(h2).isEqualTo(h1);
     }
 
     @Test
     void testToString_shouldContainKeyInformation() {
-        String toString = team.toString();
-        assertThat(toString).contains("Team");
-        assertThat(toString).contains("id=1");
-        assertThat(toString).contains("name='Development Team'");
-    }
+        String s = team.toString();
 
+        assertThat(s).contains("Team");
+        assertThat(s).contains("id=1");
+        assertThat(s).contains("name='Development Team'");
+    }
 }

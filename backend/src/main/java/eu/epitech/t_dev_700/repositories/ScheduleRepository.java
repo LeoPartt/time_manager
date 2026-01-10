@@ -12,7 +12,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-// ScheduleRepository.java
 @Repository
 public interface ScheduleRepository extends JpaRepository<ScheduleEntity, Long> {
 

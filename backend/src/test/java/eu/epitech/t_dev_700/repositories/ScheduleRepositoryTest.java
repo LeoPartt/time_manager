@@ -8,13 +8,17 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.time.Duration;
 import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.*;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -26,30 +30,64 @@ class ScheduleRepositoryTest {
     @Autowired
     private TestEntityManager entityManager;
 
-    private ScheduleEntity testSchedule;
     private UserEntity testUser;
-    private OffsetDateTime arrivalTime;
-    private OffsetDateTime departureTime;
+    private UserEntity otherUser;
+
+    private ScheduleEntity testSchedule;
+
+    // Keep a single reference time per test run to avoid micro-differences.
+    private OffsetDateTime refNow;
+
+    // ---------- Helpers ----------
+
+    private static OffsetDateTime t(String iso) {
+        return OffsetDateTime.parse(iso).truncatedTo(ChronoUnit.SECONDS);
+    }
+
+    private static OffsetDateTime nowFixed() {
+        return OffsetDateTime.now().truncatedTo(ChronoUnit.SECONDS);
+    }
+
+    private static Duration durationOnTimeline(OffsetDateTime start, OffsetDateTime end) {
+        return Duration.between(start.toInstant(), end.toInstant());
+    }
+
+    private UserEntity persistUser(String username, String email) {
+        AccountEntity account = new AccountEntity();
+        account.setUsername(username);
+        account.setPassword("password");
+
+        UserEntity user = new UserEntity();
+        user.setFirstName("First");
+        user.setLastName("Last");
+        user.setEmail(email);
+        user.setPhoneNumber("+000");
+        user.setAccount(account);
+        account.setUser(user);
+
+        return entityManager.persistAndFlush(user);
+    }
+
+    private ScheduleEntity persistSchedule(UserEntity user, OffsetDateTime arrival, OffsetDateTime departure) {
+        ScheduleEntity s = new ScheduleEntity();
+        s.setUser(user);
+        s.setArrivalTs(arrival.truncatedTo(ChronoUnit.SECONDS));
+        s.setDepartureTs(departure == null ? null : departure.truncatedTo(ChronoUnit.SECONDS));
+        return entityManager.persistAndFlush(s);
+    }
+
+    // ---------- Setup ----------
 
     @BeforeEach
     void setUp() {
-        // Create user with account
-        AccountEntity account = new AccountEntity();
-        account.setUsername("testuser");
-        account.setPassword("password");
+        testUser = persistUser("testuser", "john@example.com");
+        otherUser = persistUser("other", "other@example.com");
 
-        testUser = new UserEntity();
-        testUser.setFirstName("John");
-        testUser.setLastName("Doe");
-        testUser.setEmail("john@example.com");
-        testUser.setPhoneNumber("+123456");
-        testUser.setAccount(account);
-        account.setUser(testUser);
-        testUser = entityManager.persist(testUser);
-        entityManager.flush();
+        // One consistent "now" for the whole setup (avoid calling now twice)
+        refNow = nowFixed();
 
-        arrivalTime = OffsetDateTime.now().minusHours(8);
-        departureTime = OffsetDateTime.now();
+        OffsetDateTime arrivalTime = refNow.minusHours(8);
+        OffsetDateTime departureTime = refNow;
 
         testSchedule = new ScheduleEntity();
         testSchedule.setUser(testUser);
@@ -57,33 +95,52 @@ class ScheduleRepositoryTest {
         testSchedule.setDepartureTs(departureTime);
     }
 
-    private ScheduleEntity persistSchedule(UserEntity user, OffsetDateTime arrival, OffsetDateTime departure) {
-        ScheduleEntity s = new ScheduleEntity();
-        s.setUser(user);
-        s.setArrivalTs(arrival);
-        s.setDepartureTs(departure);
-        return entityManager.persistAndFlush(s);
-    }
+    // ---------- CRUD ----------
 
     @Test
     void testSaveSchedule_shouldPersistSchedule() {
-        ScheduleEntity saved = scheduleRepository.save(testSchedule);
+        ScheduleEntity saved = scheduleRepository.saveAndFlush(testSchedule);
+        entityManager.clear();
 
-        assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getUser()).isEqualTo(testUser);
-        assertThat(saved.getArrivalTs()).isEqualTo(arrivalTime);
-        assertThat(saved.getDepartureTs()).isEqualTo(departureTime);
+        ScheduleEntity found = scheduleRepository.findById(saved.getId()).orElseThrow();
+
+        assertThat(found.getId()).isNotNull();
+        assertThat(found.getUser().getId()).isEqualTo(testUser.getId());
+
+        // Always true regardless of timezone normalization:
+        assertThat(found.getDepartureTs()).isNotNull();
+        assertThat(found.getDepartureTs().toInstant()).isAfterOrEqualTo(found.getArrivalTs().toInstant());
+
+        // Since we built departure from arrival in setup, duration should still be 8h on the timeline.
+        assertThat(durationOnTimeline(found.getArrivalTs(), found.getDepartureTs()))
+                .isEqualTo(Duration.ofHours(8));
     }
 
     @Test
     void testSaveSchedule_withoutDeparture_shouldSucceed() {
         testSchedule.setDepartureTs(null);
 
-        ScheduleEntity saved = scheduleRepository.save(testSchedule);
+        ScheduleEntity saved = scheduleRepository.saveAndFlush(testSchedule);
+        entityManager.clear();
 
-        assertThat(saved.getId()).isNotNull();
-        assertThat(saved.getArrivalTs()).isNotNull();
-        assertThat(saved.getDepartureTs()).isNull();
+        ScheduleEntity found = scheduleRepository.findById(saved.getId()).orElseThrow();
+
+        assertThat(found.getId()).isNotNull();
+        assertThat(found.getArrivalTs()).isNotNull();
+        assertThat(found.getDepartureTs()).isNull();
+    }
+
+    @Test
+    void testSaveSchedule_withDepartureBeforeArrival_shouldFail_dueToCheckConstraint() {
+        ScheduleEntity invalid = new ScheduleEntity();
+        invalid.setUser(testUser);
+        invalid.setArrivalTs(t("2026-01-06T12:00:00+01:00"));
+        invalid.setDepartureTs(t("2026-01-06T11:59:59+01:00"));
+
+        assertThatThrownBy(() -> {
+            scheduleRepository.save(invalid);
+            entityManager.flush();
+        }).isInstanceOf(DataIntegrityViolationException.class);
     }
 
     @Test
@@ -94,80 +151,82 @@ class ScheduleRepositoryTest {
         Optional<ScheduleEntity> found = scheduleRepository.findById(saved.getId());
 
         assertThat(found).isPresent();
-        assertThat(found.get().getUser()).isEqualTo(testUser);
+        assertThat(found.get().getUser().getId()).isEqualTo(testUser.getId());
     }
 
     @Test
     void testFindById_whenNotExists_shouldReturnEmpty() {
-        Optional<ScheduleEntity> found = scheduleRepository.findById(999L);
-
-        assertThat(found).isEmpty();
+        assertThat(scheduleRepository.findById(999L)).isEmpty();
     }
 
     @Test
     void testFindAll_shouldReturnAllSchedules() {
-        scheduleRepository.save(testSchedule);
+        scheduleRepository.saveAndFlush(testSchedule);
 
         ScheduleEntity schedule2 = new ScheduleEntity();
         schedule2.setUser(testUser);
-        schedule2.setArrivalTs(OffsetDateTime.now().minusHours(16));
-        schedule2.setDepartureTs(OffsetDateTime.now().minusHours(8));
-        scheduleRepository.save(schedule2);
+        schedule2.setArrivalTs(refNow.minusHours(16));
+        schedule2.setDepartureTs(refNow.minusHours(8));
+        scheduleRepository.saveAndFlush(schedule2);
 
         List<ScheduleEntity> schedules = scheduleRepository.findAll();
-
-        assertThat(schedules).hasSizeGreaterThanOrEqualTo(2);
+        assertThat(schedules).hasSize(2);
     }
 
     @Test
-    void testUpdateSchedule_shouldPersistChanges() {
-        ScheduleEntity saved = scheduleRepository.save(testSchedule);
-        entityManager.flush();
+    void testUpdateSchedule_shouldPersistChanges_withoutTouchingArrival() {
+        ScheduleEntity saved = scheduleRepository.saveAndFlush(testSchedule);
         entityManager.clear();
 
-        OffsetDateTime newDeparture = OffsetDateTime.now().plusHours(1);
-        saved.setDepartureTs(newDeparture);
-        ScheduleEntity updated = scheduleRepository.save(saved);
-        entityManager.flush();
+        ScheduleEntity before = scheduleRepository.findById(saved.getId()).orElseThrow();
 
-        ScheduleEntity found = scheduleRepository.findById(updated.getId()).orElseThrow();
-        assertThat(found.getDepartureTs()).isEqualTo(newDeparture);
+        OffsetDateTime arrivalBefore = before.getArrivalTs();
+        OffsetDateTime oldDeparture = before.getDepartureTs();
+
+        // Update only departure, computed from persisted arrival (robust)
+        before.setDepartureTs(arrivalBefore.plusHours(1));
+        scheduleRepository.saveAndFlush(before);
+        entityManager.clear();
+
+        ScheduleEntity after = scheduleRepository.findById(saved.getId()).orElseThrow();
+
+        // Arrival must not change
+        assertThat(after.getArrivalTs().toInstant()).isEqualTo(arrivalBefore.toInstant());
+
+        // Departure must change
+        assertThat(after.getDepartureTs()).isNotNull();
+        if (oldDeparture != null) {
+            assertThat(after.getDepartureTs().toInstant()).isNotEqualTo(oldDeparture.toInstant());
+        }
+
+        // Constraint invariant
+        assertThat(after.getDepartureTs().toInstant()).isAfterOrEqualTo(after.getArrivalTs().toInstant());
+
+        // Exactly +1h relative to arrival on timeline
+        assertThat(durationOnTimeline(after.getArrivalTs(), after.getDepartureTs()))
+                .isEqualTo(Duration.ofHours(1));
     }
 
     @Test
     void testDeleteSchedule_shouldRemove() {
-        ScheduleEntity saved = scheduleRepository.save(testSchedule);
+        ScheduleEntity saved = scheduleRepository.saveAndFlush(testSchedule);
         Long scheduleId = saved.getId();
-        entityManager.flush();
 
         scheduleRepository.delete(saved);
-        entityManager.flush();
+        scheduleRepository.flush();
 
-        Optional<ScheduleEntity> found = scheduleRepository.findById(scheduleId);
-        assertThat(found).isEmpty();
+        assertThat(scheduleRepository.findById(scheduleId)).isEmpty();
     }
 
-    @Test
-    void testSaveMultipleSchedulesForSameUser_shouldSucceed() {
-        scheduleRepository.save(testSchedule);
-
-        ScheduleEntity schedule2 = new ScheduleEntity();
-        schedule2.setUser(testUser);
-        schedule2.setArrivalTs(OffsetDateTime.now().minusDays(1));
-        schedule2.setDepartureTs(OffsetDateTime.now().minusDays(1).plusHours(8));
-
-        ScheduleEntity saved = scheduleRepository.save(schedule2);
-
-        assertThat(saved.getId()).isNotNull();
-    }
+    // ---------- Domain-ish behaviors ----------
 
     @Test
     void testClockIn_onlyArrivalTime() {
         ScheduleEntity clockIn = new ScheduleEntity();
         clockIn.setUser(testUser);
-        clockIn.setArrivalTs(OffsetDateTime.now());
+        clockIn.setArrivalTs(refNow);
 
-        ScheduleEntity saved = scheduleRepository.save(clockIn);
+        ScheduleEntity saved = scheduleRepository.saveAndFlush(clockIn);
 
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getArrivalTs()).isNotNull();
@@ -178,69 +237,73 @@ class ScheduleRepositoryTest {
     void testClockOut_updateDepartureTime() {
         ScheduleEntity clockIn = new ScheduleEntity();
         clockIn.setUser(testUser);
-        clockIn.setArrivalTs(OffsetDateTime.now().minusHours(4));
-        ScheduleEntity saved = scheduleRepository.save(clockIn);
-        entityManager.flush();
+        clockIn.setArrivalTs(refNow.minusHours(4));
+
+        ScheduleEntity saved = scheduleRepository.saveAndFlush(clockIn);
         entityManager.clear();
 
-        assertThat(saved.getDepartureTs()).isNull();
+        ScheduleEntity open = scheduleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(open.getDepartureTs()).isNull();
 
-        // Clock out
-        saved.setDepartureTs(OffsetDateTime.now());
-        ScheduleEntity updated = scheduleRepository.save(saved);
-        entityManager.flush();
+        // Close relative to persisted arrival
+        open.setDepartureTs(open.getArrivalTs().plusHours(4));
+        scheduleRepository.saveAndFlush(open);
+        entityManager.clear();
 
-        ScheduleEntity found = scheduleRepository.findById(updated.getId()).orElseThrow();
+        ScheduleEntity found = scheduleRepository.findById(saved.getId()).orElseThrow();
         assertThat(found.getDepartureTs()).isNotNull();
-        assertThat(found.getDepartureTs()).isAfter(found.getArrivalTs());
+        assertThat(found.getDepartureTs().toInstant()).isAfterOrEqualTo(found.getArrivalTs().toInstant());
+        assertThat(durationOnTimeline(found.getArrivalTs(), found.getDepartureTs()))
+                .isEqualTo(Duration.ofHours(4));
     }
 
     @Test
     void testSaveSchedule_withSameArrivalAndDeparture_shouldSucceed() {
-        OffsetDateTime sameTime = OffsetDateTime.now();
-        testSchedule.setArrivalTs(sameTime);
-        testSchedule.setDepartureTs(sameTime);
+        OffsetDateTime same = refNow;
+        testSchedule.setArrivalTs(same);
+        testSchedule.setDepartureTs(same);
 
-        ScheduleEntity saved = scheduleRepository.save(testSchedule);
+        ScheduleEntity saved = scheduleRepository.saveAndFlush(testSchedule);
+        entityManager.clear();
 
-        assertThat(saved.getArrivalTs()).isEqualTo(saved.getDepartureTs());
+        ScheduleEntity found = scheduleRepository.findById(saved.getId()).orElseThrow();
+        assertThat(durationOnTimeline(found.getArrivalTs(), found.getDepartureTs()))
+                .isEqualTo(Duration.ZERO);
     }
 
     @Test
+    void testSaveMultipleSchedulesForSameUser_shouldSucceed() {
+        scheduleRepository.saveAndFlush(testSchedule);
+
+        ScheduleEntity schedule2 = new ScheduleEntity();
+        schedule2.setUser(testUser);
+        schedule2.setArrivalTs(refNow.minusDays(1));
+        schedule2.setDepartureTs(refNow.minusDays(1).plusHours(8));
+
+        scheduleRepository.saveAndFlush(schedule2);
+
+        assertThat(scheduleRepository.findByUser(testUser)).hasSize(2);
+    }
+
+    // ---------- Derived queries ----------
+
+    @Test
     void testFindByUser_shouldReturnOnlyUserSchedules() {
-        scheduleRepository.save(testSchedule);
-
-        // Another user + schedule
-        AccountEntity account2 = new AccountEntity();
-        account2.setUsername("other");
-        account2.setPassword("pw");
-
-        UserEntity otherUser = new UserEntity();
-        otherUser.setFirstName("Other");
-        otherUser.setLastName("User");
-        otherUser.setEmail("other@example.com");
-        otherUser.setPhoneNumber("+000");
-        otherUser.setAccount(account2);
-        account2.setUser(otherUser);
-
-        otherUser = entityManager.persist(otherUser);
-        entityManager.flush();
-
-        persistSchedule(otherUser,
-                OffsetDateTime.parse("2026-01-01T10:00:00+01:00"),
-                null);
+        persistSchedule(testUser, t("2026-01-05T09:00:00+01:00"), null);
+        persistSchedule(otherUser, t("2026-01-05T10:00:00+01:00"), null);
 
         List<ScheduleEntity> result = scheduleRepository.findByUser(testUser);
 
+        assertThat(result).isNotEmpty();
         assertThat(result).allMatch(s -> s.getUser().getId().equals(testUser.getId()));
     }
 
     @Test
     void testFindByUserAndDepartureTsIsNull_shouldReturnOpenSchedule() {
-        OffsetDateTime t0 = OffsetDateTime.parse("2026-01-05T09:00:00+01:00");
+        OffsetDateTime base = t("2026-01-05T09:00:00+01:00");
 
-        persistSchedule(testUser, t0.minusHours(4), t0.minusHours(2)); // closed
-        ScheduleEntity open = persistSchedule(testUser, t0.minusHours(1), null); // open
+        persistSchedule(testUser, base.minusHours(4), base.minusHours(2));
+        ScheduleEntity open = persistSchedule(testUser, base.minusHours(1), null);
 
         Optional<ScheduleEntity> found = scheduleRepository.findByUserAndDepartureTsIsNull(testUser);
 
@@ -249,116 +312,151 @@ class ScheduleRepositoryTest {
     }
 
     @Test
+    void testFindByUserAndArrivalTsBetween_shouldBeInclusiveAndFilterByUser() {
+        OffsetDateTime from = t("2026-01-06T08:00:00+01:00");
+        OffsetDateTime to   = t("2026-01-06T12:00:00+01:00");
+
+        ScheduleEntity atFrom = persistSchedule(testUser, from, null);
+        ScheduleEntity middle = persistSchedule(testUser, t("2026-01-06T10:00:00+01:00"), null);
+        ScheduleEntity atTo   = persistSchedule(testUser, to, null);
+
+        persistSchedule(otherUser, t("2026-01-06T10:00:00+01:00"), null);
+
+        List<ScheduleEntity> result = scheduleRepository.findByUserAndArrivalTsBetween(testUser, from, to);
+
+        assertThat(result)
+                .extracting(ScheduleEntity::getId)
+                .containsExactlyInAnyOrder(atFrom.getId(), middle.getId(), atTo.getId());
+    }
+
+    @Test
+    void testFindByDepartureTsIsNotNullAndArrivalTsBetween_shouldReturnClosedOnly_inWindow() {
+        OffsetDateTime from = t("2026-01-06T08:00:00+01:00");
+        OffsetDateTime to   = t("2026-01-06T12:00:00+01:00");
+
+        ScheduleEntity closedInWindow = persistSchedule(
+                testUser,
+                t("2026-01-06T09:00:00+01:00"),
+                t("2026-01-06T11:00:00+01:00")
+        );
+
+        persistSchedule(testUser, t("2026-01-06T10:00:00+01:00"), null);
+        persistSchedule(testUser, t("2026-01-06T07:59:59+01:00"), t("2026-01-06T09:00:00+01:00"));
+
+        List<ScheduleEntity> result =
+                scheduleRepository.findByDepartureTsIsNotNullAndArrivalTsBetween(from, to);
+
+        assertThat(result).extracting(ScheduleEntity::getId).containsExactly(closedInWindow.getId());
+    }
+
+    @Test
+    void testFindByUserAndDepartureTsIsNotNullAndArrivalTsBetween_shouldFilterUserAndClosedOnly() {
+        OffsetDateTime from = t("2026-01-06T08:00:00+01:00");
+        OffsetDateTime to   = t("2026-01-06T12:00:00+01:00");
+
+        ScheduleEntity included = persistSchedule(
+                testUser,
+                t("2026-01-06T09:00:00+01:00"),
+                t("2026-01-06T10:00:00+01:00")
+        );
+
+        persistSchedule(otherUser, t("2026-01-06T09:30:00+01:00"), t("2026-01-06T10:30:00+01:00"));
+        persistSchedule(testUser, t("2026-01-06T11:00:00+01:00"), null);
+
+        List<ScheduleEntity> result =
+                scheduleRepository.findByUserAndDepartureTsIsNotNullAndArrivalTsBetween(testUser, from, to);
+
+        assertThat(result).extracting(ScheduleEntity::getId).containsExactly(included.getId());
+    }
+
+    @Test
+    void testFindByUserIdInAndDepartureTsIsNotNullAndArrivalTsBetween_shouldFilterIdsAndClosedOnly() {
+        OffsetDateTime from = t("2026-01-06T08:00:00+01:00");
+        OffsetDateTime to   = t("2026-01-06T12:00:00+01:00");
+
+        ScheduleEntity a1 = persistSchedule(testUser,  t("2026-01-06T09:00:00+01:00"), t("2026-01-06T10:00:00+01:00"));
+        ScheduleEntity b1 = persistSchedule(otherUser, t("2026-01-06T11:00:00+01:00"), t("2026-01-06T11:30:00+01:00"));
+
+        persistSchedule(testUser, t("2026-01-06T10:30:00+01:00"), null);
+        persistSchedule(otherUser, t("2026-01-06T12:00:01+01:00"), t("2026-01-06T13:00:00+01:00"));
+
+        Collection<Long> ids = List.of(testUser.getId(), otherUser.getId());
+
+        List<ScheduleEntity> result =
+                scheduleRepository.findByUserIdInAndDepartureTsIsNotNullAndArrivalTsBetween(ids, from, to);
+
+        assertThat(result)
+                .extracting(ScheduleEntity::getId)
+                .containsExactlyInAnyOrder(a1.getId(), b1.getId());
+    }
+
+    // ---------- Custom JPQL queries ----------
+
+    @Test
     void testFindCurrentSchedules_shouldReturnOnlyCurrent_andOrderByArrivalDesc() {
-        OffsetDateTime now = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+        OffsetDateTime now = t("2026-01-06T12:00:00+01:00");
 
-        // Not current (ended before now)
-        persistSchedule(testUser,
-                now.minusHours(10),
-                now.minusHours(8));
-
-        // Current (open)
-        ScheduleEntity currentOpen = persistSchedule(testUser,
-                now.minusHours(3),
-                null);
-
-        // Current (ends after now)
-        ScheduleEntity currentClosedLater = persistSchedule(testUser,
-                now.minusHours(5),
-                now.plusHours(1));
-
-        // Not current (starts after now -> arrival > now)
-        persistSchedule(testUser,
-                now.plusHours(1),
-                null);
+        persistSchedule(testUser, now.minusHours(10), now.minusHours(8));
+        ScheduleEntity currentOpen = persistSchedule(testUser, now.minusHours(3), null);
+        ScheduleEntity currentClosedLater = persistSchedule(testUser, now.minusHours(5), now.plusHours(1));
+        persistSchedule(testUser, now.plusHours(1), null);
 
         List<ScheduleEntity> result = scheduleRepository.findCurrentSchedules(testUser, now);
 
         assertThat(result)
                 .extracting(ScheduleEntity::getId)
-                .containsExactly(
-                        currentOpen.getId(),          // arrival -3h (newer) first
-                        currentClosedLater.getId()    // arrival -5h second
-                );
+                .containsExactly(currentOpen.getId(), currentClosedLater.getId());
     }
 
     @Test
     void testFindFrom_shouldIncludeOpenAndDeparturesAfterFrom_andOrderByArrivalAsc() {
-        OffsetDateTime base = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+        OffsetDateTime base = t("2026-01-06T12:00:00+01:00");
         OffsetDateTime from = base.minusHours(4);
 
-        // Excluded: departure before from
-        persistSchedule(testUser,
-                base.minusHours(10),
-                base.minusHours(6)); // departure < from
+        persistSchedule(testUser, base.minusHours(10), base.minusHours(6));
 
-        // Included: departure >= from
-        ScheduleEntity includedClosed = persistSchedule(testUser,
-                base.minusHours(8),
-                base.minusHours(2)); // departure >= from
-
-        // Included: open (departure null)
-        ScheduleEntity includedOpen = persistSchedule(testUser,
-                base.minusHours(1),
-                null);
+        ScheduleEntity includedClosed = persistSchedule(testUser, base.minusHours(8), base.minusHours(2));
+        ScheduleEntity includedOpen = persistSchedule(testUser, base.minusHours(1), null);
 
         List<ScheduleEntity> result = scheduleRepository.findFrom(testUser, from);
 
         assertThat(result)
                 .extracting(ScheduleEntity::getId)
-                .containsExactly(
-                        includedClosed.getId(), // arrival -8h first
-                        includedOpen.getId()    // arrival -1h second
-                );
+                .containsExactly(includedClosed.getId(), includedOpen.getId());
     }
 
     @Test
     void testFindUntil_shouldReturnArrivalsBeforeOrEqualToTo_andOrderByArrivalAsc() {
-        OffsetDateTime to = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+        OffsetDateTime to = t("2026-01-06T12:00:00+01:00");
 
         ScheduleEntity a = persistSchedule(testUser, to.minusHours(6), to.minusHours(5));
         ScheduleEntity b = persistSchedule(testUser, to.minusHours(2), null);
-
-        // Excluded (arrival after to)
-        persistSchedule(testUser, to.plusMinutes(1), null);
+        ScheduleEntity c = persistSchedule(testUser, to, null);
+        persistSchedule(testUser, to.plusSeconds(1), null);
 
         List<ScheduleEntity> result = scheduleRepository.findUntil(testUser, to);
 
         assertThat(result)
                 .extracting(ScheduleEntity::getId)
-                .containsExactly(a.getId(), b.getId());
+                .containsExactly(a.getId(), b.getId(), c.getId());
     }
 
     @Test
-    void testFindOverlapping_shouldReturnSchedulesOverlappingWindow_includingOpen() {
-        OffsetDateTime from = OffsetDateTime.parse("2026-01-06T08:00:00+01:00");
-        OffsetDateTime to = OffsetDateTime.parse("2026-01-06T12:00:00+01:00");
+    void testFindOverlapping_shouldReturnSchedulesOverlappingWindow_includingOpen_andOrderByArrivalAsc() {
+        OffsetDateTime from = t("2026-01-06T08:00:00+01:00");
+        OffsetDateTime to   = t("2026-01-06T12:00:00+01:00");
 
-        // Overlaps (open, arrived before to)
-        ScheduleEntity open = persistSchedule(testUser,
-                OffsetDateTime.parse("2026-01-06T10:00:00+01:00"),
-                null);
+        ScheduleEntity open = persistSchedule(testUser, t("2026-01-06T10:00:00+01:00"), null);
+        ScheduleEntity overlapClosed = persistSchedule(testUser, t("2026-01-06T07:00:00+01:00"), t("2026-01-06T09:00:00+01:00"));
+        ScheduleEntity boundaryDeparture = persistSchedule(testUser, t("2026-01-06T06:00:00+01:00"), from);
 
-        // Overlaps (departure after from)
-        ScheduleEntity overlapClosed = persistSchedule(testUser,
-                OffsetDateTime.parse("2026-01-06T07:00:00+01:00"),
-                OffsetDateTime.parse("2026-01-06T09:00:00+01:00"));
-
-        // Excluded: ends before from (departure < from)
-        persistSchedule(testUser,
-                OffsetDateTime.parse("2026-01-06T06:00:00+01:00"),
-                OffsetDateTime.parse("2026-01-06T07:59:59+01:00"));
-
-        // Excluded: starts after to (arrival > to)
-        persistSchedule(testUser,
-                OffsetDateTime.parse("2026-01-06T12:00:01+01:00"),
-                null);
+        persistSchedule(testUser, t("2026-01-06T06:00:00+01:00"), t("2026-01-06T07:59:59+01:00"));
+        persistSchedule(testUser, to.plusSeconds(1), null);
 
         List<ScheduleEntity> result = scheduleRepository.findOverlapping(testUser, from, to);
 
-        // Ordered by arrival asc per query
         assertThat(result)
                 .extracting(ScheduleEntity::getId)
-                .containsExactly(overlapClosed.getId(), open.getId());
+                .containsExactly(boundaryDeparture.getId(), overlapClosed.getId(), open.getId());
     }
 }

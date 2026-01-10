@@ -25,13 +25,15 @@ import java.util.Objects;
 )
 public class AccountEntity implements UserDetails {
 
+    public static final byte FLAG_ADMIN = 0x01;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotBlank
     @Size(max = 255)
-    @Column(name = "username", nullable = false, unique = true, columnDefinition = "VARCHAR")
+    @Column(name = "username", nullable = false)
     private String username;
 
     @NotBlank
@@ -39,7 +41,7 @@ public class AccountEntity implements UserDetails {
     @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "flags")
+    @Column(name = "flags", nullable = false)
     private byte flags = 0;
 
     @OneToOne(mappedBy = "account")
@@ -87,10 +89,10 @@ public class AccountEntity implements UserDetails {
     }
 
     public boolean hasFlag(byte flag) {
-        return (flags & flag) != 0;
+        return (flags & flag) == flag;
     }
 
     public boolean isAdmin() {
-        return this.hasFlag((byte) 0xFF);
+        return this.hasFlag(FLAG_ADMIN);
     }
 }
