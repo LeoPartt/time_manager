@@ -23,6 +23,18 @@ services:
       timeout: 5s
       retries: 5
 
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: time_manager_mailpit
+    restart: unless-stopped
+    networks:
+      - time-manager-network
+    healthcheck:
+      test: ["CMD", "sh", "-c", "wget --no-verbose --tries=1 --spider http://localhost:8025/api/v1/info || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   backend:
     container_name: time_manager_backend
     image: ghcr.io/leopartt/time_manager/backend:latest
@@ -30,6 +42,8 @@ services:
     pull_policy: always
     depends_on:
       db:
+        condition: service_healthy
+      mailpit:
         condition: service_healthy
     environment:
       BACKEND_PROFILE: prod
@@ -47,9 +61,10 @@ services:
       MAIL_USER: ${MAIL_USER:-}
       MAIL_PASSWORD: ${MAIL_PASSWORD:-}
       SERVER_PORT: ${SERVER_PORT:-8080}
-      ACTUATOR_PORT: ${ACTUATOR_PORT}
+      ACTUATOR_PORT: ${ACTUATOR_PORT:-8080}
     networks:
       - time-manager-network
+      - proxy
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:${ACTUATOR_PORT:-8080}/actuator/health"]
       interval: 30s
@@ -60,6 +75,8 @@ services:
 networks:
   time-manager-network:
     driver: bridge
+  proxy:
+    external: true
 
 volumes:
   postgres_data:
