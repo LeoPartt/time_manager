@@ -148,6 +148,7 @@ jobs:
         run: |
           cd frontend/time_manager
           flutter build apk --release \
+            --dart-define=env=prod \
             --build-name=${{ steps.version.outputs.version }} \
             --build-number=${{ github.run_number }}
 
