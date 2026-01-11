@@ -1,152 +1,163 @@
 import 'package:flutter/material.dart';
+import 'package:time_manager/core/constants/app_colors.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-//import 'app_colors.dart';
 
-import '../constants/app_colors.dart';
-
-/// Defines the light and dark themes for the Time Manager app.
-///
-/// Using a single file keeps both variants synchronized and easy to maintain.
 class AppTheme {
-  // ───────────────────────────────
-  //  Light Theme
-  // ───────────────────────────────
   static ThemeData get lightTheme => ThemeData(
-        brightness: Brightness.light,
-                useMaterial3: true,
+    useMaterial3: true,
+    brightness: Brightness.light,
+    
+    colorScheme: const ColorScheme.light(
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
+      surface: Colors.white,
+      onSurface: AppColors.textPrimary,
+      error: AppColors.error,
+      shadow: AppColors.shadow,
+    ),
+    
+    scaffoldBackgroundColor: AppColors.backgroundLight,
+    
+    // TextTheme amélioré
+    textTheme: _buildTextTheme(isDark: false),
+    
+    // InputDecoration améliorée
+    inputDecorationTheme: _buildInputTheme(isDark: false),
+    
+    // ElevatedButton amélioré
+    elevatedButtonTheme: _buildButtonTheme(),
+    
+    // Card theme
+    cardTheme: CardThemeData(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.r16),
+      ),
+      color: Colors.white,
+    ),
+  );
 
-        colorScheme: const ColorScheme.light(
-          primary: AppColors.primary,
-          secondary: AppColors.accent,
-          surface: Colors.white,
-          onSurface: Colors.black,
-          shadow: AppColors.shadow,
-
-          error: AppColors.error,
-        ),
-        scaffoldBackgroundColor: AppColors.backgroundLight,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        textTheme: _textTheme(isDark: false),
-        inputDecorationTheme: _inputTheme(isDark: false),
-        cardColor: AppColors.cardLight,
-        iconTheme: const IconThemeData(color: AppColors.primary),
-        elevatedButtonTheme:_buttonTheme(isDark: false),
-         
-      );
-
-  // ───────────────────────────────
-  //  Dark Theme
-  // ───────────────────────────────
   static ThemeData get darkTheme => ThemeData(
-        brightness: Brightness.dark,
-               useMaterial3: true,
+    useMaterial3: true,
+    brightness: Brightness.dark,
+    
+    colorScheme: const ColorScheme.dark(
+      primary: AppColors.primary,
+      secondary: AppColors.secondary,
+      surface: AppColors.cardDark,
+      onSurface: AppColors.textLight,
+      error: AppColors.error,
+      shadow: AppColors.shadowDark,
+    ),
+    
+    scaffoldBackgroundColor: AppColors.backgroundDark,
+    
+    textTheme: _buildTextTheme(isDark: true),
+    inputDecorationTheme: _buildInputTheme(isDark: true),
+    elevatedButtonTheme: _buildButtonTheme(),
+    
+    cardTheme: CardThemeData(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(AppSizes.r16),
+      ),
+      color: AppColors.cardDark,
+    ),
+  );
 
-        colorScheme: const ColorScheme.dark(
-          primary: AppColors.primary,
-          secondary: AppColors.secondary,
-          surface: AppColors.cardDark,
-                    onSurface: Colors.white,
-shadow:AppColors.shadowDark ,
-          error: AppColors.error,
-        ),
-       
-        scaffoldBackgroundColor: AppColors.backgroundDark,
-        appBarTheme: const AppBarTheme(
-          backgroundColor: AppColors.secondary,
-          foregroundColor: Colors.white,
-          elevation: 0,
-        ),
-        textTheme: _textTheme(isDark: true),
-        inputDecorationTheme: _inputTheme(isDark: true),
-        cardColor: AppColors.cardDark,
-        iconTheme: const IconThemeData(color: AppColors.accent),
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-          ),
-        ),
-      );
+  static TextTheme _buildTextTheme({required bool isDark}) => TextTheme(
+    displayLarge: TextStyle(
+      color: isDark ? AppColors.textLight : AppColors.textPrimary,
+      fontWeight: FontWeight.bold,
+      fontSize: AppSizes.textDisplay,
+      letterSpacing: -0.5,
+    ),
+    headlineMedium: TextStyle(
+      color: isDark ? AppColors.textLight : AppColors.textPrimary,
+      fontWeight: FontWeight.w600,
+      fontSize: AppSizes.textXxl,
+    ),
+    bodyLarge: TextStyle(
+      color: isDark ? AppColors.textLight : AppColors.textPrimary,
+      fontSize: AppSizes.textLg,
+      height: 1.5,
+    ),
+    bodyMedium: TextStyle(
+      color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
+      fontSize: AppSizes.textMd,
+      height: 1.4,
+    ),
+  );
 
-  // ───────────────────────────────
-  //  Text Theme Helper
-  // ───────────────────────────────
-  static TextTheme _textTheme({required bool isDark}) => TextTheme(
-        displayLarge: TextStyle(
-          color: isDark ? AppColors.textLight : AppColors.textPrimary,
-          fontWeight: FontWeight.bold,
-          fontSize: AppSizes.textDisplay,
-        ),
-        headlineMedium: TextStyle(
-          color: isDark ? AppColors.textLight : AppColors.textPrimary,
-          fontWeight: FontWeight.w600,
-          fontSize: AppSizes.textXxl,
-        ),
-        bodyLarge: TextStyle(
-          color: isDark ? AppColors.textLight : AppColors.textPrimary,
-          fontSize: AppSizes.textLg,
-        ),
-        bodyMedium: TextStyle(
-          color: isDark ? AppColors.textSecondary : AppColors.textSecondary,
-          fontSize: AppSizes.textMd,
-        ),
-      );
-
-  // ───────────────────────────────
-  //  Input Theme Helper
-  // ───────────────────────────────
-  static InputDecorationTheme _inputTheme({required bool isDark}) =>
+  static InputDecorationTheme _buildInputTheme({required bool isDark}) =>
       InputDecorationTheme(
         filled: true,
-        fillColor:
-            isDark ? AppColors.cardDark : AppColors.backgroundLight,
-        contentPadding:
-            const EdgeInsets.symmetric(vertical: AppSizes.p12, horizontal: AppSizes.p16),
+        fillColor: isDark 
+            ? AppColors.cardDark.withValues(alpha:0.5)
+            : AppColors.backgroundLight,
+        
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: AppSizes.p16,
+          horizontal: AppSizes.p16,
+        ),
+        
         border: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: isDark ? AppColors.primary : AppColors.accent,
-          ),
           borderRadius: BorderRadius.circular(AppSizes.r12),
+          borderSide: BorderSide(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
+          ),
         ),
+        
         enabledBorder: OutlineInputBorder(
-          borderSide: BorderSide(
-            color: isDark ? AppColors.accent : AppColors.borderLight,
-          ),
           borderRadius: BorderRadius.circular(AppSizes.r12),
-        ),
-        focusedBorder: OutlineInputBorder(
-          borderSide: const BorderSide(color: AppColors.primary, width: 2),
-          borderRadius: BorderRadius.circular(AppSizes.r12
+          borderSide: BorderSide(
+            color: isDark ? AppColors.borderDark : AppColors.borderLight,
           ),
         ),
-        hintStyle: TextStyle(
-          color: isDark ? AppColors.accent : AppColors.textSecondary,
+        
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.r12),
+          borderSide: const BorderSide(
+            color: AppColors.primary,
+            width: 2,
+          ),
+        ),
+        
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.r12),
+          borderSide: const BorderSide(
+            color: AppColors.error,
+          ),
+        ),
+        
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSizes.r12),
+          borderSide: const BorderSide(
+            color: AppColors.error,
+            width: 2,
+          ),
         ),
       );
 
-      // ───────────────────────────────
-  //  BUTTON THEME
-  // ───────────────────────────────
-  static ElevatedButtonThemeData _buttonTheme({required bool isDark}) =>
-     ElevatedButtonThemeData(
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primary,
-            foregroundColor: Colors.white,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(AppSizes.r8),
-            ),
-            padding: const EdgeInsets.symmetric(vertical: AppSizes.p12, horizontal: AppSizes.p24),
-            
+  static ElevatedButtonThemeData _buildButtonTheme() =>
+      ElevatedButtonThemeData(
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: Colors.white,
+          elevation: 2,
+          shadowColor: AppColors.primary.withValues(alpha:0.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(AppSizes.r12),
           ),
-          
-        );
+          padding: const EdgeInsets.symmetric(
+            vertical: AppSizes.p16,
+            horizontal: AppSizes.p24,
+          ),
+          textStyle: const TextStyle(
+            fontSize: AppSizes.textLg,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.5,
+          ),
+        ),
+      );
 }
-

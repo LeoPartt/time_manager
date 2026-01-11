@@ -1,21 +1,25 @@
-// 📁 lib/presentation/widgets/charts/yearly_work_chart.dart
-
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 class YearlyWorkChart extends StatelessWidget {
-  final double totalHours;
+  final WorkSeries workSeries;
   
   const YearlyWorkChart({
     super.key,
-    required this.totalHours,
+    required this.workSeries,
   });
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    final yearData = _generateYearData(totalHours);
+    final tr = AppLocalizations.of(context)!;
+    // ✅ Convertir les WorkPoints en FlSpots
+    final yearData = workSeries.series.asMap().entries.map((entry) {
+      return FlSpot(entry.key.toDouble(), entry.value.value);
+    }).toList();
 
     return Container(
       height: 300,
@@ -25,7 +29,7 @@ class YearlyWorkChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.r16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.withValues(alpha:0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -41,7 +45,7 @@ class YearlyWorkChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Travail annuel',
+                    tr.workYear,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -50,7 +54,7 @@ class YearlyWorkChart extends StatelessWidget {
                   ),
                   SizedBox(height: AppSizes.p4),
                   Text(
-                    '12 derniers mois',
+                    '${ tr.avgPerDay}: ${workSeries.average.toStringAsFixed(1)}h/${tr.month}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -68,7 +72,7 @@ class YearlyWorkChart extends StatelessWidget {
                   borderRadius: BorderRadius.circular(AppSizes.r8),
                 ),
                 child: Text(
-                  '${totalHours.toStringAsFixed(0)}h',
+                  '${_calculateTotal().toStringAsFixed(0)}h',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -92,15 +96,19 @@ class YearlyWorkChart extends StatelessWidget {
                     tooltipBorderRadius: BorderRadius.all(Radius.circular(8)),
                     getTooltipItems: (spots) {
                       return spots.map((spot) {
-                        final month = _getMonthName(spot.x.toInt());
-                        return LineTooltipItem(
-                          '$month\n${spot.y.toStringAsFixed(1)}h',
-                          TextStyle(
-                            color: colorScheme.onInverseSurface,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
-                          ),
-                        );
+                        final index = spot.x.toInt();
+                        if (index >= 0 && index < workSeries.series.length) {
+                          final label = workSeries.series[index].label;
+                          return LineTooltipItem(
+                            '$label\n${spot.y.toStringAsFixed(1)}h',
+                            TextStyle(
+                              color: colorScheme.onInverseSurface,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12,
+                            ),
+                          );
+                        }
+                        return null;
                       }).toList();
                     },
                   ),
@@ -110,7 +118,7 @@ class YearlyWorkChart extends StatelessWidget {
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: Colors.grey.withOpacity(0.15),
+                      color: Colors.grey.withValues(alpha:0.15),
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     );
@@ -122,13 +130,16 @@ class YearlyWorkChart extends StatelessWidget {
                       showTitles: true,
                       interval: 1,
                       getTitlesWidget: (value, meta) {
-                        if (value < 0 || value > 11) return const SizedBox();
-                        // Affiche un mois sur deux pour éviter le chevauchement
-                        if (value.toInt() % 2 != 0) return const SizedBox();
+                        final index = value.toInt();
+                        if (index < 0 || index >= workSeries.series.length) {
+                          return const SizedBox();
+                        }
+                        // Affiche un label sur deux pour éviter le chevauchement
+                        if (index % 2 != 0) return const SizedBox();
                         return Padding(
                           padding: const EdgeInsets.only(top: 8.0),
                           child: Text(
-                            _getMonthShortName(value.toInt()),
+                            workSeries.series[index].label,
                             style: TextStyle(
                               fontSize: 10,
                               fontWeight: FontWeight.w600,
@@ -184,9 +195,9 @@ class YearlyWorkChart extends StatelessWidget {
                       show: true,
                       gradient: LinearGradient(
                         colors: [
-                          colorScheme.tertiary.withOpacity(0.3),
-                          colorScheme.tertiary.withOpacity(0.1),
-                          colorScheme.tertiary.withOpacity(0.0),
+                          colorScheme.tertiary.withValues(alpha:0.3),
+                          colorScheme.tertiary.withValues(alpha:0.1),
+                          colorScheme.tertiary.withValues(alpha:0.0),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,
@@ -211,8 +222,11 @@ class YearlyWorkChart extends StatelessWidget {
     List<FlSpot> data,
     ColorScheme colorScheme,
   ) {
-    final firstHalf = data.sublist(0, 6).map((e) => e.y).reduce((a, b) => a + b) / 6;
-    final secondHalf = data.sublist(6).map((e) => e.y).reduce((a, b) => a + b) / 6;
+    if (data.length < 6) return const SizedBox();
+final tr = AppLocalizations.of(context)!;
+    final midPoint = data.length ~/ 2;
+    final firstHalf = data.sublist(0, midPoint).map((e) => e.y).reduce((a, b) => a + b) / midPoint;
+    final secondHalf = data.sublist(midPoint).map((e) => e.y).reduce((a, b) => a + b) / (data.length - midPoint);
     final trend = secondHalf - firstHalf;
     final isPositive = trend > 0;
 
@@ -222,7 +236,7 @@ class YearlyWorkChart extends StatelessWidget {
         vertical: AppSizes.p8,
       ),
       decoration: BoxDecoration(
-        color: (isPositive ? Colors.green : Colors.orange).withOpacity(0.1),
+        color: (isPositive ? Colors.green : Colors.orange).withValues(alpha:0.1),
         borderRadius: BorderRadius.circular(AppSizes.r8),
       ),
       child: Row(
@@ -236,8 +250,8 @@ class YearlyWorkChart extends StatelessWidget {
           SizedBox(width: AppSizes.p4),
           Text(
             isPositive
-                ? 'En hausse de ${trend.toStringAsFixed(1)}h/mois'
-                : 'En baisse de ${(-trend).toStringAsFixed(1)}h/mois',
+      ? '${tr.increasedBy} ${trend.toStringAsFixed(1)}h/${tr.month}'
+      : '${tr.decreasedBy} ${(-trend).toStringAsFixed(1)}h/${tr.month}',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
@@ -249,50 +263,13 @@ class YearlyWorkChart extends StatelessWidget {
     );
   }
 
-  List<FlSpot> _generateYearData(double totalHours) {
-    // TODO: Remplacer par vraies données de l'API
-    final avgPerMonth = totalHours / 12;
-    
-    return List.generate(12, (index) {
-      // Simulation avec variations saisonnières réalistes
-      // Moins d'heures en été (juillet-août), plus au printemps et automne
-      double seasonalFactor;
-      if (index >= 6 && index <= 7) {
-        // Juillet-Août : vacances
-        seasonalFactor = 0.7;
-      } else if (index == 11 || index == 0) {
-        // Décembre-Janvier : fin/début d'année
-        seasonalFactor = 0.85;
-      } else {
-        // Reste de l'année
-        seasonalFactor = 1.0 + (0.1 * ((index % 3) - 1));
-      }
-      
-      return FlSpot(
-        index.toDouble(),
-        avgPerMonth * seasonalFactor,
-      );
-    });
+  double _calculateTotal() {
+    return workSeries.series.fold(0.0, (sum, point) => sum + point.value);
   }
 
   double _getMaxY(List<FlSpot> data) {
+    if (data.isEmpty) return 200;
     final max = data.map((e) => e.y).reduce((a, b) => a > b ? a : b);
     return (max * 1.3).ceilToDouble();
-  }
-
-  String _getMonthName(int month) {
-    const months = [
-      'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
-      'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
-    ];
-    return months[month];
-  }
-
-  String _getMonthShortName(int month) {
-    const months = [
-      'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jun',
-      'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc'
-    ];
-    return months[month];
   }
 }

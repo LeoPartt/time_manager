@@ -1,4 +1,4 @@
-import 'package:time_manager/domain/entities/user.dart';
+import 'package:time_manager/domain/entities/user/user.dart';
 import 'package:time_manager/domain/repositories/user_repository.dart';
 
 class GetUsers {

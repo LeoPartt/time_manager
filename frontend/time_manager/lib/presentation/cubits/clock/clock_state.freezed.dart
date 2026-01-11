@@ -314,7 +314,7 @@ $Res call({
 });
 
 
-
+$ClockCopyWith<$Res> get clock;
 
 }
 /// @nodoc
@@ -334,7 +334,16 @@ as Clock,
   ));
 }
 
-
+/// Create a copy of ClockState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClockCopyWith<$Res> get clock {
+  
+  return $ClockCopyWith<$Res>(_self.clock, (value) {
+    return _then(_self.copyWith(clock: value));
+  });
+}
 }
 
 /// @nodoc
@@ -380,7 +389,7 @@ $Res call({
 });
 
 
-
+$ClockCopyWith<$Res> get clock;
 
 }
 /// @nodoc
@@ -400,7 +409,16 @@ as Clock,
   ));
 }
 
-
+/// Create a copy of ClockState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClockCopyWith<$Res> get clock {
+  
+  return $ClockCopyWith<$Res>(_self.clock, (value) {
+    return _then(_self.copyWith(clock: value));
+  });
+}
 }
 
 /// @nodoc
@@ -446,7 +464,7 @@ $Res call({
 });
 
 
-
+$ClockCopyWith<$Res> get clock;
 
 }
 /// @nodoc
@@ -466,7 +484,16 @@ as Clock,
   ));
 }
 
-
+/// Create a copy of ClockState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClockCopyWith<$Res> get clock {
+  
+  return $ClockCopyWith<$Res>(_self.clock, (value) {
+    return _then(_self.copyWith(clock: value));
+  });
+}
 }
 
 /// @nodoc
@@ -512,7 +539,7 @@ $Res call({
 });
 
 
-
+$ClockCopyWith<$Res> get clock;
 
 }
 /// @nodoc
@@ -532,7 +559,16 @@ as Clock,
   ));
 }
 
-
+/// Create a copy of ClockState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$ClockCopyWith<$Res> get clock {
+  
+  return $ClockCopyWith<$Res>(_self.clock, (value) {
+    return _then(_self.copyWith(clock: value));
+  });
+}
 }
 
 /// @nodoc

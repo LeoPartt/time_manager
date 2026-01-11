@@ -2,7 +2,7 @@
 
 
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:time_manager/domain/entities/schedule.dart';
+import 'package:time_manager/domain/entities/schedule/schedule.dart';
 
 
 part 'clock_state.freezed.dart';

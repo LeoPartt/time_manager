@@ -41,7 +41,7 @@ public class UserService extends CRUDService<
         this.userAuthorization = userAuthorization;
     }
 
-    @Transactional(readOnly = true)
+  @Transactional(readOnly = true)
     public UserModels.UserResponse getCurrentUser() {
         UserEntity currentUser = userAuthorization.getCurrentUser();
         UserEntity user = findEntityOrThrow(currentUser.getId());
