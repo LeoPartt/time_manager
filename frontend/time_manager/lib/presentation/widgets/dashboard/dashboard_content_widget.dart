@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/attendance_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/monthly_work_chart.dart';
 import 'package:time_manager/presentation/screens/dashboard/widgets/charts/weekly_work_chart.dart';
@@ -42,7 +43,7 @@ class DashboardContentWidget extends StatelessWidget {
         AttendanceChart(
           punctuality: report.punctuality,
           attendance: report.attendance,
-          period: _getPeriodLabel(),
+          period: _getPeriodLabel(context),
         ),
 
         SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
@@ -69,14 +70,15 @@ class DashboardContentWidget extends StatelessWidget {
     }
   }
 
-  String _getPeriodLabel() {
+  String _getPeriodLabel(context) {
+    final tr = AppLocalizations.of(context)!;
     switch (selectedPeriod) {
       case ReportPeriod.week:
-        return 'Hebdomadaire';
+        return tr.weekly;
       case ReportPeriod.month:
-        return 'Mensuel';
+        return tr.monthly;
       case ReportPeriod.year:
-        return 'Annuel';
+        return tr.yearly;
     }
   }
 }

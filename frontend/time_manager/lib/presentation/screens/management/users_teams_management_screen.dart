@@ -619,7 +619,7 @@ class _TeamsTab extends StatelessWidget {
                 ],
               ),
             ),
-            loaded: (_) => const SizedBox(),
+            loaded: (_,_) => const SizedBox(),
             loadedTeams: (teams) => _buildTeamsList(context, teams, colorScheme, tr),
             error: (msg) => _buildError(context, msg, colorScheme, tr),
           );

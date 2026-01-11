@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/domain/entities/schedule/daily_work.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/widgets/planning_calendar/simplified_view_widget.dart';
 import 'package:time_manager/presentation/widgets/planning_calendar/detailed_view_widget.dart';
 
@@ -30,7 +31,7 @@ class DayDetailsWidget extends StatelessWidget {
     }
 
     if (dailyWork == null) {
-      return _buildNoDataState();
+      return _buildNoDataState(context);
     }
 
     return _buildDetailsCard(context);
@@ -44,7 +45,7 @@ class DayDetailsWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.r16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withValues(alpha:0.1),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -54,7 +55,9 @@ class DayDetailsWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildNoDataState() {
+  Widget _buildNoDataState(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    
     return Container(
       padding: EdgeInsets.all(AppSizes.p20),
       decoration: BoxDecoration(
@@ -66,7 +69,7 @@ class DayDetailsWidget extends StatelessWidget {
           Icon(Icons.info_outline, color: Colors.grey[600]),
           SizedBox(width: AppSizes.p12),
           Text(
-            'Aucune donnée pour ce jour',
+            tr.noDataForThisDay,
             style: TextStyle(color: Colors.grey[600]),
           ),
         ],
@@ -82,7 +85,7 @@ class DayDetailsWidget extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.r16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withValues(alpha:0.1),
+            color: colorScheme.shadow.withValues(alpha: 0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -102,6 +105,8 @@ class DayDetailsWidget extends StatelessWidget {
   }
 
   Widget _buildHeader(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
@@ -110,7 +115,7 @@ class DayDetailsWidget extends StatelessWidget {
             Icon(Icons.event, color: colorScheme.primary),
             SizedBox(width: AppSizes.p8),
             Text(
-              _formatDate(day),
+              _formatDate(day, context),
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -126,29 +131,43 @@ class DayDetailsWidget extends StatelessWidget {
               color: colorScheme.primary,
             ),
             onPressed: onToggleDetailedView,
-            tooltip: showDetailedPeriods ? 'Vue simplifiée' : 'Vue détaillée',
+            tooltip: showDetailedPeriods ? tr.simplifiedView : tr.detailedView,
           ),
       ],
     );
   }
 
   Widget _buildPlannedSchedule(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    
     if (dailyWork!.planned != null) {
       return _buildScheduleRow(
         context,
-        '📋 Planifié',
+        '📋 ${tr.planned}',
         '${dailyWork!.planned!.startTime} - ${dailyWork!.planned!.endTime}',
         '${dailyWork!.planned!.totalHours.toStringAsFixed(1)}h',
         colorScheme.primary,
       );
     }
 
-    return _buildNoDataRow(context, '📋 Planifié', 'Aucun planning', Colors.grey);
+    return _buildNoDataRow(
+      context,
+      '📋 ${tr.planned}',
+      tr.noPlanning,
+      Colors.grey,
+    );
   }
 
   Widget _buildActualWork(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    
     if (dailyWork!.workPeriods.isEmpty) {
-      return _buildNoDataRow(context, '✅ Réel', 'Pas de pointage', Colors.grey);
+      return _buildNoDataRow(
+        context,
+        '✅ ${tr.actual}',
+        tr.noClocking,
+        Colors.grey,
+      );
     }
 
     if (showDetailedPeriods) {
@@ -175,9 +194,9 @@ class DayDetailsWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSizes.p12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha:0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppSizes.r12),
-        border: Border.all(color: color.withValues(alpha:0.3)),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
       ),
       child: Row(
         children: [
@@ -246,7 +265,7 @@ class DayDetailsWidget extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSizes.p12),
       decoration: BoxDecoration(
-        color: color.withValues(alpha:0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(AppSizes.r12),
       ),
       child: Row(
@@ -277,29 +296,32 @@ class DayDetailsWidget extends StatelessWidget {
     );
   }
 
-  String _formatDate(DateTime date) {
-    const days = [
-      'Lundi',
-      'Mardi',
-      'Mercredi',
-      'Jeudi',
-      'Vendredi',
-      'Samedi',
-      'Dimanche',
+  String _formatDate(DateTime date, BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
+    
+    final days = [
+      tr.monday,
+      tr.tuesday,
+      tr.wednesday,
+      tr.thursday,
+      tr.friday,
+      tr.saturday,
+      tr.sunday,
     ];
-    const months = [
-      'Janvier',
-      'Février',
-      'Mars',
-      'Avril',
-      'Mai',
-      'Juin',
-      'Juillet',
-      'Août',
-      'Septembre',
-      'Octobre',
-      'Novembre',
-      'Décembre',
+    
+    final months = [
+      tr.january,
+      tr.february,
+      tr.march,
+      tr.april,
+      tr.may,
+      tr.june,
+      tr.july,
+      tr.august,
+      tr.september,
+      tr.october,
+      tr.november,
+      tr.december,
     ];
 
     final dayName = days[date.weekday - 1];

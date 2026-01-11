@@ -15,16 +15,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get login => 'Connexion';
 
   @override
-  String get logout => 'Déconnexion';
+  String get clocking => 'Pointage';
 
   @override
-  String get myProfile => 'Mon profil';
+  String get refresh => 'Actualiser';
 
   @override
-  String get editProfile => 'Modifier le profil';
+  String get noPlanning => 'Pas de planning';
 
   @override
-  String get administrator => 'Administrateur';
+  String get variance => 'Écart';
+
+  @override
+  String get clockedIn => 'Pointé';
+
+  @override
+  String get management => 'Gestion';
 
   @override
   String get planningManagement => 'Gestion du planning';
@@ -54,9 +60,6 @@ class AppLocalizationsFr extends AppLocalizations {
   String get selectUserSubtitle => 'Utilisez la barre de recherche pour trouver un utilisateur';
 
   @override
-  String get search => 'Rechercher';
-
-  @override
   String get noPlanningConfigured => 'Aucun planning configuré';
 
   @override
@@ -73,6 +76,57 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get deleteTeam => 'Supprimer l\'équipe';
+
+  @override
+  String get confirmDelete => 'Confirmer la suppression';
+
+  @override
+  String get confirmDeletePlanning => 'Êtes-vous sûr de vouloir supprimer le planning du';
+
+  @override
+  String get confirmDeleteTeam => 'Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.';
+
+  @override
+  String get confirmRemoveMember => 'Êtes-vous sûr de vouloir retirer';
+
+  @override
+  String get planningDeletedSuccess => 'Planning supprimé avec succès';
+
+  @override
+  String get teamCreatedSuccess => 'Équipe créée avec succès';
+
+  @override
+  String get teamDeletedSuccess => 'Équipe supprimée avec succès';
+
+  @override
+  String get memberAddedSuccess => 'Membre ajouté avec succès';
+
+  @override
+  String get memberRemovedSuccess => 'Membre retiré avec succès';
+
+  @override
+  String get createdSuccessfully => 'créé avec succès';
+
+  @override
+  String get createNewUserAccount => 'Créer un nouveau compte utilisateur';
+
+  @override
+  String get createNewTeam => 'Créer une nouvelle équipe';
+
+  @override
+  String get configurePlanningsForUsers => 'Configurer les plannings des utilisateurs';
+
+  @override
+  String get managePlanning => 'Gérer le planning';
+
+  @override
+  String get userSelected => 'Utilisateur sélectionné';
+
+  @override
+  String get noUsersFound => 'Aucun utilisateur trouvé';
+
+  @override
+  String get friday => 'Vendredi';
 
   @override
   String get editPlanning => 'Modifier le planning';
@@ -96,6 +150,75 @@ class AppLocalizationsFr extends AppLocalizations {
   String get weekDay => 'Jour de la semaine';
 
   @override
+  String get workDay => 'Travail Hebdomadaire';
+
+  @override
+  String get workYear => 'Travail Annuel';
+
+  @override
+  String get equipDashboard => 'Dashboard Équipe';
+
+  @override
+  String get noDataForThisDay => 'Aucune donnée pour ce jour';
+
+  @override
+  String get simplifiedView => 'Vue simplifiée';
+
+  @override
+  String get detailedView => 'Vue détaillée';
+
+  @override
+  String get planned => 'Planifié';
+
+  @override
+  String get actual => 'Réel';
+
+  @override
+  String get noClocking => 'Pas de pointage';
+
+  @override
+  String get monday => 'Lundi';
+
+  @override
+  String get tuesday => 'Mardi';
+
+  @override
+  String get saturday => 'Samedi';
+
+  @override
+  String get sunday => 'Dimanche';
+
+  @override
+  String get noTeamsAvailable => 'Aucune équipe disponible';
+
+  @override
+  String get selectTeam => 'Sélectionner une équipe';
+
+  @override
+  String get selectATeam => 'Sélectionnez une équipe';
+
+  @override
+  String get selectTeamToViewStatistics => 'Choisissez une équipe pour voir ses statistiques';
+
+  @override
+  String get loadingTeamDashboard => 'Chargement du dashboard de l\'équipe...';
+
+  @override
+  String get avgPerMonth => 'Moyenne';
+
+  @override
+  String get increasedBy => 'En hausse de';
+
+  @override
+  String get decreasedBy => 'En baisse de';
+
+  @override
+  String get workMonth => 'Travail mensuel';
+
+  @override
+  String get average => 'Moyenne';
+
+  @override
   String get duration => 'Durée';
 
   @override
@@ -115,30 +238,6 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get edit => 'Modifier';
-
-  @override
-  String get daysConfigured => 'jours configurés';
-
-  @override
-  String get outOf5WorkingDays => 'sur 5 jours ouvrés';
-
-  @override
-  String get changeUser => 'Changer d\'utilisateur';
-
-  @override
-  String get searchByNameOrEmail => 'Rechercher par nom ou email...';
-
-  @override
-  String get confirmDelete => 'Confirmer la suppression';
-
-  @override
-  String get confirmDeletePlanning => 'Êtes-vous sûr de vouloir supprimer le planning du';
-
-  @override
-  String get confirmDeleteTeam => 'Êtes-vous sûr de vouloir supprimer cette équipe ? Cette action est irréversible.';
-
-  @override
-  String get confirmRemoveMember => 'Êtes-vous sûr de vouloir retirer';
 
   @override
   String get users => 'Utilisateurs';
@@ -180,6 +279,27 @@ class AppLocalizationsFr extends AppLocalizations {
   String get member => 'membre';
 
   @override
+  String get globalDashboard => 'Tableau de bord global';
+
+  @override
+  String get companyOverview => 'Vue d\'ensemble de l\'entreprise';
+
+  @override
+  String get globalStatisticsAllEmployees => 'Statistiques globales de tous les employés';
+
+  @override
+  String get loadingGlobalDashboard => 'Chargement du tableau de bord global...';
+
+  @override
+  String get daysConfigured => 'jours configurés';
+
+  @override
+  String get outOf5WorkingDays => 'sur 5 jours ouvrés';
+
+  @override
+  String get changeUser => 'Changer d\'utilisateur';
+
+  @override
   String get editUser => 'Modifier l\'utilisateur';
 
   @override
@@ -210,67 +330,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get irreversibleAction => 'Annuler l\'action';
 
   @override
-  String get globalDashboard => 'Tableau de bord global';
-
-  @override
-  String get companyOverview => 'Vue d\'ensemble de l\'entreprise';
-
-  @override
-  String get globalStatisticsAllEmployees => 'Statistiques globales de tous les employés';
-
-  @override
-  String get loadingGlobalDashboard => 'Chargement du tableau de bord global...';
-
-  @override
-  String get planningDeletedSuccess => 'Planning supprimé avec succès';
-
-  @override
-  String get teamCreatedSuccess => 'Équipe créée avec succès';
-
-  @override
-  String get teamDeletedSuccess => 'Équipe supprimée avec succès';
-
-  @override
-  String get memberAddedSuccess => 'Membre ajouté avec succès';
-
-  @override
-  String get memberRemovedSuccess => 'Membre retiré avec succès';
-
-  @override
-  String get createdSuccessfully => 'créé avec succès';
-
-  @override
-  String get createNewUserAccount => 'Créer un nouveau compte utilisateur';
-
-  @override
-  String get createNewTeam => 'Créer une nouvelle équipe';
-
-  @override
-  String get configurePlanningsForUsers => 'Configurer les plannings des utilisateurs';
-
-  @override
-  String get managePlanning => 'Gérer le planning';
-
-  @override
-  String get userSelected => 'Utilisateur sélectionné';
-
-  @override
-  String get noUsersFound => 'Aucun utilisateur trouvé';
-
-  @override
-  String get monday => 'Lundi';
-
-  @override
-  String get tuesday => 'Mardi';
-
-  @override
-  String get wednesday => 'Mercredi';
-
-  @override
-  String get thursday => 'Jeudi';
-
-  @override
-  String get friday => 'Vendredi';
+  String get searchByNameOrEmail => 'Rechercher par nom ou email...';
 
   @override
   String get add => 'Ajouter';
@@ -279,94 +339,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get remove => 'Retirer';
 
   @override
-  String get manager => 'Manager';
-
-  @override
-  String get notProvided => 'Non renseigné';
-
-  @override
-  String get preferences => 'Préférences';
-
-  @override
-  String get notifications => 'Notifications';
-
-  @override
-  String get logoutConfirmation => 'Êtes-vous sûr de vouloir vous déconnecter ?';
-
-  @override
-  String get logoutSuccessful => 'Déconnexion réussie';
-
-  @override
-  String get profileUpdated => 'Profil mis à jour';
-
-  @override
-  String get retry => 'Réessayer';
-
-  @override
-  String get save => 'Enregistrer';
-
-  @override
-  String get discard => 'Abandonner';
-
-  @override
-  String get unsavedChanges => 'Modifications non enregistrées';
-
-  @override
-  String get unsavedChangesMessage => 'Voulez-vous abandonner vos modifications ?';
-
-  @override
-  String get unsavedChangesHint => 'Vous avez des modifications non enregistrées';
-
-  @override
-  String get username => 'Nom d\'utilisateur';
-
-  @override
-  String get firstName => 'Prénom';
-
-  @override
-  String get appearance => 'Apparence';
-
-  @override
-  String get pushNotifications => 'Notifications push';
-
-  @override
-  String get pushNotificationsDesc => 'Recevoir des notifications sur votre appareil';
-
-  @override
-  String get emailNotifications => 'Notifications email';
-
-  @override
-  String get emailNotificationsDesc => 'Recevoir des emails pour les événements importants';
-
-  @override
-  String get about => 'À propos';
-
-  @override
-  String get clocking => 'Pointage';
-
-  @override
-  String get refresh => 'Actualiser';
-
-  @override
-  String get noPlanning => 'Pas de planning';
-
-  @override
-  String get variance => 'Écart';
-
-  @override
-  String get clockedIn => 'Pointé';
-
-  @override
-  String get planning => 'Planning';
+  String get search => 'Rechercher';
 
   @override
   String get myPlanning => 'Mon planning';
-
-  @override
-  String get team => 'Équipe';
-
-  @override
-  String get loadingProfile => 'Chargement de votre profil...';
 
   @override
   String get initializing => 'Initialisation...';
@@ -447,22 +423,13 @@ class AppLocalizationsFr extends AppLocalizations {
   String get confirm => 'Confirmer';
 
   @override
-  String get appVersion => 'Version de l\'application';
+  String get loginSuccessful => 'Connexion réussie';
 
   @override
-  String get buildNumber => 'Numéro de build';
-
-  @override
-  String get languageChanged => 'Langue modifiée avec succès';
-
-  @override
-  String get lastName => 'Nom';
+  String get logout => 'Déconnexion';
 
   @override
   String get settings => 'PARAMÈTRES';
-
-  @override
-  String get loginSuccessful => 'Connexion réussie';
 
   @override
   String get darkMode => 'Mode sombre';
@@ -486,7 +453,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get me => 'MOI';
 
   @override
-  String get phoneNumber => 'Numéro de téléphone';
+  String get modify => 'Modifier';
 
   @override
   String get searchUser => 'Rechercher un utilisateur...';
@@ -504,10 +471,61 @@ class AppLocalizationsFr extends AppLocalizations {
   String get clear => 'Effacer';
 
   @override
-  String get appSubtitle => 'Gérez votre temps efficacement';
+  String get phoneNumber => 'Numéro de téléphone';
 
   @override
-  String get modify => 'Modifier';
+  String get myProfile => 'Mon profil';
+
+  @override
+  String get editProfile => 'Modifier le profil';
+
+  @override
+  String get administrator => 'Administrateur';
+
+  @override
+  String get manager => 'Manager';
+
+  @override
+  String get notProvided => 'Non renseigné';
+
+  @override
+  String get preferences => 'Préférences';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get logoutConfirmation => 'Êtes-vous sûr de vouloir vous déconnecter ?';
+
+  @override
+  String get logoutSuccessful => 'Déconnexion réussie';
+
+  @override
+  String get profileUpdated => 'Profil mis à jour';
+
+  @override
+  String get save => 'Enregistrer';
+
+  @override
+  String get discard => 'Abandonner';
+
+  @override
+  String get unsavedChanges => 'Modifications non enregistrées';
+
+  @override
+  String get unsavedChangesMessage => 'Voulez-vous abandonner vos modifications ?';
+
+  @override
+  String get unsavedChangesHint => 'Vous avez des modifications non enregistrées';
+
+  @override
+  String get username => 'Nom d\'utilisateur';
+
+  @override
+  String get firstName => 'Prénom';
+
+  @override
+  String get lastName => 'Nom';
 
   @override
   String get successful => 'avec succés';
@@ -558,6 +576,33 @@ class AppLocalizationsFr extends AppLocalizations {
   String get emailLabel => 'Adresse e-mail';
 
   @override
+  String get appearance => 'Apparence';
+
+  @override
+  String get pushNotifications => 'Notifications push';
+
+  @override
+  String get pushNotificationsDesc => 'Recevoir des notifications sur votre appareil';
+
+  @override
+  String get emailNotifications => 'Notifications email';
+
+  @override
+  String get emailNotificationsDesc => 'Recevoir des emails pour les événements importants';
+
+  @override
+  String get about => 'À propos';
+
+  @override
+  String get appVersion => 'Version de l\'application';
+
+  @override
+  String get buildNumber => 'Numéro de build';
+
+  @override
+  String get languageChanged => 'Langue modifiée avec succès';
+
+  @override
   String get passwordLabel => 'Mot de passe';
 
   @override
@@ -567,10 +612,10 @@ class AppLocalizationsFr extends AppLocalizations {
   String get firstNameLabel => 'Prénom';
 
   @override
-  String get phoneNumberLabel => 'Numéro de téléphone';
+  String get lastNameLabel => 'Nom';
 
   @override
-  String get lastNameLabel => 'Nom';
+  String get phoneNumberLabel => 'Numéro de téléphone';
 
   @override
   String get loginButton => 'Se connecter';
@@ -612,7 +657,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get forgotPassword => 'Mot de passe oublié ?';
 
   @override
-  String get management => 'Gestion';
+  String get appSubtitle => 'Gérez votre temps efficacement';
 
   @override
   String get addanewuser => 'Nouvel utilisateur';
@@ -634,15 +679,6 @@ class AppLocalizationsFr extends AppLocalizations {
   }
 
   @override
-  String get toggleThemeHint => 'Active ou désactive le mode sombre';
-
-  @override
-  String get languageSelectionHint => 'Choisir la langue de l’application';
-
-  @override
-  String get accessibilityInfo => 'Ces paramètres améliorent l’accessibilité et la lisibilité pour tous les utilisateurs.';
-
-  @override
   String get invalidPhoneNumber => 'Numéro de téléphone invalide';
 
   @override
@@ -650,6 +686,15 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get phoneFormatHint => 'Exemple : +33 6 12 34 56 78';
+
+  @override
+  String get toggleThemeHint => 'Active ou désactive le mode sombre';
+
+  @override
+  String get languageSelectionHint => 'Choisir la langue de l’application';
+
+  @override
+  String get accessibilityInfo => 'Ces paramètres améliorent l’accessibilité et la lisibilité pour tous les utilisateurs.';
 
   @override
   String get teamManagement => 'TEAM MANAGEMENT';
@@ -715,28 +760,22 @@ class AppLocalizationsFr extends AppLocalizations {
   String get dashboardLoading => 'Chargement du dashboard...';
 
   @override
+  String get planningLoading => 'Chargement du planning...';
+
+  @override
   String get planningCalendar => 'Calendrier de planning';
 
   @override
   String get planning => 'Planning';
 
   @override
-  String get noPlanningForToday => 'No schedule for today';
+  String get noPlanningForTodat => 'Aucun planning pour ce jour';
 
   @override
-  String get planningWeekly => 'Weekly schedule';
+  String get planingWeekly => 'Planning hebdomadaire';
 
   @override
-  String get noConfigPlanning => 'No schedule configured';
-
-  @override
-  String get planningLoading => 'Chargement du planning...';
-
-  @override
-  String get monday => 'Lundi';
-
-  @override
-  String get tuesday => 'Mardi';
+  String get noConfigplanning => 'Aucun planning configuré';
 
   @override
   String get wednesday => 'Mercredi';
@@ -745,13 +784,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get thursday => 'Jeudi';
 
   @override
-  String get friday => 'Friday';
-
-  @override
-  String get saturday => 'Saturday';
-
-  @override
-  String get sunday => 'Sunday';
+  String get teamDashboard => 'Tableau de bord de l\'équipe';
 
   @override
   String get january => 'Janvier';

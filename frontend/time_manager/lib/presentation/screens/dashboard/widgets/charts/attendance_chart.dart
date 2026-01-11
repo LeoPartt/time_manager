@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 class AttendanceChart extends StatelessWidget {
   final PercentKpi punctuality;
@@ -19,7 +20,7 @@ class AttendanceChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-
+final tr = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p20)),
       decoration: BoxDecoration(
@@ -41,7 +42,7 @@ class AttendanceChart extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                'Performance',
+               tr.performance,
                 style: TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
@@ -76,14 +77,14 @@ class AttendanceChart extends StatelessWidget {
             children: [
               _buildGauge(
                 context,
-                'Ponctualité',
+                tr.ponctuality,
                 punctuality.percent,
                 colorScheme.primary,
                 Icons.access_time,
               ),
               _buildGauge(
                 context,
-                'Assiduité',
+               tr.assiduity,
                 attendance.percent,
                 colorScheme.secondary,
                 Icons.check_circle,

@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 class YearlyWorkChart extends StatelessWidget {
   final WorkSeries workSeries;
@@ -14,7 +15,7 @@ class YearlyWorkChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+    final tr = AppLocalizations.of(context)!;
     // ✅ Convertir les WorkPoints en FlSpots
     final yearData = workSeries.series.asMap().entries.map((entry) {
       return FlSpot(entry.key.toDouble(), entry.value.value);
@@ -44,7 +45,7 @@ class YearlyWorkChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Travail annuel',
+                    tr.workYear,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -53,7 +54,7 @@ class YearlyWorkChart extends StatelessWidget {
                   ),
                   SizedBox(height: AppSizes.p4),
                   Text(
-                    'Moyenne : ${workSeries.average.toStringAsFixed(1)}h/mois',
+                    '${ tr.avgPerDay}: ${workSeries.average.toStringAsFixed(1)}h/${tr.month}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],
@@ -222,7 +223,7 @@ class YearlyWorkChart extends StatelessWidget {
     ColorScheme colorScheme,
   ) {
     if (data.length < 6) return const SizedBox();
-
+final tr = AppLocalizations.of(context)!;
     final midPoint = data.length ~/ 2;
     final firstHalf = data.sublist(0, midPoint).map((e) => e.y).reduce((a, b) => a + b) / midPoint;
     final secondHalf = data.sublist(midPoint).map((e) => e.y).reduce((a, b) => a + b) / (data.length - midPoint);
@@ -249,8 +250,8 @@ class YearlyWorkChart extends StatelessWidget {
           SizedBox(width: AppSizes.p4),
           Text(
             isPositive
-                ? 'En hausse de ${trend.toStringAsFixed(1)}h/mois'
-                : 'En baisse de ${(-trend).toStringAsFixed(1)}h/mois',
+      ? '${tr.increasedBy} ${trend.toStringAsFixed(1)}h/${tr.month}'
+      : '${tr.decreasedBy} ${(-trend).toStringAsFixed(1)}h/${tr.month}',
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,

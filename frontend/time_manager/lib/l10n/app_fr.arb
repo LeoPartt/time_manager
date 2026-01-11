@@ -52,10 +52,6 @@
   "userSelected": "Utilisateur sélectionné",
   "noUsersFound": "Aucun utilisateur trouvé",
   
-  "monday": "Lundi",
-  "tuesday": "Mardi",
-  "wednesday": "Mercredi",
-  "thursday": "Jeudi",
   "friday": "Vendredi",
   "editPlanning": "Modifier le planning",
   "addPlanning": "Ajouter un planning",
@@ -64,6 +60,39 @@
   "selectArrivalTime": "Sélectionner l'heure d'arrivée",
   "selectDepartureTime": "Sélectionner l'heure de départ",
   "weekDay": "Jour de la semaine",
+  "workDay": "Travail Hebdomadaire",
+  "workYear": "Travail Annuel",
+  "equipDashboard": "Dashboard Équipe",
+  "noDataForThisDay": "Aucune donnée pour ce jour",
+  "simplifiedView": "Vue simplifiée",
+  "detailedView": "Vue détaillée",
+  "planned": "Planifié",
+  "actual": "Réel",
+ 
+  "noClocking": "Pas de pointage",
+  
+  "monday": "Lundi",
+  "tuesday": "Mardi",
+
+  "saturday": "Samedi",
+  "sunday": "Dimanche",
+  
+  
+  
+  "noTeamsAvailable": "Aucune équipe disponible",
+  "selectTeam": "Sélectionner une équipe",
+  "selectATeam": "Sélectionnez une équipe",
+  "selectTeamToViewStatistics": "Choisissez une équipe pour voir ses statistiques",
+  "loadingTeamDashboard": "Chargement du dashboard de l'équipe...",
+  
+  
+  "avgPerMonth": "Moyenne",
+  "increasedBy": "En hausse de",
+  "decreasedBy": "En baisse de",
+  
+  "workMonth": "Travail mensuel",
+  "average": "Moyenne",
+  
   "duration": "Durée",
   "invalid": "Invalide",
   "invalidTimeRange": "L'heure de départ doit être après l'heure d'arrivée",
@@ -105,10 +134,9 @@
   "add": "Ajouter",
   "remove": "Retirer",
   "search": "Rechercher",
-  "planning": "Planning",
+
   "myPlanning": "Mon planning",
-  "team": "Équipe",
-  "loadingProfile": "Chargement de votre profil...",
+
   "initializing": "Initialisation...",
   "loadingDashboard": "Chargement du tableau de bord...",
   "loadingPlanning": "Chargement du planning...",
@@ -164,7 +192,7 @@
   "logoutConfirmation": "Êtes-vous sûr de vouloir vous déconnecter ?",
   "logoutSuccessful": "Déconnexion réussie",
   "profileUpdated": "Profil mis à jour",
-  "retry": "Réessayer",
+
   "save": "Enregistrer",
   "discard": "Abandonner",
   "unsavedChanges": "Modifications non enregistrées",
@@ -274,20 +302,11 @@
   "noPlanningForTodat" : "Aucun planning pour ce jour",
   "planingWeekly" : "Planning hebdomadaire",
   "noConfigplanning" : "Aucun planning configuré",
-  "monday" : "Lundi",
-  "tuesday" : "Mardi",
+ 
   "wednesday" : "Mercredi",
   "thursday" : "Jeudi",
-  "Friday" : "Vendredi",
-  "Saturday" : "Samedi",
-  "Sunday" : "Dimanche",
-  "tuesday" : "Mardi",
-  "monday" : "Lundi",
-  "tuesday" : "Mardi",
-  "monday" : "Lundi",
-  "tuesday" : "Mardi",
-  "monday" : "Lundi",
-  "tuesday" : "Mardi",
+   "teamDashboard": "Tableau de bord de l'équipe",
+
   "january": "Janvier",
   "february": "Fevrier",
   "march": "Mars",

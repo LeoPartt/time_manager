@@ -118,7 +118,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                               style: TextStyle(color: AppColors.error),
                             ),
                           ),
-                          loaded: (team) => _buildTeamContent(context, team, tr),
+                          loaded: (team,managerId) => _buildTeamContent(context, team,managerId, tr),
                           orElse: () => const LoadingStateWidget(),
                         );
                       },
@@ -133,7 +133,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
     );
   }
 
-  Widget _buildTeamContent(BuildContext context, Team team, AppLocalizations tr) {
+  Widget _buildTeamContent(BuildContext context, Team team,int? managerId, AppLocalizations tr) {
     final members = team.members;
     final colorScheme = context.colorScheme;
 
@@ -236,13 +236,21 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
                             color: colorScheme.onSurface,
                           ),
                         ),
-                        subtitle: Text(
-                          member.email,
-                          style: TextStyle(
-                            fontSize: AppSizes.textSm,
-                            color: colorScheme.onSurface.withValues(alpha:0.6),
-                          ),
-                        ),
+                        subtitle:   IconButton(
+                              icon: Icon(
+                                Icons.workspace_premium, 
+                                color: _managerId == member.id
+                                    ? Colors.amber
+                                    : Colors.grey.withValues(alpha: 0.5),
+                                size: 20,
+                              ),
+                              onPressed: () {
+                                context.read<TeamCubit>().setTeamManager(
+                                      teamId: team.id,
+                                      userId: member.id,
+                                    );
+                              },
+                            ),
                         trailing: IconButton(
                           onPressed: () => _confirmRemoveMember(
                             context,

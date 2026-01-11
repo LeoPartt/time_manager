@@ -1,9 +1,11 @@
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/core/utils/extensions/context_extensions.dart';
 import 'package:time_manager/initialization/locator.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_state.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
@@ -85,7 +87,9 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     final colorScheme = context.colorScheme;
+    final isTablet = context.screenWidth >= 600;
 
     return Scaffold(
       bottomNavigationBar: const NavBar(),
@@ -94,15 +98,24 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
           onRefresh: () async => _loadDashboard(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p24)),
-            child: Column(
-              children: [
-                Header(label: 'Dashboard Équipe'),
-                SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-                _buildTeamSelector(context, colorScheme),
-                SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-                _buildContent(context, colorScheme),
-              ],
+            padding: EdgeInsets.all(
+              AppSizes.responsiveWidth(context, AppSizes.p24),
+            ),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isTablet ? 1200 : double.infinity,
+                ),
+                child: Column(
+                  children: [
+                    Header(label: tr.teamDashboard),
+                    SizedBox(height: AppSizes.p24),
+                    _buildTeamSelector(context, colorScheme, tr),
+                    SizedBox(height: AppSizes.p24),
+                    _buildContent(context, colorScheme, tr),
+                  ],
+                ),
+              ),
             ),
           ),
         ),
@@ -110,13 +123,17 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
     );
   }
 
-  Widget _buildTeamSelector(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildTeamSelector(
+    BuildContext context,
+    ColorScheme colorScheme,
+    AppLocalizations tr,
+  ) {
     return BlocBuilder<TeamCubit, TeamState>(
       builder: (context, state) {
         return state.when(
           initial: () => const SizedBox(),
           loading: () => const LinearProgressIndicator(),
-          loaded: (_) =>  LoadingStateWidget(),
+          loaded: (_, __) => const LoadingStateWidget(),
           loadedTeams: (teams) {
             if (teams.isEmpty) {
               return Container(
@@ -132,7 +149,7 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
                     SizedBox(width: AppSizes.p12),
                     Expanded(
                       child: Text(
-                        'Aucune équipe disponible',
+                        tr.noTeamsAvailable,
                         style: TextStyle(color: Colors.orange.shade900),
                       ),
                     ),
@@ -146,12 +163,14 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
               decoration: BoxDecoration(
                 color: colorScheme.surface,
                 borderRadius: BorderRadius.circular(AppSizes.r12),
-                border: Border.all(color: colorScheme.outline.withValues(alpha:0.2)),
+                border: Border.all(
+                  color: colorScheme.outline.withValues(alpha: 0.2),
+                ),
               ),
               child: DropdownButtonFormField<int>(
-                initialValue: _selectedTeamId,
+                value: _selectedTeamId,
                 decoration: InputDecoration(
-                  labelText: 'Sélectionner une équipe',
+                  labelText: tr.selectTeam,
                   prefixIcon: Icon(Icons.groups, color: colorScheme.secondary),
                   border: InputBorder.none,
                 ),
@@ -195,10 +214,14 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
     );
   }
 
-  Widget _buildContent(BuildContext context, ColorScheme colorScheme) {
+  Widget _buildContent(
+    BuildContext context,
+    ColorScheme colorScheme,
+    AppLocalizations tr,
+  ) {
     if (_selectedTeamId == null) {
       return Container(
-        padding: EdgeInsets.all(48),
+        padding: const EdgeInsets.all(48),
         child: Column(
           children: [
             Icon(
@@ -208,7 +231,7 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
             ),
             SizedBox(height: AppSizes.p16),
             Text(
-              'Sélectionnez une équipe',
+              tr.selectATeam,
               style: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
@@ -217,7 +240,7 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
             ),
             SizedBox(height: AppSizes.p8),
             Text(
-              'Choisissez une équipe pour voir ses statistiques',
+              tr.selectTeamToViewStatistics,
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey[600]),
             ),
@@ -234,10 +257,8 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
       },
       builder: (context, state) {
         return state.when(
-          initial: () => const LoadingStateWidget(),
-          loading: () => const LoadingStateWidget(
-            message: 'Chargement du dashboard de l\'équipe...',
-          ),
+          initial: () => LoadingStateWidget(message: tr.initializing),
+          loading: () => LoadingStateWidget(message: tr.loadingTeamDashboard),
           userLoaded: (_) => const SizedBox(),
           teamLoaded: (report) => DashboardContentWidget(
             report: report.dashboard,

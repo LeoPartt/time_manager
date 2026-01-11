@@ -51,7 +51,7 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
     return BlocConsumer<TeamCubit, TeamState>(
       listener: (context, state) {
         state.whenOrNull(
-          loaded: (team) {
+          loaded: (team,_) {
             context.showSuccess(tr.teamCreatedSuccess);
             context.router.replace(const ManagementRoute());
           },

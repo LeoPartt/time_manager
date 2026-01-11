@@ -2,6 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 class WeeklyWorkChart extends StatelessWidget {
   final WorkSeries workSeries;
@@ -14,7 +15,7 @@ class WeeklyWorkChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
-    
+    final tr = AppLocalizations.of(context)!;
     // ✅ Convertir les WorkPoints en FlSpots
     final weekData = workSeries.series.asMap().entries.map((entry) {
       return FlSpot(entry.key.toDouble(), entry.value.value);
@@ -44,7 +45,7 @@ class WeeklyWorkChart extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Travail hebdomadaire',
+                    tr.workDay,
                     style: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
@@ -53,7 +54,7 @@ class WeeklyWorkChart extends StatelessWidget {
                   ),
                   SizedBox(height: AppSizes.p4),
                   Text(
-                    'Moyenne : ${workSeries.average.toStringAsFixed(1)}h/jour',
+                    '${tr.avgPerDay} : ${workSeries.average.toStringAsFixed(1)}h/${tr.day}',
                     style: TextStyle(
                       fontSize: 12,
                       color: Colors.grey[600],

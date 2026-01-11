@@ -107,29 +107,41 @@ abstract class AppLocalizations {
   /// **'Login'**
   String get login;
 
-  /// No description provided for @logout.
+  /// No description provided for @clocking.
   ///
   /// In en, this message translates to:
-  /// **'Logout'**
-  String get logout;
+  /// **'Clocking'**
+  String get clocking;
 
-  /// No description provided for @myProfile.
+  /// No description provided for @refresh.
   ///
   /// In en, this message translates to:
-  /// **'My Profile'**
-  String get myProfile;
+  /// **'Refresh'**
+  String get refresh;
 
-  /// No description provided for @editProfile.
+  /// No description provided for @noPlanning.
   ///
   /// In en, this message translates to:
-  /// **'Edit Profile'**
-  String get editProfile;
+  /// **'No planning'**
+  String get noPlanning;
 
-  /// No description provided for @administrator.
+  /// No description provided for @variance.
   ///
   /// In en, this message translates to:
-  /// **'Administrator'**
-  String get administrator;
+  /// **'Variance'**
+  String get variance;
+
+  /// No description provided for @clockedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in'**
+  String get clockedIn;
+
+  /// No description provided for @management.
+  ///
+  /// In en, this message translates to:
+  /// **'Management'**
+  String get management;
 
   /// No description provided for @planningManagement.
   ///
@@ -140,37 +152,37 @@ abstract class AppLocalizations {
   /// No description provided for @createUser.
   ///
   /// In en, this message translates to:
-  /// **'Create User'**
+  /// **'Create a user'**
   String get createUser;
 
   /// No description provided for @addUser.
   ///
   /// In en, this message translates to:
-  /// **'Add User'**
+  /// **'Add a user'**
   String get addUser;
 
   /// No description provided for @addTeam.
   ///
   /// In en, this message translates to:
-  /// **'Add Team'**
+  /// **'Add a team'**
   String get addTeam;
 
   /// No description provided for @addDay.
   ///
   /// In en, this message translates to:
-  /// **'Add Day'**
+  /// **'Add a day'**
   String get addDay;
 
   /// No description provided for @teamName.
   ///
   /// In en, this message translates to:
-  /// **'Team Name'**
+  /// **'Team name'**
   String get teamName;
 
   /// No description provided for @teamDescription.
   ///
   /// In en, this message translates to:
-  /// **'Team Description'**
+  /// **'Team description'**
   String get teamDescription;
 
   /// No description provided for @teamNameRequired.
@@ -184,12 +196,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Use the search bar to find a user'**
   String get selectUserSubtitle;
-
-  /// No description provided for @search.
-  ///
-  /// In en, this message translates to:
-  /// **'Search'**
-  String get search;
 
   /// No description provided for @noPlanningConfigured.
   ///
@@ -224,31 +230,133 @@ abstract class AppLocalizations {
   /// No description provided for @deleteTeam.
   ///
   /// In en, this message translates to:
-  /// **'Delete Team'**
+  /// **'Delete team'**
   String get deleteTeam;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm deletion'**
+  String get confirmDelete;
+
+  /// No description provided for @confirmDeletePlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the planning from'**
+  String get confirmDeletePlanning;
+
+  /// No description provided for @confirmDeleteTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this team? This action is irreversible.'**
+  String get confirmDeleteTeam;
+
+  /// No description provided for @confirmRemoveMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove'**
+  String get confirmRemoveMember;
+
+  /// No description provided for @planningDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning deleted successfully'**
+  String get planningDeletedSuccess;
+
+  /// No description provided for @teamCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Team created successfully'**
+  String get teamCreatedSuccess;
+
+  /// No description provided for @teamDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Team deleted successfully'**
+  String get teamDeletedSuccess;
+
+  /// No description provided for @memberAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Member added successfully'**
+  String get memberAddedSuccess;
+
+  /// No description provided for @memberRemovedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Member removed successfully'**
+  String get memberRemovedSuccess;
+
+  /// No description provided for @createdSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'created successfully'**
+  String get createdSuccessfully;
+
+  /// No description provided for @createNewUserAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new user account'**
+  String get createNewUserAccount;
+
+  /// No description provided for @createNewTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new team'**
+  String get createNewTeam;
+
+  /// No description provided for @configurePlanningsForUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure user plannings'**
+  String get configurePlanningsForUsers;
+
+  /// No description provided for @managePlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage planning'**
+  String get managePlanning;
+
+  /// No description provided for @userSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'User selected'**
+  String get userSelected;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
 
   /// No description provided for @editPlanning.
   ///
   /// In en, this message translates to:
-  /// **'Edit Planning'**
+  /// **'Edit planning'**
   String get editPlanning;
 
   /// No description provided for @addPlanning.
   ///
   /// In en, this message translates to:
-  /// **'Add Planning'**
+  /// **'Add planning'**
   String get addPlanning;
 
   /// No description provided for @arrivalTime.
   ///
   /// In en, this message translates to:
-  /// **'Arrival Time'**
+  /// **'Arrival time'**
   String get arrivalTime;
 
   /// No description provided for @departureTime.
   ///
   /// In en, this message translates to:
-  /// **'Departure Time'**
+  /// **'Departure time'**
   String get departureTime;
 
   /// No description provided for @selectArrivalTime.
@@ -266,8 +374,146 @@ abstract class AppLocalizations {
   /// No description provided for @weekDay.
   ///
   /// In en, this message translates to:
-  /// **'Week Day'**
+  /// **'Weekday'**
   String get weekDay;
+
+  /// No description provided for @workDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly Work'**
+  String get workDay;
+
+  /// No description provided for @workYear.
+  ///
+  /// In en, this message translates to:
+  /// **'Annual Work'**
+  String get workYear;
+
+  /// No description provided for @equipDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Dashboard'**
+  String get equipDashboard;
+
+  /// No description provided for @noDataForThisDay.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for this day'**
+  String get noDataForThisDay;
+
+  /// No description provided for @simplifiedView.
+  ///
+  /// In en, this message translates to:
+  /// **'Simplified view'**
+  String get simplifiedView;
+
+  /// No description provided for @detailedView.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed view'**
+  String get detailedView;
+
+  /// No description provided for @planned.
+  ///
+  /// In en, this message translates to:
+  /// **'Planned'**
+  String get planned;
+
+  /// No description provided for @actual.
+  ///
+  /// In en, this message translates to:
+  /// **'Actual'**
+  String get actual;
+
+  /// No description provided for @noClocking.
+  ///
+  /// In en, this message translates to:
+  /// **'No clocking'**
+  String get noClocking;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
+
+  /// No description provided for @noTeamsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No teams available'**
+  String get noTeamsAvailable;
+
+  /// No description provided for @selectTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a team'**
+  String get selectTeam;
+
+  /// No description provided for @selectATeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a team'**
+  String get selectATeam;
+
+  /// No description provided for @selectTeamToViewStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a team to view its statistics'**
+  String get selectTeamToViewStatistics;
+
+  /// No description provided for @loadingTeamDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading team dashboard...'**
+  String get loadingTeamDashboard;
+
+  /// No description provided for @avgPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get avgPerMonth;
+
+  /// No description provided for @increasedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Increased by'**
+  String get increasedBy;
+
+  /// No description provided for @decreasedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Decreased by'**
+  String get decreasedBy;
+
+  /// No description provided for @workMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly work'**
+  String get workMonth;
+
+  /// No description provided for @average.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get average;
 
   /// No description provided for @duration.
   ///
@@ -311,54 +557,6 @@ abstract class AppLocalizations {
   /// **'Edit'**
   String get edit;
 
-  /// No description provided for @daysConfigured.
-  ///
-  /// In en, this message translates to:
-  /// **'days configured'**
-  String get daysConfigured;
-
-  /// No description provided for @outOf5WorkingDays.
-  ///
-  /// In en, this message translates to:
-  /// **'out of 5 working days'**
-  String get outOf5WorkingDays;
-
-  /// No description provided for @changeUser.
-  ///
-  /// In en, this message translates to:
-  /// **'Change user'**
-  String get changeUser;
-
-  /// No description provided for @searchByNameOrEmail.
-  ///
-  /// In en, this message translates to:
-  /// **'Search by name or email...'**
-  String get searchByNameOrEmail;
-
-  /// No description provided for @confirmDelete.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm deletion'**
-  String get confirmDelete;
-
-  /// No description provided for @confirmDeletePlanning.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to delete the planning for'**
-  String get confirmDeletePlanning;
-
-  /// No description provided for @confirmDeleteTeam.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to delete this team? This action is irreversible.'**
-  String get confirmDeleteTeam;
-
-  /// No description provided for @confirmRemoveMember.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to remove'**
-  String get confirmRemoveMember;
-
   /// No description provided for @users.
   ///
   /// In en, this message translates to:
@@ -368,13 +566,13 @@ abstract class AppLocalizations {
   /// No description provided for @userDetails.
   ///
   /// In en, this message translates to:
-  /// **'User Details'**
+  /// **'User details'**
   String get userDetails;
 
   /// No description provided for @viewDashboard.
   ///
   /// In en, this message translates to:
-  /// **'View Dashboard'**
+  /// **'View dashboard'**
   String get viewDashboard;
 
   /// No description provided for @featureInDevelopment.
@@ -437,22 +635,64 @@ abstract class AppLocalizations {
   /// **'member'**
   String get member;
 
+  /// No description provided for @globalDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Dashboard'**
+  String get globalDashboard;
+
+  /// No description provided for @companyOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Overview'**
+  String get companyOverview;
+
+  /// No description provided for @globalStatisticsAllEmployees.
+  ///
+  /// In en, this message translates to:
+  /// **'Global statistics for all employees'**
+  String get globalStatisticsAllEmployees;
+
+  /// No description provided for @loadingGlobalDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading global dashboard...'**
+  String get loadingGlobalDashboard;
+
+  /// No description provided for @daysConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'days configured'**
+  String get daysConfigured;
+
+  /// No description provided for @outOf5WorkingDays.
+  ///
+  /// In en, this message translates to:
+  /// **'out of 5 working days'**
+  String get outOf5WorkingDays;
+
+  /// No description provided for @changeUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Change user'**
+  String get changeUser;
+
   /// No description provided for @editUser.
   ///
   /// In en, this message translates to:
-  /// **'Edit User'**
+  /// **'Edit user'**
   String get editUser;
 
   /// No description provided for @editTeam.
   ///
   /// In en, this message translates to:
-  /// **'Edit Team'**
+  /// **'Edit team'**
   String get editTeam;
 
   /// No description provided for @saveChanges.
   ///
   /// In en, this message translates to:
-  /// **'Save Changes'**
+  /// **'Save changes'**
   String get saveChanges;
 
   /// No description provided for @userUpdatedSuccess.
@@ -494,134 +734,14 @@ abstract class AppLocalizations {
   /// No description provided for @irreversibleAction.
   ///
   /// In en, this message translates to:
-  /// **'Revert Delete'**
+  /// **'This action is irreversible'**
   String get irreversibleAction;
 
-  /// No description provided for @globalDashboard.
+  /// No description provided for @searchByNameOrEmail.
   ///
   /// In en, this message translates to:
-  /// **'Global Dashboard'**
-  String get globalDashboard;
-
-  /// No description provided for @companyOverview.
-  ///
-  /// In en, this message translates to:
-  /// **'Company Overview'**
-  String get companyOverview;
-
-  /// No description provided for @globalStatisticsAllEmployees.
-  ///
-  /// In en, this message translates to:
-  /// **'Global statistics of all employees'**
-  String get globalStatisticsAllEmployees;
-
-  /// No description provided for @loadingGlobalDashboard.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading global dashboard...'**
-  String get loadingGlobalDashboard;
-
-  /// No description provided for @planningDeletedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Planning deleted successfully'**
-  String get planningDeletedSuccess;
-
-  /// No description provided for @teamCreatedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Team created successfully'**
-  String get teamCreatedSuccess;
-
-  /// No description provided for @teamDeletedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Team deleted successfully'**
-  String get teamDeletedSuccess;
-
-  /// No description provided for @memberAddedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Member added successfully'**
-  String get memberAddedSuccess;
-
-  /// No description provided for @memberRemovedSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Member removed successfully'**
-  String get memberRemovedSuccess;
-
-  /// No description provided for @createdSuccessfully.
-  ///
-  /// In en, this message translates to:
-  /// **'created successfully'**
-  String get createdSuccessfully;
-
-  /// No description provided for @createNewUserAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a new user account'**
-  String get createNewUserAccount;
-
-  /// No description provided for @createNewTeam.
-  ///
-  /// In en, this message translates to:
-  /// **'Create a new team'**
-  String get createNewTeam;
-
-  /// No description provided for @configurePlanningsForUsers.
-  ///
-  /// In en, this message translates to:
-  /// **'Configure user plannings'**
-  String get configurePlanningsForUsers;
-
-  /// No description provided for @managePlanning.
-  ///
-  /// In en, this message translates to:
-  /// **'Manage Planning'**
-  String get managePlanning;
-
-  /// No description provided for @userSelected.
-  ///
-  /// In en, this message translates to:
-  /// **'User selected'**
-  String get userSelected;
-
-  /// No description provided for @noUsersFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No users found'**
-  String get noUsersFound;
-
-  /// No description provided for @monday.
-  ///
-  /// In en, this message translates to:
-  /// **'Monday'**
-  String get monday;
-
-  /// No description provided for @tuesday.
-  ///
-  /// In en, this message translates to:
-  /// **'Tuesday'**
-  String get tuesday;
-
-  /// No description provided for @wednesday.
-  ///
-  /// In en, this message translates to:
-  /// **'Wednesday'**
-  String get wednesday;
-
-  /// No description provided for @thursday.
-  ///
-  /// In en, this message translates to:
-  /// **'Thursday'**
-  String get thursday;
-
-  /// No description provided for @friday.
-  ///
-  /// In en, this message translates to:
-  /// **'Friday'**
-  String get friday;
+  /// **'Search by name or email...'**
+  String get searchByNameOrEmail;
 
   /// No description provided for @add.
   ///
@@ -635,185 +755,17 @@ abstract class AppLocalizations {
   /// **'Remove'**
   String get remove;
 
-  /// No description provided for @manager.
+  /// No description provided for @search.
   ///
   /// In en, this message translates to:
-  /// **'Manager'**
-  String get manager;
-
-  /// No description provided for @notProvided.
-  ///
-  /// In en, this message translates to:
-  /// **'Not provided'**
-  String get notProvided;
-
-  /// No description provided for @preferences.
-  ///
-  /// In en, this message translates to:
-  /// **'Preferences'**
-  String get preferences;
-
-  /// No description provided for @notifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Notifications'**
-  String get notifications;
-
-  /// No description provided for @logoutConfirmation.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to logout?'**
-  String get logoutConfirmation;
-
-  /// No description provided for @logoutSuccessful.
-  ///
-  /// In en, this message translates to:
-  /// **'Logout successful'**
-  String get logoutSuccessful;
-
-  /// No description provided for @profileUpdated.
-  ///
-  /// In en, this message translates to:
-  /// **'Profile updated'**
-  String get profileUpdated;
-
-  /// No description provided for @retry.
-  ///
-  /// In en, this message translates to:
-  /// **'Retry'**
-  String get retry;
-
-  /// No description provided for @save.
-  ///
-  /// In en, this message translates to:
-  /// **'Save'**
-  String get save;
-
-  /// No description provided for @discard.
-  ///
-  /// In en, this message translates to:
-  /// **'Discard'**
-  String get discard;
-
-  /// No description provided for @unsavedChanges.
-  ///
-  /// In en, this message translates to:
-  /// **'Unsaved Changes'**
-  String get unsavedChanges;
-
-  /// No description provided for @unsavedChangesMessage.
-  ///
-  /// In en, this message translates to:
-  /// **'Do you want to discard your changes?'**
-  String get unsavedChangesMessage;
-
-  /// No description provided for @unsavedChangesHint.
-  ///
-  /// In en, this message translates to:
-  /// **'You have unsaved changes'**
-  String get unsavedChangesHint;
-
-  /// No description provided for @username.
-  ///
-  /// In en, this message translates to:
-  /// **'Username'**
-  String get username;
-
-  /// No description provided for @firstName.
-  ///
-  /// In en, this message translates to:
-  /// **'First Name'**
-  String get firstName;
-
-  /// No description provided for @appearance.
-  ///
-  /// In en, this message translates to:
-  /// **'Appearance'**
-  String get appearance;
-
-  /// No description provided for @pushNotifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Push notifications'**
-  String get pushNotifications;
-
-  /// No description provided for @pushNotificationsDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Receive notifications on your device'**
-  String get pushNotificationsDesc;
-
-  /// No description provided for @emailNotifications.
-  ///
-  /// In en, this message translates to:
-  /// **'Email notifications'**
-  String get emailNotifications;
-
-  /// No description provided for @emailNotificationsDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'Receive emails for important events'**
-  String get emailNotificationsDesc;
-
-  /// No description provided for @about.
-  ///
-  /// In en, this message translates to:
-  /// **'About'**
-  String get about;
-
-  /// No description provided for @clocking.
-  ///
-  /// In en, this message translates to:
-  /// **'Time Clock'**
-  String get clocking;
-
-  /// No description provided for @refresh.
-  ///
-  /// In en, this message translates to:
-  /// **'Refresh'**
-  String get refresh;
-
-  /// No description provided for @noPlanning.
-  ///
-  /// In en, this message translates to:
-  /// **'No planning'**
-  String get noPlanning;
-
-  /// No description provided for @variance.
-  ///
-  /// In en, this message translates to:
-  /// **'Variance'**
-  String get variance;
-
-  /// No description provided for @clockedIn.
-  ///
-  /// In en, this message translates to:
-  /// **'Clocked In'**
-  String get clockedIn;
-
-  /// No description provided for @planning.
-  ///
-  /// In en, this message translates to:
-  /// **'Planning'**
-  String get planning;
+  /// **'Search'**
+  String get search;
 
   /// No description provided for @myPlanning.
   ///
   /// In en, this message translates to:
-  /// **'My Planning'**
+  /// **'My planning'**
   String get myPlanning;
-
-  /// No description provided for @team.
-  ///
-  /// In en, this message translates to:
-  /// **'Team'**
-  String get team;
-
-  /// No description provided for @loadingProfile.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading your profile...'**
-  String get loadingProfile;
 
   /// No description provided for @initializing.
   ///
@@ -842,7 +794,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectUser.
   ///
   /// In en, this message translates to:
-  /// **'Select user'**
+  /// **'Select a user'**
   String get selectUser;
 
   /// No description provided for @workingDays.
@@ -866,31 +818,31 @@ abstract class AppLocalizations {
   /// No description provided for @clockedOut.
   ///
   /// In en, this message translates to:
-  /// **'Clocked Out'**
+  /// **'Clocked out'**
   String get clockedOut;
 
   /// No description provided for @clockinConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Confirm clock in now?'**
+  /// **'Confirm clock-in now?'**
   String get clockinConfirmation;
 
   /// No description provided for @clockoutConfirmation.
   ///
   /// In en, this message translates to:
-  /// **'Confirm clock out now?'**
+  /// **'Confirm clock-out now?'**
   String get clockoutConfirmation;
 
   /// No description provided for @clockinSuccessful.
   ///
   /// In en, this message translates to:
-  /// **'Clock in successful'**
+  /// **'Clock-in recorded successfully'**
   String get clockinSuccessful;
 
   /// No description provided for @clockoutSuccessful.
   ///
   /// In en, this message translates to:
-  /// **'Clock out successful'**
+  /// **'Clock-out recorded successfully'**
   String get clockoutSuccessful;
 
   /// No description provided for @clockedInAt.
@@ -902,7 +854,7 @@ abstract class AppLocalizations {
   /// No description provided for @clockoutAt.
   ///
   /// In en, this message translates to:
-  /// **'Clock out at'**
+  /// **'Clock-out at'**
   String get clockoutAt;
 
   /// No description provided for @workingFor.
@@ -914,19 +866,19 @@ abstract class AppLocalizations {
   /// No description provided for @manualTime.
   ///
   /// In en, this message translates to:
-  /// **'Manual Time'**
+  /// **'Manual time'**
   String get manualTime;
 
   /// No description provided for @selectClockinTime.
   ///
   /// In en, this message translates to:
-  /// **'Select clock in time'**
+  /// **'Select clock-in time'**
   String get selectClockinTime;
 
   /// No description provided for @selectClockoutTime.
   ///
   /// In en, this message translates to:
-  /// **'Select clock out time'**
+  /// **'Select clock-out time'**
   String get selectClockoutTime;
 
   /// No description provided for @cannotClockInFuture.
@@ -944,25 +896,25 @@ abstract class AppLocalizations {
   /// No description provided for @todayStats.
   ///
   /// In en, this message translates to:
-  /// **'Today\'s Stats'**
+  /// **'Today\'s stats'**
   String get todayStats;
 
   /// No description provided for @firstClockin.
   ///
   /// In en, this message translates to:
-  /// **'First Clock In'**
+  /// **'First clock-in'**
   String get firstClockin;
 
   /// No description provided for @totalWorked.
   ///
   /// In en, this message translates to:
-  /// **'Total Worked'**
+  /// **'Total worked'**
   String get totalWorked;
 
   /// No description provided for @expectedTime.
   ///
   /// In en, this message translates to:
-  /// **'Expected Time'**
+  /// **'Expected time'**
   String get expectedTime;
 
   /// No description provided for @confirm.
@@ -971,41 +923,23 @@ abstract class AppLocalizations {
   /// **'Confirm'**
   String get confirm;
 
-  /// No description provided for @appVersion.
+  /// No description provided for @loginSuccessful.
   ///
   /// In en, this message translates to:
-  /// **'App version'**
-  String get appVersion;
+  /// **'Login successful'**
+  String get loginSuccessful;
 
-  /// No description provided for @buildNumber.
+  /// No description provided for @logout.
   ///
   /// In en, this message translates to:
-  /// **'Build number'**
-  String get buildNumber;
-
-  /// No description provided for @languageChanged.
-  ///
-  /// In en, this message translates to:
-  /// **'Language changed successfully'**
-  String get languageChanged;
-
-  /// No description provided for @lastName.
-  ///
-  /// In en, this message translates to:
-  /// **'Last Name'**
-  String get lastName;
+  /// **'Logout'**
+  String get logout;
 
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
   /// **'SETTINGS'**
   String get settings;
-
-  /// No description provided for @loginSuccessful.
-  ///
-  /// In en, this message translates to:
-  /// **'Login successful'**
-  String get loginSuccessful;
 
   /// No description provided for @darkMode.
   ///
@@ -1049,11 +983,11 @@ abstract class AppLocalizations {
   /// **'ME'**
   String get me;
 
-  /// No description provided for @phoneNumber.
+  /// No description provided for @modify.
   ///
   /// In en, this message translates to:
-  /// **'Phone number'**
-  String get phoneNumber;
+  /// **'Modify'**
+  String get modify;
 
   /// No description provided for @searchUser.
   ///
@@ -1085,22 +1019,124 @@ abstract class AppLocalizations {
   /// **'Clear'**
   String get clear;
 
-  /// No description provided for @appSubtitle.
+  /// No description provided for @phoneNumber.
   ///
   /// In en, this message translates to:
-  /// **'Manage your time effectively'**
-  String get appSubtitle;
+  /// **'Phone number'**
+  String get phoneNumber;
 
-  /// No description provided for @modify.
+  /// No description provided for @myProfile.
   ///
   /// In en, this message translates to:
-  /// **'Modify'**
-  String get modify;
+  /// **'My profile'**
+  String get myProfile;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit profile'**
+  String get editProfile;
+
+  /// No description provided for @administrator.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator'**
+  String get administrator;
+
+  /// No description provided for @manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get manager;
+
+  /// No description provided for @notProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get notProvided;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @logoutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get logoutConfirmation;
+
+  /// No description provided for @logoutSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout successful'**
+  String get logoutSuccessful;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdated;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @unsavedChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved changes'**
+  String get unsavedChanges;
+
+  /// No description provided for @unsavedChangesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to discard your changes?'**
+  String get unsavedChangesMessage;
+
+  /// No description provided for @unsavedChangesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes'**
+  String get unsavedChangesHint;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @firstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First name'**
+  String get firstName;
+
+  /// No description provided for @lastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name'**
+  String get lastName;
 
   /// No description provided for @successful.
   ///
   /// In en, this message translates to:
-  /// **'with success'**
+  /// **'successful'**
   String get successful;
 
   /// No description provided for @delete.
@@ -1136,7 +1172,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Create an user'**
+  /// **'Create a user'**
   String get registerTitle;
 
   /// No description provided for @welcome.
@@ -1160,7 +1196,7 @@ abstract class AppLocalizations {
   /// No description provided for @teamDetails.
   ///
   /// In en, this message translates to:
-  /// **'Team Details'**
+  /// **'Team details'**
   String get teamDetails;
 
   /// No description provided for @reports.
@@ -1172,7 +1208,7 @@ abstract class AppLocalizations {
   /// No description provided for @kpiTitle.
   ///
   /// In en, this message translates to:
-  /// **'Performance Indicators'**
+  /// **'Key Performance Indicators'**
   String get kpiTitle;
 
   /// No description provided for @loading.
@@ -1190,8 +1226,62 @@ abstract class AppLocalizations {
   /// No description provided for @emailLabel.
   ///
   /// In en, this message translates to:
-  /// **'Email Address'**
+  /// **'Email address'**
   String get emailLabel;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @pushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get pushNotifications;
+
+  /// No description provided for @pushNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive notifications on your device'**
+  String get pushNotificationsDesc;
+
+  /// No description provided for @emailNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Email notifications'**
+  String get emailNotifications;
+
+  /// No description provided for @emailNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive emails for important events'**
+  String get emailNotificationsDesc;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'App version'**
+  String get appVersion;
+
+  /// No description provided for @buildNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Build number'**
+  String get buildNumber;
+
+  /// No description provided for @languageChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Language changed successfully'**
+  String get languageChanged;
 
   /// No description provided for @passwordLabel.
   ///
@@ -1208,25 +1298,25 @@ abstract class AppLocalizations {
   /// No description provided for @firstNameLabel.
   ///
   /// In en, this message translates to:
-  /// **'First Name'**
+  /// **'First name'**
   String get firstNameLabel;
-
-  /// No description provided for @phoneNumberLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone Number'**
-  String get phoneNumberLabel;
 
   /// No description provided for @lastNameLabel.
   ///
   /// In en, this message translates to:
-  /// **'Last Name'**
+  /// **'Last name'**
   String get lastNameLabel;
+
+  /// No description provided for @phoneNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phoneNumberLabel;
 
   /// No description provided for @loginButton.
   ///
   /// In en, this message translates to:
-  /// **'Sign In'**
+  /// **'Login'**
   String get loginButton;
 
   /// No description provided for @registerButton.
@@ -1262,13 +1352,13 @@ abstract class AppLocalizations {
   /// No description provided for @fieldRequired.
   ///
   /// In en, this message translates to:
-  /// **'The field cannot be empty'**
+  /// **'Field cannot be empty'**
   String get fieldRequired;
 
   /// No description provided for @departure.
   ///
   /// In en, this message translates to:
-  /// **'departure time'**
+  /// **'Departure time'**
   String get departure;
 
   /// No description provided for @badRequest.
@@ -1298,25 +1388,25 @@ abstract class AppLocalizations {
   /// No description provided for @forgotPassword.
   ///
   /// In en, this message translates to:
-  /// **'Forgot your password?'**
+  /// **'Forgot password?'**
   String get forgotPassword;
 
-  /// No description provided for @management.
+  /// No description provided for @appSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'MANAGEMENT'**
-  String get management;
+  /// **'Manage your time efficiently'**
+  String get appSubtitle;
 
   /// No description provided for @addanewuser.
   ///
   /// In en, this message translates to:
-  /// **'new user'**
+  /// **'New user'**
   String get addanewuser;
 
   /// No description provided for @addanewteam.
   ///
   /// In en, this message translates to:
-  /// **'new team'**
+  /// **'New team'**
   String get addanewteam;
 
   /// No description provided for @searchbarhint.
@@ -1325,7 +1415,7 @@ abstract class AppLocalizations {
   /// **'User or team...'**
   String get searchbarhint;
 
-  /// Displayed when a network error occurs
+  /// Displayed when a network error occurs.
   ///
   /// In en, this message translates to:
   /// **'Network error ({code})'**
@@ -1334,26 +1424,8 @@ abstract class AppLocalizations {
   /// Error message when a required field is missing.
   ///
   /// In en, this message translates to:
-  /// **'The \'{field}\' field is required.'**
+  /// **'The field \'{field}\' is required.'**
   String fieldIsRequired(String field);
-
-  /// No description provided for @toggleThemeHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Toggle between dark and light mode'**
-  String get toggleThemeHint;
-
-  /// No description provided for @languageSelectionHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Select the application language'**
-  String get languageSelectionHint;
-
-  /// No description provided for @accessibilityInfo.
-  ///
-  /// In en, this message translates to:
-  /// **'These settings improve accessibility and readability for all users.'**
-  String get accessibilityInfo;
 
   /// No description provided for @invalidPhoneNumber.
   ///
@@ -1370,8 +1442,26 @@ abstract class AppLocalizations {
   /// No description provided for @phoneFormatHint.
   ///
   /// In en, this message translates to:
-  /// **'Example: +1 202 555 0123'**
+  /// **'Example: +33 6 12 34 56 78'**
   String get phoneFormatHint;
+
+  /// No description provided for @toggleThemeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable or disable dark mode'**
+  String get toggleThemeHint;
+
+  /// No description provided for @languageSelectionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose the app language'**
+  String get languageSelectionHint;
+
+  /// No description provided for @accessibilityInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'These settings improve accessibility and readability for all users.'**
+  String get accessibilityInfo;
 
   /// No description provided for @teamManagement.
   ///
@@ -1394,19 +1484,19 @@ abstract class AppLocalizations {
   /// No description provided for @teamNameLabel.
   ///
   /// In en, this message translates to:
-  /// **'Name :'**
+  /// **'Name:'**
   String get teamNameLabel;
 
   /// No description provided for @teamDescriptionLabel.
   ///
   /// In en, this message translates to:
-  /// **'Description :'**
+  /// **'Description:'**
   String get teamDescriptionLabel;
 
   /// No description provided for @teamNoMember.
   ///
   /// In en, this message translates to:
-  /// **'No members'**
+  /// **'No member'**
   String get teamNoMember;
 
   /// No description provided for @cancel.
@@ -1448,7 +1538,7 @@ abstract class AppLocalizations {
   /// No description provided for @month.
   ///
   /// In en, this message translates to:
-  /// **'month'**
+  /// **'Month'**
   String get month;
 
   /// No description provided for @year.
@@ -1496,8 +1586,14 @@ abstract class AppLocalizations {
   /// No description provided for @dashboardLoading.
   ///
   /// In en, this message translates to:
-  /// **'Dashboard is loading...'**
+  /// **'Loading dashboard...'**
   String get dashboardLoading;
+
+  /// No description provided for @planningLoading.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading planning...'**
+  String get planningLoading;
 
   /// No description provided for @planningCalendar.
   ///
@@ -1508,44 +1604,26 @@ abstract class AppLocalizations {
   /// No description provided for @planning.
   ///
   /// In en, this message translates to:
-  /// **'Schedule'**
+  /// **'Planning'**
   String get planning;
 
-  /// No description provided for @noPlanningForToday.
+  /// No description provided for @noPlanningForTodat.
   ///
   /// In en, this message translates to:
-  /// **'No schedule for today'**
-  String get noPlanningForToday;
+  /// **'No planning for this day'**
+  String get noPlanningForTodat;
 
-  /// No description provided for @planningWeekly.
+  /// No description provided for @planingWeekly.
   ///
   /// In en, this message translates to:
-  /// **'Weekly schedule'**
-  String get planningWeekly;
+  /// **'Weekly planning'**
+  String get planingWeekly;
 
-  /// No description provided for @noConfigPlanning.
+  /// No description provided for @noConfigplanning.
   ///
   /// In en, this message translates to:
-  /// **'No schedule configured'**
-  String get noConfigPlanning;
-
-  /// No description provided for @planningLoading.
-  ///
-  /// In en, this message translates to:
-  /// **'Loading planning...'**
-  String get planningLoading;
-
-  /// No description provided for @monday.
-  ///
-  /// In en, this message translates to:
-  /// **'Monday'**
-  String get monday;
-
-  /// No description provided for @tuesday.
-  ///
-  /// In en, this message translates to:
-  /// **'Tuesday'**
-  String get tuesday;
+  /// **'No planning configured'**
+  String get noConfigplanning;
 
   /// No description provided for @wednesday.
   ///
@@ -1559,23 +1637,11 @@ abstract class AppLocalizations {
   /// **'Thursday'**
   String get thursday;
 
-  /// No description provided for @friday.
+  /// No description provided for @teamDashboard.
   ///
   /// In en, this message translates to:
-  /// **'Friday'**
-  String get friday;
-
-  /// No description provided for @saturday.
-  ///
-  /// In en, this message translates to:
-  /// **'Saturday'**
-  String get saturday;
-
-  /// No description provided for @sunday.
-  ///
-  /// In en, this message translates to:
-  /// **'Sunday'**
-  String get sunday;
+  /// **'Team Dashboard'**
+  String get teamDashboard;
 
   /// No description provided for @january.
   ///
@@ -1664,7 +1730,7 @@ abstract class AppLocalizations {
   /// No description provided for @ponctuality.
   ///
   /// In en, this message translates to:
-  /// **'Ponctuality'**
+  /// **'Punctuality'**
   String get ponctuality;
 
   /// No description provided for @assiduity.
@@ -1694,7 +1760,7 @@ abstract class AppLocalizations {
   /// No description provided for @atUpgrade.
   ///
   /// In en, this message translates to:
-  /// **'At improve'**
+  /// **'Needs improvement'**
   String get atUpgrade;
 }
 

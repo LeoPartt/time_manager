@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/l10n/app_localizations.dart';
 
 enum ReportPeriod { week, month, year }
 
@@ -19,6 +20,7 @@ class PeriodSelectorWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final tr = AppLocalizations.of(context)!;
     return Container(
       padding: EdgeInsets.all(AppSizes.p4),
       decoration: BoxDecoration(
@@ -30,21 +32,21 @@ class PeriodSelectorWidget extends StatelessWidget {
           Expanded(
             child: _buildPeriodButton(
               context,
-              'Semaine',
+             tr.week,
               ReportPeriod.week,
             ),
           ),
           Expanded(
             child: _buildPeriodButton(
               context,
-              'Mois',
+              tr.month,
               ReportPeriod.month,
             ),
           ),
           Expanded(
             child: _buildPeriodButton(
               context,
-              'Année',
+              tr.year,
               ReportPeriod.year,
             ),
           ),
