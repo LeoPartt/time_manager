@@ -217,4 +217,35 @@ class TeamMapperTest {
                 .isInstanceOf(NullPointerException.class);
     }
 
+
+    @Test
+    void testCreateEntity_withNullRequest_shouldReturnNull() {
+        assertThat(teamMapper.createEntity(null)).isNull();
+    }
+
+    @Test
+    void testReplaceEntity_withNullBody_shouldDoNothing() {
+        String originalName = teamEntity.getName();
+        String originalDescription = teamEntity.getDescription();
+        Long originalId = teamEntity.getId();
+
+        teamMapper.replaceEntity(teamEntity, null);
+
+        assertThat(teamEntity.getId()).isEqualTo(originalId);
+        assertThat(teamEntity.getName()).isEqualTo(originalName);
+        assertThat(teamEntity.getDescription()).isEqualTo(originalDescription);
+    }
+
+    @Test
+    void testUpdateEntity_withNullBody_shouldDoNothing() {
+        String originalName = teamEntity.getName();
+        String originalDescription = teamEntity.getDescription();
+        Long originalId = teamEntity.getId();
+
+        teamMapper.updateEntity(teamEntity, null);
+
+        assertThat(teamEntity.getId()).isEqualTo(originalId);
+        assertThat(teamEntity.getName()).isEqualTo(originalName);
+        assertThat(teamEntity.getDescription()).isEqualTo(originalDescription);
+    }
 }

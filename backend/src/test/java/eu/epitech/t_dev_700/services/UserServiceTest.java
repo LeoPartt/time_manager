@@ -15,15 +15,15 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,10 +32,10 @@ class UserServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private UserMapper userMapper;
 
-    // NEW: required by UserService constructor
     @Mock private TeamService teamService;
     @Mock private ClockService clockService;
     @Mock private PlanningService planningService;
+    @Mock private UserAuthorization userAuthorization;
 
     @InjectMocks private UserService userService;
 
@@ -256,16 +256,15 @@ class UserServiceTest {
 
     @Test
     void testGetCurrentUser_shouldReturnMappedUser() {
-        try (MockedStatic<UserAuthorization> mocked = mockStatic(UserAuthorization.class)) {
-            mocked.when(UserAuthorization::getCurrentUser).thenReturn(userEntity);
-            when(userMapper.toModel(userEntity)).thenReturn(userResponse);
+        when(userAuthorization.getCurrentUser()).thenReturn(userEntity);
+        when(userMapper.toModel(userEntity)).thenReturn(userResponse);
 
-            UserModels.UserResponse result = userService.getCurrentUser();
+        UserModels.UserResponse result = userService.getCurrentUser();
 
-            assertThat(result).isEqualTo(userResponse);
-            mocked.verify(UserAuthorization::getCurrentUser);
-            verify(userMapper).toModel(userEntity);
-        }
+        assertThat(result).isEqualTo(userResponse);
+        verify(userAuthorization).getCurrentUser();
+        verify(userMapper).toModel(userEntity);
+        verifyNoMoreInteractions(userAuthorization, userMapper);
     }
 
     @Test

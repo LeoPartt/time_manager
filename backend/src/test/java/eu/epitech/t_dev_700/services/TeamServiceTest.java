@@ -39,6 +39,7 @@ class TeamServiceTest {
     @Mock private UserMapper userMapper;
     @Mock private MembershipService membershipService;
     @Mock private UserComponent userComponent;
+    @Mock private UserAuthorization userAuthorization;
 
     @InjectMocks private TeamService teamService;
 
@@ -292,7 +293,7 @@ class TeamServiceTest {
     @Test
     void onTeamCreation_whenNoCurrentUser_shouldDoNothing() {
         try (MockedStatic<UserAuthorization> mocked = Mockito.mockStatic(UserAuthorization.class)) {
-            mocked.when(UserAuthorization::getCurrentUser).thenReturn(null);
+            mocked.when(userAuthorization::getCurrentUser).thenReturn(null);
 
             teamService.onTeamCreation(teamEntity, postRequest);
 
@@ -303,7 +304,7 @@ class TeamServiceTest {
     @Test
     void onTeamCreation_whenCurrentUser_shouldCreateManagerMembership() {
         try (MockedStatic<UserAuthorization> mocked = Mockito.mockStatic(UserAuthorization.class)) {
-            mocked.when(UserAuthorization::getCurrentUser).thenReturn(currentUser);
+            mocked.when(userAuthorization::getCurrentUser).thenReturn(currentUser);
 
             teamService.onTeamCreation(teamEntity, postRequest);
 

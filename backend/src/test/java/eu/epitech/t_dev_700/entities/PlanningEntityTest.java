@@ -118,4 +118,11 @@ class PlanningEntityTest {
 
         assertThat(p1).isNotEqualTo(p2);
     }
+
+    @Test
+    void equals_otherType_shouldReturnFalse() {
+        PlanningEntity p = new PlanningEntity();
+
+        assertThat(p.equals("not a planning")).isFalse();
+    }
 }

@@ -164,4 +164,26 @@ class TeamEntityTest {
         assertThat(s).contains("id=1");
         assertThat(s).contains("name='Development Team'");
     }
+
+    @Test
+    void removeMembership_whenMembershipBelongsToOtherTeam_shouldNotNullTeam() {
+        TeamEntity other = new TeamEntity();
+        other.setId(99L);
+        other.setName("Other team");
+
+        MembershipEntity membership = new MembershipEntity();
+        membership.setTeam(other); // m.getTeam() != this
+        membership.setRole(MembershipEntity.TeamRole.MEMBER);
+
+        // Put it in the set so removeMembership() actually removes something
+        team.getMemberships().add(membership);
+
+        team.removeMembership(membership);
+
+        assertThat(team.getMemberships()).doesNotContain(membership);
+        assertThat(membership.getTeam()).isSameAs(other); // should NOT be nulled
+    }
+
+
+
 }

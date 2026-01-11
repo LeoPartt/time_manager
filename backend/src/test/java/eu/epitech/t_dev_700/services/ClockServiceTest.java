@@ -5,6 +5,7 @@ import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.models.ClockModels;
 import eu.epitech.t_dev_700.models.UserScheduleQuery;
 import eu.epitech.t_dev_700.repositories.ScheduleRepository;
+import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import eu.epitech.t_dev_700.services.components.UserComponent;
 import eu.epitech.t_dev_700.services.exceptions.ForbiddenFutureClocking;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,6 +34,9 @@ class ClockServiceTest {
 
     @Mock
     private ScheduleRepository scheduleRepository;
+
+    @Mock
+    private UserAuthorization userAuthorization;
 
     @InjectMocks
     private ClockService clockService;
@@ -321,5 +325,47 @@ class ClockServiceTest {
 
         verify(userComponent).getUser(userId);
         verify(scheduleRepository).save(any(ScheduleEntity.class));
+    }
+
+    @Test
+    void getUserClocks_whenCurrentIsNull_treatsAsFalse_andUsesOtherFiltersOrDefault() {
+        Long userId = 6L;
+        when(userComponent.getUser(userId)).thenReturn(user);
+
+        UserScheduleQuery query = mock(UserScheduleQuery.class);
+        when(query.getCurrent()).thenReturn(null);
+        when(query.getFrom()).thenReturn(null);
+        when(query.getTo()).thenReturn(null);
+
+        OffsetDateTime a = OffsetDateTime.parse("2025-07-01T09:00:00+00:00");
+        ScheduleEntity s = new ScheduleEntity(user, a);
+
+        when(scheduleRepository.findByUser(user)).thenReturn(List.of(s));
+
+        Long[] result = clockService.getUserClocks(userId, query);
+
+        assertArrayEquals(new Long[]{a.toEpochSecond()}, result);
+        verify(scheduleRepository).findByUser(user);
+        verify(scheduleRepository, never()).findCurrentSchedules(any(), any());
+    }
+
+    @Test
+    void postClock_withoutUserOrId_usesUserAuthorization_andDelegates() {
+        when(userAuthorization.getCurrentUser()).thenReturn(user);
+
+        ClockModels.PostClockRequest body = mock(ClockModels.PostClockRequest.class);
+        when(body.timestamp()).thenReturn(OffsetDateTime.now().minusMinutes(1));
+        when(body.io()).thenReturn(ClockAction.IN);
+
+        when(scheduleRepository.findByUserAndDepartureTsIsNull(user))
+                .thenReturn(Optional.empty());
+
+        clockService.postClock(body);
+
+        verify(userAuthorization).getCurrentUser();
+        verify(scheduleRepository).findByUserAndDepartureTsIsNull(user);
+        verify(scheduleRepository).save(any(ScheduleEntity.class));
+        verifyNoMoreInteractions(userAuthorization, scheduleRepository);
+        verifyNoInteractions(userComponent); // this overload should not use userComponent
     }
 }

@@ -24,23 +24,26 @@ public class UserService extends CRUDService<
     private final TeamService teamService;
     private final ClockService clockService;
     private final PlanningService planningService;
+    private final UserAuthorization userAuthorization;
 
     public UserService(
             UserRepository userRepository,
             UserMapper userMapper,
             TeamService teamService,
             ClockService clockService,
-            PlanningService planningService) {
+            PlanningService planningService,
+            UserAuthorization userAuthorization) {
         super(userRepository, userMapper, "User");
         this.userMapper = userMapper;
         this.teamService = teamService;
         this.clockService = clockService;
         this.planningService = planningService;
+        this.userAuthorization = userAuthorization;
     }
 
     @Transactional(readOnly = true)
     public UserModels.UserResponse getCurrentUser() {
-        return userMapper.toModel(UserAuthorization.getCurrentUser());
+        return userMapper.toModel(userAuthorization.getCurrentUser());
     }
 
     @Transactional(readOnly = true)

@@ -4,11 +4,13 @@ import eu.epitech.t_dev_700.models.ErrorModels;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.DecodingException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.*;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -54,6 +56,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return new ErrorModels.ErrorResponse(HttpStatus.BAD_REQUEST, "Malformed JSON body", request).toResponse();
     }
 
+    @ExceptionHandler(ConstraintViolationException.class)
+    public ResponseEntity<Object> handleConstraintViolation(ConstraintViolationException ex, WebRequest request) {
+        return new ErrorModels.ErrorResponse(
+                HttpStatus.UNPROCESSABLE_ENTITY,
+                "Validation failed",
+                request,
+                ex.getConstraintViolations().stream()
+                        .collect(Collectors.toMap(
+                                v -> v.getPropertyPath().toString(),
+                                v -> Optional.ofNullable(v.getMessage()).orElse("")
+                        ))
+        ).toResponse();
+    }
+
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Object> handleConflict(IllegalStateException ex, WebRequest request) {
         return new ErrorModels.ErrorResponse(HttpStatus.CONFLICT, ex, request).toResponse();
@@ -84,7 +100,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         }).toResponse();
     }
 
-    @ExceptionHandler(AccessDeniedException.class)
+    @ExceptionHandler({AccessDeniedException.class, AuthorizationDeniedException.class})
     public ResponseEntity<Object> handleUnexpected(AccessDeniedException ex, WebRequest request) {
         return new ErrorModels.ErrorResponse(
                 HttpStatus.FORBIDDEN,

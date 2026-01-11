@@ -27,23 +27,26 @@ public class TeamService extends CRUDService<
     private final UserMapper userMapper;
     private final MembershipService membershipService;
     private final UserComponent userComponent;
+    private final UserAuthorization userAuthorization;
 
     protected TeamService(
             TeamRepository teamRepository,
             TeamMapper teamMapper,
             UserMapper userMapper,
             MembershipService membershipService,
-            UserComponent userComponent) {
+            UserComponent userComponent,
+            UserAuthorization userAuthorization) {
         super(teamRepository, teamMapper, "team");
         this.teamMapper = teamMapper;
         this.userMapper = userMapper;
         this.membershipService = membershipService;
         this.userComponent = userComponent;
+        this.userAuthorization = userAuthorization;
     }
 
     @CRUDHookUtils.CRUDHook(action = CRUDHookUtils.Action.CREATE, moment = CRUDHookUtils.Moment.AFTER)
     public void onTeamCreation(TeamEntity entity, TeamModels.PostTeamRequest request) {
-        UserEntity currentUser = UserAuthorization.getCurrentUser();
+        UserEntity currentUser = userAuthorization.getCurrentUser();
         if (currentUser == null) return;
         this.membershipService.createMembership(entity, currentUser, MembershipEntity.TeamRole.MANAGER);
     }

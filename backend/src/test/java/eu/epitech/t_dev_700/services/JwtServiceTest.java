@@ -109,4 +109,9 @@ class JwtServiceTest {
 
         assertEquals("ADMIN", role);
     }
+
+    @Test
+    void getExpirationTime_shouldReturnConfiguredExpiration() {
+        assertEquals(EXPIRATION_TIME, jwtService.getExpirationTime());
+    }
 }

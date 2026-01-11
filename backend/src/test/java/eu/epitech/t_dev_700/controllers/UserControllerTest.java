@@ -47,8 +47,6 @@ class UserControllerTest {
     @MockitoBean
     private UserService userService;
 
-    // Present in your original test, but not used by this controller directly.
-    // Keeping it only if Spring context requires it somewhere else.
     @MockitoBean
     private TeamService teamService;
 
@@ -579,4 +577,5 @@ class UserControllerTest {
 
         verifyNoInteractions(userService);
     }
+
 }
