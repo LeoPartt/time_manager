@@ -13,7 +13,7 @@ import org.springframework.stereotype.Component;
 
 @Component("userAuth")
 @RequiredArgsConstructor
-public class UserAuthorization {
+public class UserAuthorization implements CurrentUserProvider {
 
     private final MembershipService membershipService;
     private final PlanningService planningService;
@@ -22,7 +22,7 @@ public class UserAuthorization {
         return ((AccountEntity) auth.getPrincipal()).getUser();
     }
 
-    public static UserEntity getCurrentUser() {
+    public UserEntity getCurrentUser() {
         return getCurrentUser(SecurityContextHolder
                 .getContext()
                 .getAuthentication());

@@ -115,7 +115,7 @@ public class ReportsService {
         ZonedDateTime zdt = anchor.atZoneSameInstant(businessZone);
 
         return switch (mode) {
-            case W -> {
+            case ReportModels.Mode.W -> {
                 // ISO week starts Monday
                 ZonedDateTime start = zdt
                         .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
@@ -123,12 +123,12 @@ public class ReportsService {
                 ZonedDateTime end = start.plusWeeks(1);
                 yield new PeriodRange(start.toOffsetDateTime(), end.toOffsetDateTime());
             }
-            case M -> {
+            case ReportModels.Mode.M -> {
                 ZonedDateTime start = zdt.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
                 ZonedDateTime end = start.plusMonths(1);
                 yield new PeriodRange(start.toOffsetDateTime(), end.toOffsetDateTime());
             }
-            case Y -> {
+            case ReportModels.Mode.Y -> {
                 ZonedDateTime start = zdt.withDayOfYear(1).truncatedTo(ChronoUnit.DAYS);
                 ZonedDateTime end = start.plusYears(1);
                 yield new PeriodRange(start.toOffsetDateTime(), end.toOffsetDateTime());
@@ -175,9 +175,9 @@ public class ReportsService {
 
     private ReportModels.WorkBucket bucketForMode(ReportModels.Mode mode) {
         return switch (mode) {
-            case W -> ReportModels.WorkBucket.DAY;
-            case M -> ReportModels.WorkBucket.WEEK;
-            case Y -> ReportModels.WorkBucket.MONTH;
+            case ReportModels.Mode.W -> ReportModels.WorkBucket.DAY;
+            case ReportModels.Mode.M -> ReportModels.WorkBucket.WEEK;
+            case ReportModels.Mode.Y -> ReportModels.WorkBucket.MONTH;
         };
     }
 
@@ -227,7 +227,7 @@ public class ReportsService {
             double totalHours
     ) {
         switch (mode) {
-            case W -> {
+            case ReportModels.Mode.W -> {
                 long workedDays = schedules.stream()
                         .map(s -> s.getArrivalTs()
                                 .atZoneSameInstant(businessZone)
@@ -237,7 +237,7 @@ public class ReportsService {
                 return workedDays == 0 ? 0f : (float) (totalHours / workedDays);
             }
 
-            case M -> {
+            case ReportModels.Mode.M -> {
                 WeekFields wf = WeekFields.ISO;
                 long workedWeeks = schedules.stream()
                         .map(s -> {
@@ -251,7 +251,7 @@ public class ReportsService {
                 return workedWeeks == 0 ? 0f : (float) (totalHours / workedWeeks);
             }
 
-            case Y -> {
+            case ReportModels.Mode.Y -> {
                 long workedMonths = schedules.stream()
                         .map(s -> YearMonth.from(
                                 s.getArrivalTs().atZoneSameInstant(businessZone)))
@@ -267,12 +267,12 @@ public class ReportsService {
         ZonedDateTime z = ts.atZoneSameInstant(businessZone);
 
         return switch (bucket) {
-            case DAY -> {
+            case ReportModels.WorkBucket.DAY -> {
                 ZonedDateTime start = z.truncatedTo(ChronoUnit.DAYS);
                 String label = z.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.ENGLISH); // Mon/Tue...
                 yield new BucketKey(start.toOffsetDateTime(), label);
             }
-            case WEEK -> {
+            case ReportModels.WorkBucket.WEEK -> {
                 // ISO week start (Monday), label "W<weekOfYear>"
                 ZonedDateTime start = z.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)).truncatedTo(ChronoUnit.DAYS);
                 WeekFields wf = WeekFields.ISO;
@@ -280,7 +280,7 @@ public class ReportsService {
                 String label = "W" + week;
                 yield new BucketKey(start.toOffsetDateTime(), label);
             }
-            case MONTH -> {
+            case ReportModels.WorkBucket.MONTH -> {
                 ZonedDateTime start = z.withDayOfMonth(1).truncatedTo(ChronoUnit.DAYS);
                 String label = z.getMonth().getDisplayName(TextStyle.SHORT, Locale.ENGLISH); // Jan/Feb...
                 yield new BucketKey(start.toOffsetDateTime(), label);

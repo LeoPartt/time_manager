@@ -3,6 +3,7 @@ package eu.epitech.t_dev_700.models;
 import eu.epitech.t_dev_700.utils.HasDetails;
 import io.swagger.v3.oas.annotations.ExternalDocumentation;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.constraints.NotNull;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -58,6 +59,25 @@ public class ErrorModels {
                     details,
                     Instant.now()
             );
+        }
+
+        private static String getRequestUri(HttpServletRequest request) {
+            return request.getRequestURI();
+        }
+
+        public ErrorResponse(HttpStatus status, String detail, HttpServletRequest request, Object details) {
+            this(
+                    status.getReasonPhrase(),
+                    status.value(),
+                    detail,
+                    getRequestUri(request),
+                    details,
+                    Instant.now()
+            );
+        }
+
+        public ErrorResponse(HttpStatus status, String detail, HttpServletRequest request) {
+            this(status, detail, request, Collections.emptyMap());
         }
 
         public ErrorResponse(HttpStatus status, String detail, WebRequest request) {
