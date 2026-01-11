@@ -42,15 +42,9 @@ public class UserService extends CRUDService<
     }
 
   @Transactional(readOnly = true)
-public UserModels.UserResponse getCurrentUser() {
-    UserEntity currentUser = userAuthorization.getCurrentUser();
-    
-    // ✅ Recharger l'utilisateur depuis la base pour initialiser les collections lazy
-    UserEntity user = ((UserRepository) this.repository).findById(currentUser.getId())
-        .orElseThrow(() -> new RuntimeException("User not found"));
-    
-    return userMapper.toModel(user);
-}
+    public UserModels.UserResponse getCurrentUser() {
+        return userMapper.toModel(userAuthorization.getCurrentUser());
+    }
 
     @Transactional(readOnly = true)
     public TeamModels.TeamResponse[] getTeams(Long id) {
