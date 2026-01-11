@@ -1,4 +1,3 @@
-// 📁 lib/presentation/cubits/dashboard/dashboard_cubit.dart
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -29,8 +28,6 @@ class DashboardCubit extends Cubit<DashboardState> {
   }) async {
     final tr = AppLocalizations.of(context)!;
 
-    print('🔵 [DashboardCubit] loadUserDashboard');
-    print('🔵 [DashboardCubit] userId: $userId, mode: $mode');
 
     emit(const DashboardState.loading());
 
@@ -41,12 +38,9 @@ class DashboardCubit extends Cubit<DashboardState> {
         at: at,
       );
 
-      print('🟢 [DashboardCubit] User dashboard loaded');
 
       emit(DashboardState.userLoaded(report));
-    } catch (e, stackTrace) {
-      print('🔴 [DashboardCubit] Error: $e');
-      print('🔴 [DashboardCubit] StackTrace: $stackTrace');
+    } catch (e) {
       emit(DashboardState.error('${tr.error}: $e'));
     }
   }
@@ -60,8 +54,6 @@ class DashboardCubit extends Cubit<DashboardState> {
   }) async {
     final tr = AppLocalizations.of(context)!;
 
-    print('🔵 [DashboardCubit] loadTeamDashboard');
-    print('🔵 [DashboardCubit] teamId: $teamId, mode: $mode');
 
     emit(const DashboardState.loading());
 
@@ -72,12 +64,9 @@ class DashboardCubit extends Cubit<DashboardState> {
         at: at,
       );
 
-      print('🟢 [DashboardCubit] Team dashboard loaded');
 
       emit(DashboardState.teamLoaded(report));
-    } catch (e, stackTrace) {
-      print('🔴 [DashboardCubit] Error: $e');
-      print('🔴 [DashboardCubit] StackTrace: $stackTrace');
+    } catch (e) {
       emit(DashboardState.error('${tr.error}: $e'));
     }
   }
@@ -90,8 +79,6 @@ class DashboardCubit extends Cubit<DashboardState> {
   }) async {
     final tr = AppLocalizations.of(context)!;
 
-    print('🔵 [DashboardCubit] loadGlobalDashboard');
-    print('🔵 [DashboardCubit] mode: $mode');
 
     emit(const DashboardState.loading());
 
@@ -101,12 +88,9 @@ class DashboardCubit extends Cubit<DashboardState> {
         at: at,
       );
 
-      print('🟢 [DashboardCubit] Global dashboard loaded');
 
       emit(DashboardState.globalLoaded(report));
-    } catch (e, stackTrace) {
-      print('🔴 [DashboardCubit] Error: $e');
-      print('🔴 [DashboardCubit] StackTrace: $stackTrace');
+    } catch (e) {
       emit(DashboardState.error('${tr.error}: $e'));
     }
   }

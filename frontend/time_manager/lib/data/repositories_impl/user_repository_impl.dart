@@ -2,8 +2,9 @@ import 'dart:convert';
 import 'package:time_manager/data/datasources/local/cache_manager.dart';
 import 'package:time_manager/data/datasources/local/local_storage_service.dart';
 import 'package:time_manager/data/datasources/remote/user_api.dart';
-import 'package:time_manager/data/models/user_model.dart';
-import 'package:time_manager/domain/entities/user.dart';
+import 'package:time_manager/data/models/user/user_model.dart';
+import 'package:time_manager/domain/entities/user/user.dart';
+
 import 'package:time_manager/domain/repositories/user_repository.dart';
 import 'package:time_manager/domain/usecases/user/update_user_profile.dart';
 
@@ -42,6 +43,39 @@ static const String _cacheKeyProfile = 'cached_user_profile';
       rethrow;
     }
   }
+
+  @override
+Future<User> updateUser({
+  required int userId,
+  String? username,
+  String? firstName,
+  String? lastName,
+  String? email,
+  String? phoneNumber,
+}) async {
+  final body = <String, dynamic>{};
+  if (username != null) body['username'] = username;
+  if (firstName != null) body['firstName'] = firstName;
+  if (lastName != null) body['lastName'] = lastName;
+  if (email != null) body['email'] = email;
+  if (phoneNumber != null) body['phoneNumber'] = phoneNumber;
+
+  final data = await api.updateUser(userId, body);
+  final dto = UserModel.fromJson(data);
+
+  // Invalider les caches
+  await cache.remove(_cacheKeyUsers);
+  await cache.remove('cached_user_$userId');
+  
+  // Si c'est l'utilisateur courant, mettre à jour son cache
+  final currentUser = await getCurrentUser();
+  if (currentUser?.id == userId) {
+    await cache.save(_cacheKeyProfile, dto.toJson(), ttlSeconds: 1800);
+    await storage.saveUser(jsonEncode(dto.toJson()));
+  }
+
+  return dto.toDomain();
+}
 
 @override
   Future<List<User>> getUsers() async {

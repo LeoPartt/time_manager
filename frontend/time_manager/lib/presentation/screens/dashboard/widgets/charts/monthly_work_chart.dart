@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-import 'package:time_manager/domain/entities/dashboard_report.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
 
 class MonthlyWorkChart extends StatelessWidget {
   final WorkSeries workSeries;
@@ -40,7 +40,7 @@ class MonthlyWorkChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.r16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.withValues(alpha:0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -172,7 +172,7 @@ class MonthlyWorkChart extends StatelessWidget {
                   drawVerticalLine: false,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: Colors.grey.withOpacity(0.15),
+                      color: Colors.grey.withValues(alpha:0.15),
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     );
@@ -205,7 +205,7 @@ class MonthlyWorkChart extends StatelessWidget {
     return LinearGradient(
       colors: [
         baseColor,
-        baseColor.withOpacity(0.7),
+        baseColor.withValues(alpha:0.7),
       ],
       begin: Alignment.topCenter,
       end: Alignment.bottomCenter,

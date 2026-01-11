@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:time_manager/domain/entities/team.dart';
+import 'package:time_manager/domain/entities/team/team.dart';
 
 part 'team_state.freezed.dart';
 

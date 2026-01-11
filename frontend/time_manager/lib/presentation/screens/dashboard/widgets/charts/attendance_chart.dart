@@ -2,7 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-import 'package:time_manager/domain/entities/dashboard_report.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
 
 class AttendanceChart extends StatelessWidget {
   final PercentKpi punctuality;
@@ -27,7 +27,7 @@ class AttendanceChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.r16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.withValues(alpha:0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -125,9 +125,9 @@ class AttendanceChart extends StatelessWidget {
                 child: CircularProgressIndicator(
                   value: 1.0,
                   strokeWidth: 14,
-                  backgroundColor: Colors.grey.withOpacity(0.15),
+                  backgroundColor: Colors.grey.withValues(alpha:0.15),
                   valueColor: AlwaysStoppedAnimation<Color>(
-                    Colors.grey.withOpacity(0.15),
+                    Colors.grey.withValues(alpha:0.15),
                   ),
                 ),
               ),
@@ -190,7 +190,7 @@ class AttendanceChart extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppSizes.p12),
       decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest.withOpacity(0.5),
+        color: colorScheme.surfaceContainerHighest.withValues(alpha:0.5),
         borderRadius: BorderRadius.circular(AppSizes.r8),
       ),
       child: Row(

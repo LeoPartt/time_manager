@@ -1,6 +1,6 @@
 import 'package:time_manager/data/datasources/remote/dashboard_api.dart';
-import 'package:time_manager/data/models/dashboard_report_model.dart';
-import 'package:time_manager/domain/entities/dashboard_report.dart';
+import 'package:time_manager/data/models/dashboard/dashboard_report_model.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
 import 'package:time_manager/domain/repositories/dashboard_repository.dart';
 
 class DashboardRepositoryImpl implements DashboardRepository {
@@ -21,12 +21,10 @@ class DashboardRepositoryImpl implements DashboardRepository {
         at: at,
       );
 
-      print('📦 [DashboardRepository] User JSON: $json');
 
       final model = UserDashboardReportModel.fromJson(json);
       return model.toEntity();
     } catch (e) {
-      print('🔴 [DashboardRepository] User error: $e');
       rethrow;
     }
   }
@@ -44,12 +42,10 @@ class DashboardRepositoryImpl implements DashboardRepository {
         at: at,
       );
 
-      print('📦 [DashboardRepository] Team JSON: $json');
 
       final model = TeamDashboardReportModel.fromJson(json);
       return model.toEntity();
     } catch (e) {
-      print('🔴 [DashboardRepository] Team error: $e');
       rethrow;
     }
   }
@@ -65,12 +61,10 @@ class DashboardRepositoryImpl implements DashboardRepository {
         at: at,
       );
 
-      print('📦 [DashboardRepository] Global JSON: $json');
 
       final model = GlobalDashboardReportModel.fromJson(json);
       return model.toEntity();
     } catch (e) {
-      print('🔴 [DashboardRepository] Global error: $e');
       rethrow;
     }
   }

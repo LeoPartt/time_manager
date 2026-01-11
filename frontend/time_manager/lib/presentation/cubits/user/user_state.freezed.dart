@@ -55,10 +55,10 @@ extension UserStatePatterns on UserState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( _Initial value)?  initial,TResult Function( UserLoading value)?  loading,TResult Function( UserLoaded value)?  loaded,TResult Function( UserUpdated value)?  updated,TResult Function( UserListLoaded value)?  listLoaded,TResult Function( UserDeleted value)?  deleted,TResult Function( _Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( UserInitial value)?  initial,TResult Function( UserLoading value)?  loading,TResult Function( UserLoaded value)?  loaded,TResult Function( UserUpdated value)?  updated,TResult Function( UserListLoaded value)?  listLoaded,TResult Function( UserDeleted value)?  deleted,TResult Function( _Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
+case UserInitial() when initial != null:
 return initial(_that);case UserLoading() when loading != null:
 return loading(_that);case UserLoaded() when loaded != null:
 return loaded(_that);case UserUpdated() when updated != null:
@@ -83,10 +83,10 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( _Initial value)  initial,required TResult Function( UserLoading value)  loading,required TResult Function( UserLoaded value)  loaded,required TResult Function( UserUpdated value)  updated,required TResult Function( UserListLoaded value)  listLoaded,required TResult Function( UserDeleted value)  deleted,required TResult Function( _Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( UserInitial value)  initial,required TResult Function( UserLoading value)  loading,required TResult Function( UserLoaded value)  loaded,required TResult Function( UserUpdated value)  updated,required TResult Function( UserListLoaded value)  listLoaded,required TResult Function( UserDeleted value)  deleted,required TResult Function( _Error value)  error,}){
 final _that = this;
 switch (_that) {
-case _Initial():
+case UserInitial():
 return initial(_that);case UserLoading():
 return loading(_that);case UserLoaded():
 return loaded(_that);case UserUpdated():
@@ -110,10 +110,10 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( _Initial value)?  initial,TResult? Function( UserLoading value)?  loading,TResult? Function( UserLoaded value)?  loaded,TResult? Function( UserUpdated value)?  updated,TResult? Function( UserListLoaded value)?  listLoaded,TResult? Function( UserDeleted value)?  deleted,TResult? Function( _Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( UserInitial value)?  initial,TResult? Function( UserLoading value)?  loading,TResult? Function( UserLoaded value)?  loaded,TResult? Function( UserUpdated value)?  updated,TResult? Function( UserListLoaded value)?  listLoaded,TResult? Function( UserDeleted value)?  deleted,TResult? Function( _Error value)?  error,}){
 final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
+case UserInitial() when initial != null:
 return initial(_that);case UserLoading() when loading != null:
 return loading(_that);case UserLoaded() when loaded != null:
 return loaded(_that);case UserUpdated() when updated != null:
@@ -139,7 +139,7 @@ return error(_that);case _:
 
 @optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( User user)?  loaded,TResult Function( User user)?  updated,TResult Function( List<User> users)?  listLoaded,TResult Function()?  deleted,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
+case UserInitial() when initial != null:
 return initial();case UserLoading() when loading != null:
 return loading();case UserLoaded() when loaded != null:
 return loaded(_that.user);case UserUpdated() when updated != null:
@@ -166,7 +166,7 @@ return error(_that.message);case _:
 
 @optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( User user)  loaded,required TResult Function( User user)  updated,required TResult Function( List<User> users)  listLoaded,required TResult Function()  deleted,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
-case _Initial():
+case UserInitial():
 return initial();case UserLoading():
 return loading();case UserLoaded():
 return loaded(_that.user);case UserUpdated():
@@ -192,7 +192,7 @@ return error(_that.message);case _:
 
 @optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( User user)?  loaded,TResult? Function( User user)?  updated,TResult? Function( List<User> users)?  listLoaded,TResult? Function()?  deleted,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
-case _Initial() when initial != null:
+case UserInitial() when initial != null:
 return initial();case UserLoading() when loading != null:
 return loading();case UserLoaded() when loaded != null:
 return loaded(_that.user);case UserUpdated() when updated != null:
@@ -210,8 +210,8 @@ return error(_that.message);case _:
 /// @nodoc
 
 
-class _Initial implements UserState {
-  const _Initial();
+class UserInitial implements UserState {
+  const UserInitial();
   
 
 
@@ -221,7 +221,7 @@ class _Initial implements UserState {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _Initial);
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserInitial);
 }
 
 

@@ -1,4 +1,4 @@
-import 'package:time_manager/domain/entities/dashboard_report.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
 import 'package:time_manager/domain/repositories/dashboard_repository.dart';
 
 class GetGlobalDashboard {

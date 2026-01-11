@@ -1,7 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-import 'package:time_manager/domain/entities/dashboard_report.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
 
 class WeeklyWorkChart extends StatelessWidget {
   final WorkSeries workSeries;
@@ -28,7 +28,7 @@ class WeeklyWorkChart extends StatelessWidget {
         borderRadius: BorderRadius.circular(AppSizes.r16),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
+            color: colorScheme.shadow.withValues(alpha:0.1),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -118,7 +118,7 @@ class WeeklyWorkChart extends StatelessWidget {
                   horizontalInterval: 2,
                   getDrawingHorizontalLine: (value) {
                     return FlLine(
-                      color: Colors.grey.withOpacity(0.15),
+                      color: Colors.grey.withValues(alpha:0.15),
                       strokeWidth: 1,
                       dashArray: [5, 5],
                     );
@@ -194,9 +194,9 @@ class WeeklyWorkChart extends StatelessWidget {
                       show: true,
                       gradient: LinearGradient(
                         colors: [
-                          colorScheme.primary.withOpacity(0.3),
-                          colorScheme.primary.withOpacity(0.1),
-                          colorScheme.primary.withOpacity(0.0),
+                          colorScheme.primary.withValues(alpha:0.3),
+                          colorScheme.primary.withValues(alpha:0.1),
+                          colorScheme.primary.withValues(alpha:0.0),
                         ],
                         begin: Alignment.topCenter,
                         end: Alignment.bottomCenter,

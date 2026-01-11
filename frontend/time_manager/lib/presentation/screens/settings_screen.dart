@@ -1,13 +1,16 @@
+
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-import 'package:time_manager/core/utils/accessibility_utils.dart';
+import 'package:time_manager/core/utils/extensions/context_extensions.dart';
 import 'package:time_manager/core/theme/local_provider.dart';
+import 'package:time_manager/core/theme/theme_switcher.dart';
+import 'package:time_manager/core/widgets/app_info_provider.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
-import '../../core/theme/theme_switcher.dart';
 
 @RoutePage()
 class SettingsScreen extends StatelessWidget {
@@ -18,172 +21,393 @@ class SettingsScreen extends StatelessWidget {
     final themeSwitcher = context.watch<ThemeSwitcher>();
     final localeProvider = context.watch<LocaleProvider>();
     final tr = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final colorScheme = theme.colorScheme;
+    final colorScheme = context.colorScheme;
+    final isTablet = context.screenWidth >= 600;
+    final appInfo = context.watch<AppInfoProvider>();
+
 
     return Scaffold(
       bottomNavigationBar: const NavBar(),
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: AppSizes.responsiveWidth(context, AppSizes.p24),
-            vertical: AppSizes.responsiveHeight(context, AppSizes.p24),
+          padding: EdgeInsets.all(
+            AppSizes.responsiveWidth(context, AppSizes.p24),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              AccessibilityUtils.withLabel(
-                label: tr.settings,
-                child: Header(label: tr.settings.toUpperCase()),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+                maxWidth: isTablet ? 600 : double.infinity,
               ),
-              SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-
-              Semantics(
-                label: tr.darkMode,
-                hint: tr.toggleThemeHint,
-                toggled: themeSwitcher.isDarkMode,
-                child: Container(
-                  padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p16)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(AppSizes.r16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.shadow.withValues(alpha: 0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
+              child: Column(
+                children: [
+                  // Header
+                  Header(label: tr.settings),
+                  
+                  SizedBox(height: AppSizes.p24),
+                  
+                  // Section Apparence
+                  _buildSectionHeader(context, tr.appearance, Icons.palette_outlined),
+                  
+                  SizedBox(height: AppSizes.p12),
+                  
+                  // Dark Mode Toggle
+                  _buildSettingCard(
+                    context,
+                    child: SwitchListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: AppSizes.p16,
+                        vertical: AppSizes.p8,
                       ),
-                    ],
-                  ),
-                  child: SwitchListTile(
-                    title: Text(
-                      tr.darkMode,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontSize: AccessibilityUtils.accessibleText(
-                          context,
-                          AppSizes.textLg,
-                        ),
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    subtitle: Text(
-                      themeSwitcher.isDarkMode
-                          ? tr.currentThemeDark
-                          : tr.currentThemeLight,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontSize: AccessibilityUtils.accessibleText(
-                          context,
-                          AppSizes.textMd,
+                      title: Text(
+                        tr.darkMode,
+                        style: TextStyle(
+                          fontSize: AppSizes.textMd,
+                          fontWeight: FontWeight.w600,
                         ),
                       ),
-                    ),
-                    value: themeSwitcher.isDarkMode,
-                    onChanged: (value) => themeSwitcher.toggleTheme(),
-                    activeThumbColor: colorScheme.primary,
-                    inactiveThumbColor: colorScheme.secondary,
-                    secondary: Icon(
-                      themeSwitcher.isDarkMode
-                          ? Icons.dark_mode_rounded
-                          : Icons.light_mode_rounded,
-                      color: colorScheme.primary,
-                      size: AppSizes.responsiveIcon(context, AppSizes.iconLarge),
-                      semanticLabel: themeSwitcher.isDarkMode
-                          ? tr.currentThemeDark
-                          : tr.currentThemeLight,
-                    ),
-                  ),
-                ),
-              ),
-
-              SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p32)),
-
-              // ────────────── Language Selection Section ──────────────
-              Semantics(
-                label: tr.language,
-                hint: tr.languageSelectionHint,
-                child: Container(
-                  padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p16)),
-                  decoration: BoxDecoration(
-                    color: colorScheme.surface,
-                    borderRadius: BorderRadius.circular(AppSizes.r16),
-                    boxShadow: [
-                      BoxShadow(
-                        color: colorScheme.shadow.withValues(alpha: 0.2),
-                        blurRadius: 8,
-                        offset: const Offset(0, 3),
+                      subtitle: Text(
+                        themeSwitcher.isDarkMode
+                            ? tr.currentThemeDark
+                            : tr.currentThemeLight,
+                        style: TextStyle(
+                          fontSize: AppSizes.textSm,
+                          color: colorScheme.onSurface.withValues(alpha:0.6),
+                        ),
                       ),
-                    ],
-                  ),
-                  child: ListTile(
-                    leading: const Icon(Icons.language_rounded),
-                    title: Text(
-                      tr.language,
-                      style: theme.textTheme.bodyLarge?.copyWith(
-                        fontSize: AccessibilityUtils.accessibleText(
-                          context,
-                          AppSizes.textLg,
+                      value: themeSwitcher.isDarkMode,
+                      onChanged: (value) => themeSwitcher.toggleTheme(),
+                      secondary: Container(
+                        padding: EdgeInsets.all(AppSizes.p8),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer.withValues(alpha:0.5),
+                          borderRadius: BorderRadius.circular(AppSizes.r8),
+                        ),
+                        child: Icon(
+                          themeSwitcher.isDarkMode
+                              ? Icons.dark_mode_rounded
+                              : Icons.light_mode_rounded,
+                          color: colorScheme.primary,
                         ),
                       ),
                     ),
-                    trailing: DropdownButton<Locale>(
-                      value: localeProvider.locale,
-                      underline: const SizedBox.shrink(),
-                      icon: Icon(
-                        Icons.arrow_drop_down_rounded,
-                        color: colorScheme.primary,
+                  ),
+                  
+                  SizedBox(height: AppSizes.p32),
+                  
+                  // Section Langue
+                  _buildSectionHeader(context, tr.language, Icons.language_rounded),
+                  
+                  SizedBox(height: AppSizes.p12),
+                  
+                  // Language Selector
+                  _buildSettingCard(
+                    context,
+                    child: ListTile(
+                      contentPadding: EdgeInsets.symmetric(
+                        horizontal: AppSizes.p16,
+                        vertical: AppSizes.p8,
                       ),
-                      items: [
-                        DropdownMenuItem(
-                          value: const Locale('en'),
-                          child: Text(
-                            tr.english,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: AccessibilityUtils.accessibleText(
-                                context,
-                                AppSizes.textMd,
-                              ),
+                      leading: Container(
+                        padding: EdgeInsets.all(AppSizes.p8),
+                        decoration: BoxDecoration(
+                          color: colorScheme.primaryContainer.withValues(alpha:0.5),
+                          borderRadius: BorderRadius.circular(AppSizes.r8),
+                        ),
+                        child: Icon(
+                          Icons.translate_rounded,
+                          color: colorScheme.primary,
+                        ),
+                      ),
+                      title: Text(
+                        tr.language,
+                        style: TextStyle(
+                          fontSize: AppSizes.textMd,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      subtitle: Text(
+                        _getLanguageName(localeProvider.locale, tr),
+                        style: TextStyle(
+                          fontSize: AppSizes.textSm,
+                          color: colorScheme.onSurface.withValues(alpha:0.6),
+                        ),
+                      ),
+                      trailing: DropdownButton<Locale>(
+                        value: localeProvider.locale,
+                        underline: const SizedBox.shrink(),
+                        icon: Icon(
+                          Icons.arrow_drop_down_rounded,
+                          color: colorScheme.primary,
+                        ),
+                        items: [
+                          DropdownMenuItem(
+                            value: const Locale('en'),
+                            child: Row(
+                              children: [
+                                Text('🇬🇧  '),
+                                Text(tr.english),
+                              ],
+                            ),
+                          ),
+                          DropdownMenuItem(
+                            value: const Locale('fr'),
+                            child: Row(
+                              children: [
+                                Text('🇫🇷  '),
+                                Text(tr.french),
+                              ],
+                            ),
+                          ),
+                        ],
+                        onChanged: (locale) {
+                          if (locale != null) {
+                            localeProvider.setLocale(locale);
+                            context.showSuccess(tr.languageChanged);
+                          }
+                        },
+                      ),
+                    ),
+                  ),
+                  
+                  SizedBox(height: AppSizes.p32),
+                  
+                  // Section Notifications
+                  _buildSectionHeader(context, tr.notifications, Icons.notifications_outlined),
+                  
+                  SizedBox(height: AppSizes.p12),
+                  
+                  _buildSettingCard(
+                    context,
+                    child: Column(
+                      children: [
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AppSizes.p16,
+                            vertical: AppSizes.p8,
+                          ),
+                          title: Text(
+                            tr.pushNotifications,
+                            style: TextStyle(
+                              fontSize: AppSizes.textMd,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            tr.pushNotificationsDesc,
+                            style: TextStyle(
+                              fontSize: AppSizes.textSm,
+                              color: colorScheme.onSurface.withValues(alpha:0.6),
+                            ),
+                          ),
+                          value: true, 
+                          onChanged: (value) {
+                            
+                          },
+                          secondary: Container(
+                            padding: EdgeInsets.all(AppSizes.p8),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primaryContainer.withValues(alpha:0.5),
+                              borderRadius: BorderRadius.circular(AppSizes.r8),
+                            ),
+                            child: Icon(
+                              Icons.notifications_active_outlined,
+                              color: colorScheme.primary,
                             ),
                           ),
                         ),
-                        DropdownMenuItem(
-                          value: const Locale('fr'),
-                          child: Text(
-                            tr.french,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              fontSize: AccessibilityUtils.accessibleText(
-                                context,
-                                AppSizes.textMd,
-                              ),
+                        
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outline.withValues(alpha:0.2),
+                        ),
+                        
+                        SwitchListTile(
+                          contentPadding: EdgeInsets.symmetric(
+                            horizontal: AppSizes.p16,
+                            vertical: AppSizes.p8,
+                          ),
+                          title: Text(
+                            tr.emailNotifications,
+                            style: TextStyle(
+                              fontSize: AppSizes.textMd,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          subtitle: Text(
+                            tr.emailNotificationsDesc,
+                            style: TextStyle(
+                              fontSize: AppSizes.textSm,
+                              color: colorScheme.onSurface.withValues(alpha:0.6),
+                            ),
+                          ),
+                          value: false, 
+                          onChanged: (value) {
+                            
+                          },
+                          secondary: Container(
+                            padding: EdgeInsets.all(AppSizes.p8),
+                            decoration: BoxDecoration(
+                              color: colorScheme.primaryContainer.withValues(alpha:0.5),
+                              borderRadius: BorderRadius.circular(AppSizes.r8),
+                            ),
+                            child: Icon(
+                              Icons.email_outlined,
+                              color: colorScheme.primary,
                             ),
                           ),
                         ),
                       ],
-                      onChanged: (locale) {
-                        if (locale != null) localeProvider.setLocale(locale);
-                      },
                     ),
                   ),
-                ),
-              ),
-
-              SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p32)),
-
-              ExcludeSemantics(
-                child: Text(
-                  tr.accessibilityInfo,
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    fontSize: AccessibilityUtils.accessibleText(
-                      context,
-                      AppSizes.textSm,
+                  
+                  SizedBox(height: AppSizes.p32),
+                  
+                  // Section À propos
+                  _buildSectionHeader(context, tr.about, Icons.info_outline),
+                  
+                  SizedBox(height: AppSizes.p12),
+                  
+                  _buildSettingCard(
+                    context,
+                    child: Column(
+                      children: [
+                         _buildInfoTile(
+        context,
+        icon: Icons.app_settings_alt_outlined,
+        title: tr.appVersion,
+        subtitle: appInfo.isLoaded ? appInfo.version : '—',
+      ),
+                        
+                        Divider(
+                          height: 1,
+                          color: colorScheme.outline.withValues(alpha:0.2),
+                        ),
+                        
+                          _buildInfoTile(
+        context,
+        icon: Icons.verified_outlined,
+        title: tr.buildNumber,
+        subtitle: appInfo.isLoaded ? appInfo.buildNumber : '—',
+      ),
+                      ],
                     ),
                   ),
-                ),
+                  
+                  SizedBox(height: AppSizes.p32),
+                  
+                  // Footer
+                  Text(
+                    tr.accessibilityInfo,
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: AppSizes.textSm,
+                      color: colorScheme.onSurface.withValues(alpha:0.5),
+                    ),
+                  ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildSectionHeader(BuildContext context, String title, IconData icon) {
+    final colorScheme = context.colorScheme;
+    
+    return Row(
+      children: [
+        Icon(
+          icon,
+          size: 20,
+          color: colorScheme.primary,
+        ),
+        SizedBox(width: AppSizes.p8),
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: AppSizes.textLg,
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSettingCard(BuildContext context, {required Widget child}) {
+    final colorScheme = context.colorScheme;
+    
+    return Container(
+      decoration: BoxDecoration(
+        color: colorScheme.surface,
+        borderRadius: BorderRadius.circular(AppSizes.r16),
+        border: Border.all(
+          color: colorScheme.outline.withValues(alpha:0.2),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: colorScheme.shadow.withValues(alpha:0.08),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+
+  Widget _buildInfoTile(
+    BuildContext context, {
+    required IconData icon,
+    required String title,
+    required String subtitle,
+  }) {
+    final colorScheme = context.colorScheme;
+    
+    return ListTile(
+      contentPadding: EdgeInsets.symmetric(
+        horizontal: AppSizes.p16,
+        vertical: AppSizes.p8,
+      ),
+      leading: Container(
+        padding: EdgeInsets.all(AppSizes.p8),
+        decoration: BoxDecoration(
+          color: colorScheme.primaryContainer.withValues(alpha:0.5),
+          borderRadius: BorderRadius.circular(AppSizes.r8),
+        ),
+        child: Icon(
+          icon,
+          color: colorScheme.primary,
+          size: 20,
+        ),
+      ),
+      title: Text(
+        title,
+        style: TextStyle(
+          fontSize: AppSizes.textMd,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
+      subtitle: Text(
+        subtitle,
+        style: TextStyle(
+          fontSize: AppSizes.textSm,
+          color: colorScheme.onSurface.withValues(alpha:0.6),
+        ),
+      ),
+    );
+  }
+
+  String _getLanguageName(Locale locale, AppLocalizations tr) {
+    switch (locale.languageCode) {
+      case 'en':
+        return tr.english;
+      case 'fr':
+        return tr.french;
+      default:
+        return tr.english;
+    }
   }
 }

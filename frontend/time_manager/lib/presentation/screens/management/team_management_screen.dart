@@ -1,12 +1,14 @@
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_manager/core/constants/app_colors.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/core/utils/extensions/context_extensions.dart';
 import 'package:time_manager/core/widgets/app_button.dart';
-import 'package:time_manager/core/widgets/app_search_bar.dart';
-import 'package:time_manager/domain/entities/team.dart';
-import 'package:time_manager/domain/entities/user.dart';
+import 'package:time_manager/core/widgets/app_card.dart';
+import 'package:time_manager/domain/entities/team/team.dart';
+import 'package:time_manager/domain/entities/user/user.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_state.dart';
@@ -14,12 +16,17 @@ import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_state.dart';
 import 'package:time_manager/presentation/routes/app_router.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
+import 'package:time_manager/presentation/widgets/loading_state_widget.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 
 @RoutePage()
 class TeamManagementScreen extends StatefulWidget {
   final Team team;
-  const TeamManagementScreen({super.key, required this.team});
+  
+  const TeamManagementScreen({
+    super.key,
+    required this.team,
+  });
 
   @override
   State<TeamManagementScreen> createState() => _TeamManagementScreenState();
@@ -33,11 +40,8 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
   @override
   void initState() {
     super.initState();
-
     context.read<UserCubit>().getUsers();
-
-    /// 🔑 IMPORTANT : on recharge la team depuis le Cubit
-    /// widget.team ne sert QUE pour l’id initial pas plus !! O_O
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<TeamCubit>().getTeam(widget.team.id);
     });
@@ -46,6 +50,8 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
+    final isTablet = context.screenWidth >= 600;
+
     return MultiBlocListener(
       listeners: [
         BlocListener<UserCubit, UserState>(
@@ -59,311 +65,354 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
             );
           },
         ),
-
-        /// ⚠️ SnackBar uniquement sur erreur
         BlocListener<TeamCubit, TeamState>(
           listener: (context, state) {
             state.whenOrNull(
               loaded: (_) {
                 if (mounted && _isAddingMember) {
-                  setState(() {}); // Pour rebuild après suppr
+                  setState(() {});
                 }
               },
-              error: (msg) => ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  backgroundColor: Colors.redAccent,
-                  behavior: SnackBarBehavior.floating,
-                  content: Text(
-                    "Erreur : $msg",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                ),
-              ),
-              initial: () {
-                context.router.push(const ManagementRoute());
-              },
+              error: (msg) => context.showError(msg),
+              initial: () => context.router.push(const ManagementRoute()),
             );
-          }
+          },
         ),
       ],
       child: Scaffold(
         bottomNavigationBar: const NavBar(),
         body: SafeArea(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppSizes.p16,
-              vertical: AppSizes.p12,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Header(label: tr.teamManagement),
-                const SizedBox(height: 8),
-                AppSearchBar(),
-                const SizedBox(height: 16),
-
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: BoxDecoration(
-                      color: AppColors.accent.withValues(alpha: 0.95),
-                      borderRadius: BorderRadius.circular(AppSizes.r24),
+          child: SingleChildScrollView(
+            padding: EdgeInsets.all(AppSizes.p16),
+            child: Center(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxWidth: isTablet ? 800 : double.infinity,
+                ),
+                child: Column(
+                  children: [
+                    Header(
+                      label: tr.teamManagement,
+                      leading: IconButton(
+                        icon: const Icon(Icons.arrow_back),
+                        onPressed: () => context.router.pop(),
+                      ),
                     ),
-                    padding: const EdgeInsets.all(AppSizes.p20),
-                    child: BlocBuilder<TeamCubit, TeamState>(
+                    
+                    SizedBox(height: AppSizes.p24),
+
+                    BlocBuilder<TeamCubit, TeamState>(
                       builder: (context, state) {
                         return state.maybeWhen(
-                          loading: () => const Center(
-                            child: CircularProgressIndicator(),
-                          ),
+                          loading: () => const LoadingStateWidget(),
                           error: (msg) => Center(
                             child: Text(
-                              "Erreur : $msg",
-                              style:
-                                  TextStyle(color: AppColors.textPrimary),
+                              msg,
+                              style: TextStyle(color: AppColors.error),
                             ),
                           ),
-                          loaded: (team) =>
-                              _buildTeamContent(context, team),
-                          orElse: () => Center(
-                            child: Text(
-                              "Schould not happen",
-                              style:
-                                  TextStyle(color: AppColors.textPrimary),
-                            ),
-                          ),
+                          loaded: (team) => _buildTeamContent(context, team, tr),
+                          orElse: () => const LoadingStateWidget(),
                         );
                       },
                     ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTeamContent(BuildContext context, Team team, AppLocalizations tr) {
+    final members = team.members;
+    final colorScheme = context.colorScheme;
+
+    return Column(
+      children: [
+        // Team Header
+        AppCard(
+          child: Padding(
+            padding: EdgeInsets.all(AppSizes.p20),
+            child: Row(
+              children: [
+                Container(
+                  padding: EdgeInsets.all(AppSizes.p16),
+                  decoration: BoxDecoration(
+                    color: colorScheme.primaryContainer,
+                    borderRadius: BorderRadius.circular(AppSizes.r12),
+                  ),
+                  child: Icon(
+                    Icons.group,
+                    size: 32,
+                    color: colorScheme.primary,
+                  ),
+                ),
+                
+                SizedBox(width: AppSizes.p16),
+                
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        team.name,
+                        style: TextStyle(
+                          fontSize: AppSizes.textXl,
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                      ),
+                      SizedBox(height: AppSizes.p4),
+                      Text(
+                        '${members.length} ${tr.members}',
+                        style: TextStyle(
+                          fontSize: AppSizes.textSm,
+                          color: colorScheme.onSurface.withValues(alpha:0.6),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
         ),
-      ),
-    );
-  }
 
-  /// --- UI principale ---
-  Widget _buildTeamContent(BuildContext context, Team team) {
-    final members = team.members; // 🔒 source unique
-    final tr = AppLocalizations.of(context)!;
+        SizedBox(height: AppSizes.p24),
 
-    return Column(
-      children: [
-        // HEADER TEAM (inchangé)
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircleAvatar(
-              radius: 26,
-              backgroundColor:
-                  AppColors.primary.withValues(alpha: 0.3),
-              child: Icon(
-                Icons.person,
-                size: 32,
-                color: AppColors.textPrimary,
-              ),
-            ),
-            const SizedBox(width: 12),
-            Container(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withValues(alpha: 0.4),
-                borderRadius: BorderRadius.circular(AppSizes.r12),
-              ),
-              child: Text(
-                team.name,
-                style: TextStyle(
-                  color: AppColors.textPrimary,
-                  fontSize: AppSizes.textLg,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-
-        // LISTE MEMBRES
-        Expanded(
-          child: members.isEmpty
-              ? Center(
-                  child: Text(
-                    tr.teamNoMember ,
-                    style:
-                        TextStyle(color: AppColors.textPrimary),
-                  ),
-                )
-              : ListView.separated(
-                  itemCount: members.length,
-                  separatorBuilder: (_, __) => Divider(
-                    color: AppColors.primary.withValues(alpha: 0.2),
-                    height: 8,
-                  ),
-                  itemBuilder: (context, index) {
-                    final member = members[index];
-                    return Row(
-                      mainAxisAlignment:
-                          MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.person,
-                                color: Colors.black87, size: 20),
-                            const SizedBox(width: 8),
-                            Text(
-                              '${member.firstName} ${member.lastName}',
-                              style: TextStyle(
-                                color: AppColors.textPrimary,
-                                fontWeight: FontWeight.w500,
-                              ),
+        // Members List
+        AppCard(
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 300),
+            child: members.isEmpty
+                ? Padding(
+                    padding: EdgeInsets.all(AppSizes.p32),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.people_outline,
+                            size: 64,
+                            color: colorScheme.onSurface.withValues(alpha:0.3),
+                          ),
+                          SizedBox(height: AppSizes.p16),
+                          Text(
+                            tr.noMembers,
+                            style: TextStyle(
+                              fontSize: AppSizes.textLg,
+                              color: colorScheme.onSurface.withValues(alpha:0.6),
                             ),
-                          ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  )
+                : ListView.separated(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    itemCount: members.length,
+                    separatorBuilder: (_, _) => Divider(
+                      color: colorScheme.outline.withValues(alpha:0.2),
+                      height: 1,
+                    ),
+                    itemBuilder: (context, index) {
+                      final member = members[index];
+                      return ListTile(
+                      
+                        title: Text(
+                          '${member.firstName} ${member.lastName}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.w600,
+                            color: colorScheme.onSurface,
+                          ),
                         ),
-                        IconButton(
-                          onPressed: () => context
-                              .read<TeamCubit>()
-                              .removeMember(team.id, member.id),
-                          icon: const Icon(Icons.close_rounded,
-                              color: Colors.redAccent),
+                        subtitle: Text(
+                          member.email,
+                          style: TextStyle(
+                            fontSize: AppSizes.textSm,
+                            color: colorScheme.onSurface.withValues(alpha:0.6),
+                          ),
                         ),
-                      ],
-                    );
-                  },
-                ),
+                        trailing: IconButton(
+                          onPressed: () => _confirmRemoveMember(
+                            context,
+                            team,
+                            member,
+                            tr,
+                          ),
+                          icon: Icon(
+                            Icons.remove_circle_outline,
+                            color: AppColors.error,
+                          ),
+                          tooltip: tr.removeMember,
+                        ),
+                      );
+                    },
+                  ),
+          ),
         ),
-        const SizedBox(height: 10),
 
-        // BOUTONS
+        SizedBox(height: AppSizes.p24),
+
+        // Action Buttons
         Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            AppButton(
-              label: _isAddingMember ? tr.cancel : tr.addMembers,
-              onPressed: () {
-                setState(() {
-                  _isAddingMember = !_isAddingMember;
-                  _query = '';
-                });
-              },
+            Expanded(
+              child: AppButton(
+                label: _isAddingMember ? tr.cancel : tr.addMembers,
+                onPressed: () {
+                  setState(() {
+                    _isAddingMember = !_isAddingMember;
+                    _query = '';
+                  });
+                },
+                icon: _isAddingMember ? Icons.close : Icons.person_add,
+              ),
             ),
-            AppButton(label: tr.delete, onPressed: 
-              () async {
-                final confirmed = await _confirmDelete(context);
-
-                if (confirmed && mounted) {
-                  context.read<TeamCubit>().deleteTeam(team.id);
-                }
-              }
+            
+            SizedBox(width: AppSizes.p16),
+            
+            Expanded(
+              child: AppDangerButton(
+                label: tr.deleteTeam,
+                onPressed: () => _confirmDeleteTeam(context, team, tr),
+                icon: Icons.delete_outline,
+              ),
             ),
           ],
         ),
 
-        if (_isAddingMember) _buildAddMemberPanel(context, team),
+        if (_isAddingMember) ...[
+          SizedBox(height: AppSizes.p24),
+          _buildAddMemberPanel(context, team, tr),
+        ],
       ],
     );
   }
 
-  /// --- PANEL AJOUT ---
-  Widget _buildAddMemberPanel(BuildContext context, Team team) {
-  final teamMemberIds = team.members.map((m) => m.id).toSet();
+  Widget _buildAddMemberPanel(BuildContext context, Team team, AppLocalizations tr) {
+    final colorScheme = context.colorScheme;
+    final teamMemberIds = team.members.map((m) => m.id).toSet();
 
-  final filteredUsers = _allUsers
-      .where((u) => !teamMemberIds.contains(u.id)) // 🔑 clé
-      .where((u) {
-        final q = _query.toLowerCase();
-        return q.isEmpty ||
-            u.firstName.toLowerCase().contains(q) ||
-            u.lastName.toLowerCase().contains(q) ||
-            u.email.toLowerCase().contains(q);
-      })
-      .toList();
+    final filteredUsers = _allUsers
+        .where((u) => !teamMemberIds.contains(u.id))
+        .where((u) {
+          final q = _query.toLowerCase();
+          return q.isEmpty ||
+              u.firstName.toLowerCase().contains(q) ||
+              u.lastName.toLowerCase().contains(q) ||
+              u.email.toLowerCase().contains(q);
+        })
+        .toList();
 
-    return Container(
-      margin: const EdgeInsets.only(top: 12),
-      decoration: BoxDecoration(
-        color: AppColors.secondary.withValues(alpha: 0.95),
-        borderRadius: BorderRadius.circular(AppSizes.r16),
-      ),
-      padding: const EdgeInsets.all(8),
-      constraints: const BoxConstraints(maxHeight: 250),
-      child: Column(
-        children: [
-          TextField(
-            onChanged: (v) => setState(() => _query = v.trim()),
-            decoration: const InputDecoration(
-              prefixIcon: Icon(Icons.search_rounded),
-              hintText: 'Search user...',
-              border: InputBorder.none,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: ListView.separated(
-              itemCount: filteredUsers.length,
-              separatorBuilder: (_, __) => Divider(
-                color: AppColors.primary.withValues(alpha: 0.2),
-                height: 1,
+    return AppCard(
+      child: Container(
+        constraints: const BoxConstraints(maxHeight: 400),
+        child: Column(
+          children: [
+            Padding(
+              padding: EdgeInsets.all(AppSizes.p16),
+              child: TextField(
+                onChanged: (v) => setState(() => _query = v.trim()),
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search),
+                  hintText: tr.searchUser,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(AppSizes.r12),
+                  ),
+                ),
               ),
-              itemBuilder: (context, index) {
-                final user = filteredUsers[index];
-                return ListTile(
-                  leading: const Icon(Icons.person,
-                      color: Colors.white70, size: 20),
-                  title: Text(
-                    '${user.firstName} ${user.lastName}',
-                    style:
-                        TextStyle(color: AppColors.textPrimary),
-                  ),
-                  subtitle: Text(
-                    user.email,
-                    style: TextStyle(
-                        color: AppColors.textPrimary
-                            .withValues(alpha: 0.7)),
-                  ),
-                  onTap: () {
-                    context
-                        .read<TeamCubit>()
-                        .addMember(team.id, user.id);
-                    setState(() => _isAddingMember = false);
-                  },
-                );
-              },
             ),
-          ),
-        ],
+            
+            Divider(color: colorScheme.outline.withValues(alpha:0.2)),
+            
+            Expanded(
+              child: filteredUsers.isEmpty
+                  ? Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(AppSizes.p24),
+                        child: Text(
+                          tr.noUsersFound,
+                          style: TextStyle(
+                            color: colorScheme.onSurface.withValues(alpha:0.6),
+                          ),
+                        ),
+                      ),
+                    )
+                  : ListView.separated(
+                      itemCount: filteredUsers.length,
+                      separatorBuilder: (_, _) => Divider(
+                        color: colorScheme.outline.withValues(alpha:0.2),
+                        height: 1,
+                      ),
+                      itemBuilder: (context, index) {
+                        final user = filteredUsers[index];
+                        return ListTile(
+                        
+                          title: Text(
+                            '${user.firstName} ${user.lastName}',
+                            style: const TextStyle(fontWeight: FontWeight.w600),
+                          ),
+                          subtitle: Text(
+                            user.email,
+                            style: TextStyle(fontSize: AppSizes.textSm),
+                          ),
+                          trailing: Icon(
+                            Icons.add_circle_outline,
+                            color: colorScheme.primary,
+                          ),
+                          onTap: () {
+                            context.read<TeamCubit>().addMember(team.id, user.id);
+                            setState(() => _isAddingMember = false);
+                            context.showSuccess(tr.memberAddedSuccess);
+                          },
+                        );
+                      },
+                    ),
+            ),
+          ],
+        ),
       ),
     );
   }
-}
 
-Future<bool> _confirmDelete(BuildContext context) async {
-  return await showDialog<bool>(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: const Text('Delete team'),
-            content: const Text(
-              'Are you sure you want to delete this team? This action is irreversible.',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
-                ),
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Delete'),
-              ),
-            ],
-          );
-        },
-      ) ??
-      false;
+  Future<void> _confirmRemoveMember(
+    BuildContext context,
+    Team team,
+    User member,
+    AppLocalizations tr,
+  ) async {
+    final confirmed = await context.showConfirmDialog(
+      title: tr.removeMember,
+      message: '${tr.confirmRemoveMember} ${member.firstName} ${member.lastName} ?',
+      isDangerous: true,
+      confirmText: tr.remove,
+    );
+
+    if (confirmed && context.mounted) {
+      context.read<TeamCubit>().removeMember(team.id, member.id);
+      context.showSuccess(tr.memberRemovedSuccess);
+    }
+  }
+
+  Future<void> _confirmDeleteTeam(
+    BuildContext context,
+    Team team,
+    AppLocalizations tr,
+  ) async {
+    final confirmed = await context.showConfirmDialog(
+      title: tr.deleteTeam,
+      message: tr.confirmDeleteTeam,
+      isDangerous: true,
+      confirmText: tr.delete,
+    );
+
+    if (confirmed && context.mounted) {
+      context.read<TeamCubit>().deleteTeam(team.id);
+      context.showSuccess(tr.teamDeletedSuccess);
+    }
+  }
 }

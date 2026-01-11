@@ -20,11 +20,9 @@ class DashboardApi {
       };
 
       final url = '${ApiEndpoints.userDashboard(userId)}?${_buildQueryString(queryParams)}';
-      print('🔵 [DashboardApi] Fetching user dashboard: $url');
 
       final response = await client.get(url);
 
-      print('🟢 [DashboardApi] User dashboard response: $response');
 
       if (response is Map<String, dynamic>) {
         return response;
@@ -51,11 +49,9 @@ class DashboardApi {
       };
 
       final url = '${ApiEndpoints.teamDashboard(teamId)}?${_buildQueryString(queryParams)}';
-      print('🔵 [DashboardApi] Fetching team dashboard: $url');
 
       final response = await client.get(url);
 
-      print('🟢 [DashboardApi] Team dashboard response: $response');
 
       if (response is Map<String, dynamic>) {
         return response;
@@ -71,34 +67,37 @@ class DashboardApi {
 
   /// 📊 Récupère le dashboard global
   Future<Map<String, dynamic>> getGlobalDashboard({
-    required String mode,
-    DateTime? at,
-  }) async {
-    try {
-      final queryParams = <String, String>{
-        'mode': mode,
-        if (at != null) 'at': at.toIso8601String(),
-      };
+  required String mode,
+  DateTime? at,
+}) async {
+  try {
+    final queryParams = <String, String>{
+      'mode': mode,
+      if (at != null) 'at': at.toIso8601String(),
+    };
 
-      final url = '${ApiEndpoints.globalDashboard}?${_buildQueryString(queryParams)}';
-      print('🔵 [DashboardApi] Fetching global dashboard: $url');
+    final url = '${ApiEndpoints.globalDashboard}?${_buildQueryString(queryParams)}';
 
-      final response = await client.get(url);
+    final response = await client.get(url);
 
-      print('🟢 [DashboardApi] Global dashboard response: $response');
 
-      if (response is Map<String, dynamic>) {
-        return response;
+    if (response is Map<String, dynamic>) {
+      // ✅ Wrapper la réponse si elle n'a pas de champ "dashboard"
+      if (!response.containsKey('dashboard')) {
+        return {
+          'dashboard': response,
+        };
       }
-
-      throw NetworkException('Invalid response format for global dashboard');
-    } on NetworkException {
-      rethrow;
-    } catch (e) {
-      throw NetworkException('Unexpected error fetching global dashboard: $e');
+      return response;
     }
-  }
 
+    throw NetworkException('Invalid response format for global dashboard');
+  } on NetworkException {
+    rethrow;
+  } catch (e) {
+    throw NetworkException('Unexpected error fetching global dashboard: $e');
+  }
+}
   String _buildQueryString(Map<String, String> params) {
     return params.entries
         .map((e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')

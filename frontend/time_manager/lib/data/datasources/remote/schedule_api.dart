@@ -63,4 +63,41 @@ final body = {
       throw NetworkException('Unexpected error fetching clock status: $e');
     }
   }
+
+  Future<dynamic> getUserClocks({
+    required int userId,
+    DateTime? from,
+    DateTime? to,
+    bool? current,
+  }) async {
+    try {
+      final queryParams = <String, String>{};
+
+      if (from != null) {
+        queryParams['from'] = from.toUtc().toIso8601String();
+      }
+      if (to != null) {
+        queryParams['to'] = to.toUtc().toIso8601String();
+      }
+      if (current != null) {
+        queryParams['current'] = current.toString();
+      }
+
+      final query = queryParams.isEmpty
+          ? ''
+          : '?${queryParams.entries.map((e) => '${e.key}=${Uri.encodeComponent(e.value)}').join('&')}';
+
+      final url = '${ApiEndpoints.userClocks(userId)}$query';
+
+
+      final response = await client.get(url);
+
+
+      return response;
+    } on NetworkException {
+      rethrow;
+    } catch (e) {
+      throw NetworkException('Error fetching user clocks: $e');
+    }
+  }
 }

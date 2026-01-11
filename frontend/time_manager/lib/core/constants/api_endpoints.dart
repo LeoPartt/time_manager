@@ -43,12 +43,6 @@ class ApiEndpoints {
   //  SCHEDULE endpoints
   // ───────────────────────────────
   static String get schedules => '/clocks';
-  static String scheduleById(int id) => '/schedules/$id';
-  // static String get clockIn => '/clocks';
-  // static String get clockOut => '/clocks';
-  static String get history => '/schedules/history';
-   
-  static String get clockStatus => '/clocks/status';
 
   // ───────────────────────────────
   // REPORTS / KPI endpoints

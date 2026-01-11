@@ -113,11 +113,899 @@ abstract class AppLocalizations {
   /// **'Logout'**
   String get logout;
 
+  /// No description provided for @myProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'My Profile'**
+  String get myProfile;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @administrator.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator'**
+  String get administrator;
+
+  /// No description provided for @planningManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning Management'**
+  String get planningManagement;
+
+  /// No description provided for @createUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Create User'**
+  String get createUser;
+
+  /// No description provided for @addUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Add User'**
+  String get addUser;
+
+  /// No description provided for @addTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Team'**
+  String get addTeam;
+
+  /// No description provided for @addDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Day'**
+  String get addDay;
+
+  /// No description provided for @teamName.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Name'**
+  String get teamName;
+
+  /// No description provided for @teamDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Description'**
+  String get teamDescription;
+
+  /// No description provided for @teamNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Team name is required'**
+  String get teamNameRequired;
+
+  /// No description provided for @selectUserSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the search bar to find a user'**
+  String get selectUserSubtitle;
+
+  /// No description provided for @search.
+  ///
+  /// In en, this message translates to:
+  /// **'Search'**
+  String get search;
+
+  /// No description provided for @noPlanningConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'No planning configured'**
+  String get noPlanningConfigured;
+
+  /// No description provided for @noPlanningSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Start by adding working days'**
+  String get noPlanningSubtitle;
+
+  /// No description provided for @noMembers.
+  ///
+  /// In en, this message translates to:
+  /// **'No members'**
+  String get noMembers;
+
+  /// No description provided for @members.
+  ///
+  /// In en, this message translates to:
+  /// **'members'**
+  String get members;
+
+  /// No description provided for @removeMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove member'**
+  String get removeMember;
+
+  /// No description provided for @deleteTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Team'**
+  String get deleteTeam;
+
+  /// No description provided for @editPlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Planning'**
+  String get editPlanning;
+
+  /// No description provided for @addPlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Planning'**
+  String get addPlanning;
+
+  /// No description provided for @arrivalTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrival Time'**
+  String get arrivalTime;
+
+  /// No description provided for @departureTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure Time'**
+  String get departureTime;
+
+  /// No description provided for @selectArrivalTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select arrival time'**
+  String get selectArrivalTime;
+
+  /// No description provided for @selectDepartureTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select departure time'**
+  String get selectDepartureTime;
+
+  /// No description provided for @weekDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Week Day'**
+  String get weekDay;
+
+  /// No description provided for @duration.
+  ///
+  /// In en, this message translates to:
+  /// **'Duration'**
+  String get duration;
+
+  /// No description provided for @invalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid'**
+  String get invalid;
+
+  /// No description provided for @invalidTimeRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Departure time must be after arrival time'**
+  String get invalidTimeRange;
+
+  /// No description provided for @planningCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning created successfully'**
+  String get planningCreatedSuccess;
+
+  /// No description provided for @planningUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning updated successfully'**
+  String get planningUpdatedSuccess;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @daysConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'days configured'**
+  String get daysConfigured;
+
+  /// No description provided for @outOf5WorkingDays.
+  ///
+  /// In en, this message translates to:
+  /// **'out of 5 working days'**
+  String get outOf5WorkingDays;
+
+  /// No description provided for @changeUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Change user'**
+  String get changeUser;
+
+  /// No description provided for @searchByNameOrEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or email...'**
+  String get searchByNameOrEmail;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm deletion'**
+  String get confirmDelete;
+
+  /// No description provided for @confirmDeletePlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete the planning for'**
+  String get confirmDeletePlanning;
+
+  /// No description provided for @confirmDeleteTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this team? This action is irreversible.'**
+  String get confirmDeleteTeam;
+
+  /// No description provided for @confirmRemoveMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to remove'**
+  String get confirmRemoveMember;
+
+  /// No description provided for @users.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get users;
+
+  /// No description provided for @userDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'User Details'**
+  String get userDetails;
+
+  /// No description provided for @viewDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'View Dashboard'**
+  String get viewDashboard;
+
+  /// No description provided for @featureInDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature in development'**
+  String get featureInDevelopment;
+
+  /// No description provided for @confirmDeleteUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete'**
+  String get confirmDeleteUser;
+
+  /// No description provided for @userDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'User deleted successfully'**
+  String get userDeletedSuccess;
+
+  /// No description provided for @loadingUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading users...'**
+  String get loadingUsers;
+
+  /// No description provided for @loadingTeams.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading teams...'**
+  String get loadingTeams;
+
+  /// No description provided for @noUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'No users'**
+  String get noUsers;
+
+  /// No description provided for @noUsersSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No users have been found'**
+  String get noUsersSubtitle;
+
+  /// No description provided for @noTeams.
+  ///
+  /// In en, this message translates to:
+  /// **'No teams'**
+  String get noTeams;
+
+  /// No description provided for @noTeamsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No teams have been created'**
+  String get noTeamsSubtitle;
+
+  /// No description provided for @member.
+  ///
+  /// In en, this message translates to:
+  /// **'member'**
+  String get member;
+
+  /// No description provided for @editUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit User'**
+  String get editUser;
+
+  /// No description provided for @editTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Team'**
+  String get editTeam;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @userUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'User updated successfully'**
+  String get userUpdatedSuccess;
+
+  /// No description provided for @teamUpdatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Team updated successfully'**
+  String get teamUpdatedSuccess;
+
+  /// No description provided for @usernameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Username is required'**
+  String get usernameRequired;
+
+  /// No description provided for @firstNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'First name is required'**
+  String get firstNameRequired;
+
+  /// No description provided for @lastNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Last name is required'**
+  String get lastNameRequired;
+
+  /// No description provided for @email.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get email;
+
+  /// No description provided for @irreversibleAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Revert Delete'**
+  String get irreversibleAction;
+
+  /// No description provided for @globalDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Global Dashboard'**
+  String get globalDashboard;
+
+  /// No description provided for @companyOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Company Overview'**
+  String get companyOverview;
+
+  /// No description provided for @globalStatisticsAllEmployees.
+  ///
+  /// In en, this message translates to:
+  /// **'Global statistics of all employees'**
+  String get globalStatisticsAllEmployees;
+
+  /// No description provided for @loadingGlobalDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading global dashboard...'**
+  String get loadingGlobalDashboard;
+
+  /// No description provided for @planningDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning deleted successfully'**
+  String get planningDeletedSuccess;
+
+  /// No description provided for @teamCreatedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Team created successfully'**
+  String get teamCreatedSuccess;
+
+  /// No description provided for @teamDeletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Team deleted successfully'**
+  String get teamDeletedSuccess;
+
+  /// No description provided for @memberAddedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Member added successfully'**
+  String get memberAddedSuccess;
+
+  /// No description provided for @memberRemovedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Member removed successfully'**
+  String get memberRemovedSuccess;
+
+  /// No description provided for @createdSuccessfully.
+  ///
+  /// In en, this message translates to:
+  /// **'created successfully'**
+  String get createdSuccessfully;
+
+  /// No description provided for @createNewUserAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new user account'**
+  String get createNewUserAccount;
+
+  /// No description provided for @createNewTeam.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a new team'**
+  String get createNewTeam;
+
+  /// No description provided for @configurePlanningsForUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure user plannings'**
+  String get configurePlanningsForUsers;
+
+  /// No description provided for @managePlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Planning'**
+  String get managePlanning;
+
+  /// No description provided for @userSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'User selected'**
+  String get userSelected;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @add.
+  ///
+  /// In en, this message translates to:
+  /// **'Add'**
+  String get add;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @manager.
+  ///
+  /// In en, this message translates to:
+  /// **'Manager'**
+  String get manager;
+
+  /// No description provided for @notProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get notProvided;
+
+  /// No description provided for @preferences.
+  ///
+  /// In en, this message translates to:
+  /// **'Preferences'**
+  String get preferences;
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @logoutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get logoutConfirmation;
+
+  /// No description provided for @logoutSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout successful'**
+  String get logoutSuccessful;
+
+  /// No description provided for @profileUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated'**
+  String get profileUpdated;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
+
+  /// No description provided for @unsavedChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved Changes'**
+  String get unsavedChanges;
+
+  /// No description provided for @unsavedChangesMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to discard your changes?'**
+  String get unsavedChangesMessage;
+
+  /// No description provided for @unsavedChangesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'You have unsaved changes'**
+  String get unsavedChangesHint;
+
+  /// No description provided for @username.
+  ///
+  /// In en, this message translates to:
+  /// **'Username'**
+  String get username;
+
+  /// No description provided for @firstName.
+  ///
+  /// In en, this message translates to:
+  /// **'First Name'**
+  String get firstName;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @pushNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Push notifications'**
+  String get pushNotifications;
+
+  /// No description provided for @pushNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive notifications on your device'**
+  String get pushNotificationsDesc;
+
+  /// No description provided for @emailNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Email notifications'**
+  String get emailNotifications;
+
+  /// No description provided for @emailNotificationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive emails for important events'**
+  String get emailNotificationsDesc;
+
+  /// No description provided for @about.
+  ///
+  /// In en, this message translates to:
+  /// **'About'**
+  String get about;
+
+  /// No description provided for @clocking.
+  ///
+  /// In en, this message translates to:
+  /// **'Time Clock'**
+  String get clocking;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @noPlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'No planning'**
+  String get noPlanning;
+
+  /// No description provided for @variance.
+  ///
+  /// In en, this message translates to:
+  /// **'Variance'**
+  String get variance;
+
+  /// No description provided for @clockedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked In'**
+  String get clockedIn;
+
+  /// No description provided for @planning.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning'**
+  String get planning;
+
+  /// No description provided for @myPlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'My Planning'**
+  String get myPlanning;
+
+  /// No description provided for @team.
+  ///
+  /// In en, this message translates to:
+  /// **'Team'**
+  String get team;
+
+  /// No description provided for @loadingProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading your profile...'**
+  String get loadingProfile;
+
+  /// No description provided for @initializing.
+  ///
+  /// In en, this message translates to:
+  /// **'Initializing...'**
+  String get initializing;
+
+  /// No description provided for @loadingDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading dashboard...'**
+  String get loadingDashboard;
+
+  /// No description provided for @loadingPlanning.
+  ///
+  /// In en, this message translates to:
+  /// **'Loading planning...'**
+  String get loadingPlanning;
+
+  /// No description provided for @viewingPlanningFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Planning for'**
+  String get viewingPlanningFor;
+
+  /// No description provided for @selectUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Select user'**
+  String get selectUser;
+
+  /// No description provided for @workingDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Working days'**
+  String get workingDays;
+
+  /// No description provided for @weeklyHours.
+  ///
+  /// In en, this message translates to:
+  /// **'Hours/week'**
+  String get weeklyHours;
+
+  /// No description provided for @avgPerDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Average/day'**
+  String get avgPerDay;
+
+  /// No description provided for @clockedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked Out'**
+  String get clockedOut;
+
+  /// No description provided for @clockinConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm clock in now?'**
+  String get clockinConfirmation;
+
+  /// No description provided for @clockoutConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm clock out now?'**
+  String get clockoutConfirmation;
+
+  /// No description provided for @clockinSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock in successful'**
+  String get clockinSuccessful;
+
+  /// No description provided for @clockoutSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock out successful'**
+  String get clockoutSuccessful;
+
+  /// No description provided for @clockedInAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Clocked in at'**
+  String get clockedInAt;
+
+  /// No description provided for @clockoutAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Clock out at'**
+  String get clockoutAt;
+
+  /// No description provided for @workingFor.
+  ///
+  /// In en, this message translates to:
+  /// **'Working for'**
+  String get workingFor;
+
+  /// No description provided for @manualTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Time'**
+  String get manualTime;
+
+  /// No description provided for @selectClockinTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select clock in time'**
+  String get selectClockinTime;
+
+  /// No description provided for @selectClockoutTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Select clock out time'**
+  String get selectClockoutTime;
+
+  /// No description provided for @cannotClockInFuture.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot clock in the future'**
+  String get cannotClockInFuture;
+
+  /// No description provided for @history.
+  ///
+  /// In en, this message translates to:
+  /// **'History'**
+  String get history;
+
+  /// No description provided for @todayStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Today\'s Stats'**
+  String get todayStats;
+
+  /// No description provided for @firstClockin.
+  ///
+  /// In en, this message translates to:
+  /// **'First Clock In'**
+  String get firstClockin;
+
+  /// No description provided for @totalWorked.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Worked'**
+  String get totalWorked;
+
+  /// No description provided for @expectedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Expected Time'**
+  String get expectedTime;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @appVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'App version'**
+  String get appVersion;
+
+  /// No description provided for @buildNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Build number'**
+  String get buildNumber;
+
+  /// No description provided for @languageChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Language changed successfully'**
+  String get languageChanged;
+
+  /// No description provided for @lastName.
+  ///
+  /// In en, this message translates to:
+  /// **'Last Name'**
+  String get lastName;
+
   /// No description provided for @settings.
   ///
   /// In en, this message translates to:
   /// **'SETTINGS'**
   String get settings;
+
+  /// No description provided for @loginSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Login successful'**
+  String get loginSuccessful;
 
   /// No description provided for @darkMode.
   ///
@@ -160,6 +1048,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'ME'**
   String get me;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get phoneNumber;
+
+  /// No description provided for @searchUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Search user...'**
+  String get searchUser;
+
+  /// No description provided for @searchUsersOrTeams.
+  ///
+  /// In en, this message translates to:
+  /// **'Search users or teams...'**
+  String get searchUsersOrTeams;
+
+  /// No description provided for @noUserFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No user found'**
+  String get noUserFound;
+
+  /// No description provided for @noResultsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No results found'**
+  String get noResultsFound;
+
+  /// No description provided for @clear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear'**
+  String get clear;
+
+  /// No description provided for @appSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your time effectively'**
+  String get appSubtitle;
 
   /// No description provided for @modify.
   ///

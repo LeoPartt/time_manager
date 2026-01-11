@@ -3,60 +3,73 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/core/utils/extensions/context_extensions.dart';
-import 'package:time_manager/domain/entities/dashboard_report.dart';
 import 'package:time_manager/initialization/locator.dart';
-import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_state.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/charts/monthly_work_chart.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/charts/weekly_work_chart.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/charts/yearly_work_chart.dart';
-import 'package:time_manager/presentation/screens/dashboard/widgets/charts/attendance_chart.dart';
+import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
+import 'package:time_manager/presentation/cubits/team/team_state.dart';
+import 'package:time_manager/presentation/widgets/dashboard/dashboard_content_widget.dart';
+import 'package:time_manager/presentation/widgets/dashboard/period_selector_widget.dart';
+import 'package:time_manager/presentation/widgets/error_state_widget.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
+import 'package:time_manager/presentation/widgets/loading_state_widget.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
-
-enum ReportPeriod { week, month, year }
 
 @RoutePage()
 class TeamDashboardScreen extends StatelessWidget {
-  const TeamDashboardScreen({super.key});
+  final int? teamId;
+
+  const TeamDashboardScreen({super.key, this.teamId});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => locator<DashboardCubit>(),
-      child: const _TeamDashboardView(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => locator<DashboardCubit>()),
+        BlocProvider(create: (context) => locator<TeamCubit>()),
+      ],
+      child: _TeamDashboardView(teamId: teamId),
     );
   }
 }
 
 class _TeamDashboardView extends StatefulWidget {
-  const _TeamDashboardView();
+  final int? teamId;
+
+  const _TeamDashboardView({this.teamId});
 
   @override
   State<_TeamDashboardView> createState() => _TeamDashboardViewState();
 }
 
 class _TeamDashboardViewState extends State<_TeamDashboardView> {
-  int? _selectedTeamId;
   ReportPeriod _selectedPeriod = ReportPeriod.week;
+  int? _selectedTeamId;
 
-  // TODO: Récupérer la liste des équipes depuis l'API
-  final List<Map<String, dynamic>> _teams = [
-    {'id': 1, 'name': 'Team Marguerite'},
-    {'id': 2, 'name': 'Team Alpha'},
-    {'id': 3, 'name': 'Team Beta'},
-  ];
+  @override
+  void initState() {
+    super.initState();
+    _selectedTeamId = widget.teamId;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        context.read<TeamCubit>().getTeams();
+        if (_selectedTeamId != null) {
+          _loadDashboard();
+        }
+      }
+    });
+  }
 
   void _loadDashboard() {
     if (_selectedTeamId == null) return;
 
     final mode = _getModeString(_selectedPeriod);
     context.read<DashboardCubit>().loadTeamDashboard(
-      context,
-      teamId: _selectedTeamId!,
-      mode: mode,
-    );
+          context,
+          teamId: _selectedTeamId!,
+          mode: mode,
+        );
   }
 
   String _getModeString(ReportPeriod period) {
@@ -72,67 +85,23 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
 
   @override
   Widget build(BuildContext context) {
-    final tr = AppLocalizations.of(context)!;
-    final colorScheme = Theme.of(context).colorScheme;
+    final colorScheme = context.colorScheme;
 
     return Scaffold(
       bottomNavigationBar: const NavBar(),
       body: SafeArea(
         child: RefreshIndicator(
-          onRefresh: () async {
-            _loadDashboard();
-          },
+          onRefresh: () async => _loadDashboard(),
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
             padding: EdgeInsets.all(AppSizes.responsiveWidth(context, AppSizes.p24)),
             child: Column(
               children: [
-                Header(label: 'Dashboard Team'),
+                Header(label: 'Dashboard Équipe'),
                 SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-
-                // 🔽 Sélecteur d'équipe
-                _buildTeamSelector(colorScheme),
+                _buildTeamSelector(context, colorScheme),
                 SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-
-                // 📊 Affichage du rapport
-                BlocConsumer<DashboardCubit, DashboardState>(
-                  listener: (context, state) {
-                    state.whenOrNull(
-                      error: (msg) => context.showSnack(msg, isError: true),
-                    );
-                  },
-                  builder: (context, state) {
-                    return state.when(
-                      initial: () => _buildEmptyState(
-                        context,
-                        colorScheme,
-                        'Sélectionnez une équipe',
-                        'Choisissez une équipe pour voir son dashboard',
-                      ),
-                      loading: () => Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            const CircularProgressIndicator(),
-                            const SizedBox(height: 16),
-                            Text(
-                              'Chargement du dashboard...',
-                              style: TextStyle(color: Colors.grey[600]),
-                            ),
-                          ],
-                        ),
-                      ),
-                      userLoaded: (_) => const SizedBox(),
-                      teamLoaded: (report) => _buildDashboardContent(
-                        context,
-                        report.dashboard,
-                        colorScheme,
-                      ),
-                      globalLoaded: (_) => const SizedBox(),
-                      error: (msg) => _buildError(context, msg, colorScheme),
-                    );
-                  },
-                ),
+                _buildContent(context, colorScheme),
               ],
             ),
           ),
@@ -141,265 +110,152 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
     );
   }
 
-  Widget _buildTeamSelector(ColorScheme colorScheme) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppSizes.p16,
-        vertical: AppSizes.p4,
-      ),
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
-        borderRadius: BorderRadius.circular(AppSizes.r16),
-        border: Border.all(color: colorScheme.outline),
-        boxShadow: [
-          BoxShadow(
-            color: colorScheme.shadow.withOpacity(0.1),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<int>(
-          value: _selectedTeamId,
-          hint: Row(
-            children: [
-              Icon(Icons.group, color: colorScheme.primary),
-              SizedBox(width: AppSizes.p12),
-              const Text('Sélectionner une équipe'),
-            ],
-          ),
-          isExpanded: true,
-          items: _teams.map((team) {
-            return DropdownMenuItem<int>(
-              value: team['id'],
-              child: Row(
-                children: [
-                  Icon(Icons.group_outlined, color: colorScheme.primary, size: 20),
-                  SizedBox(width: AppSizes.p12),
-                  Text(team['name']),
-                ],
+  Widget _buildTeamSelector(BuildContext context, ColorScheme colorScheme) {
+    return BlocBuilder<TeamCubit, TeamState>(
+      builder: (context, state) {
+        return state.when(
+          initial: () => const SizedBox(),
+          loading: () => const LinearProgressIndicator(),
+          loaded: (_) =>  LoadingStateWidget(),
+          loadedTeams: (teams) {
+            if (teams.isEmpty) {
+              return Container(
+                padding: EdgeInsets.all(AppSizes.p16),
+                decoration: BoxDecoration(
+                  color: Colors.orange.shade50,
+                  borderRadius: BorderRadius.circular(AppSizes.r12),
+                  border: Border.all(color: Colors.orange.shade200),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.info_outline, color: Colors.orange),
+                    SizedBox(width: AppSizes.p12),
+                    Expanded(
+                      child: Text(
+                        'Aucune équipe disponible',
+                        style: TextStyle(color: Colors.orange.shade900),
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+
+            return Container(
+              padding: EdgeInsets.all(AppSizes.p12),
+              decoration: BoxDecoration(
+                color: colorScheme.surface,
+                borderRadius: BorderRadius.circular(AppSizes.r12),
+                border: Border.all(color: colorScheme.outline.withValues(alpha:0.2)),
+              ),
+              child: DropdownButtonFormField<int>(
+                initialValue: _selectedTeamId,
+                decoration: InputDecoration(
+                  labelText: 'Sélectionner une équipe',
+                  prefixIcon: Icon(Icons.groups, color: colorScheme.secondary),
+                  border: InputBorder.none,
+                ),
+                items: teams.map((team) {
+                  return DropdownMenuItem(
+                    value: team.id,
+                    child: Text(team.name),
+                  );
+                }).toList(),
+                onChanged: (value) {
+                  if (value != null) {
+                    setState(() => _selectedTeamId = value);
+                    _loadDashboard();
+                  }
+                },
               ),
             );
-          }).toList(),
-          onChanged: (teamId) {
-            if (teamId != null) {
-              setState(() => _selectedTeamId = teamId);
-              _loadDashboard();
-            }
           },
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDashboardContent(
-    BuildContext context,
-    DashboardReport report,
-    ColorScheme colorScheme,
-  ) {
-    return Column(
-      children: [
-        // Sélecteur de période
-        _buildPeriodSelector(context, colorScheme),
-        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-
-        // Chart Attendance/Punctuality
-        AttendanceChart(
-          punctuality: report.punctuality,
-          attendance: report.attendance,
-          period: _getPeriodLabel(),
-        ),
-
-        SizedBox(height: AppSizes.responsiveHeight(context, AppSizes.p24)),
-
-        // Work Chart dynamique
-        _buildWorkChartForPeriod(context, report.work, colorScheme),
-      ],
-    );
-  }
-
-  Widget _buildPeriodSelector(BuildContext context, ColorScheme colorScheme) {
-    return Container(
-      padding: EdgeInsets.all(AppSizes.p4),
-      decoration: BoxDecoration(
-        color: colorScheme.surfaceContainerHighest,
-        borderRadius: BorderRadius.circular(AppSizes.r12),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildPeriodButton(
-              context,
-              'Semaine',
-              ReportPeriod.week,
-              colorScheme,
+          error: (msg) => Container(
+            padding: EdgeInsets.all(AppSizes.p16),
+            decoration: BoxDecoration(
+              color: Colors.red.shade50,
+              borderRadius: BorderRadius.circular(AppSizes.r12),
+              border: Border.all(color: Colors.red.shade200),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, color: Colors.red),
+                SizedBox(width: AppSizes.p12),
+                Expanded(
+                  child: Text(
+                    msg,
+                    style: TextStyle(color: Colors.red.shade900),
+                  ),
+                ),
+              ],
             ),
           ),
-          Expanded(
-            child: _buildPeriodButton(
-              context,
-              'Mois',
-              ReportPeriod.month,
-              colorScheme,
-            ),
-          ),
-          Expanded(
-            child: _buildPeriodButton(
-              context,
-              'Année',
-              ReportPeriod.year,
-              colorScheme,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPeriodButton(
-    BuildContext context,
-    String label,
-    ReportPeriod period,
-    ColorScheme colorScheme,
-  ) {
-    final isSelected = _selectedPeriod == period;
-
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          _selectedPeriod = period;
-        });
-        _loadDashboard();
+        );
       },
-      child: Container(
-        padding: EdgeInsets.symmetric(
-          vertical: AppSizes.p12,
-          horizontal: AppSizes.p16,
-        ),
-        decoration: BoxDecoration(
-          color: isSelected ? colorScheme.primary : Colors.transparent,
-          borderRadius: BorderRadius.circular(AppSizes.r8),
-        ),
-        child: Text(
-          label,
-          textAlign: TextAlign.center,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? colorScheme.onPrimary : colorScheme.onSurface,
-          ),
-        ),
-      ),
     );
   }
 
-  Widget _buildWorkChartForPeriod(
-    BuildContext context,
-    WorkSeries workSeries,
-    ColorScheme colorScheme,
-  ) {
-    switch (_selectedPeriod) {
-      case ReportPeriod.week:
-        return WeeklyWorkChart(workSeries: workSeries);
-      case ReportPeriod.month:
-        return MonthlyWorkChart(workSeries: workSeries);
-      case ReportPeriod.year:
-        return YearlyWorkChart(workSeries: workSeries);
-    }
-  }
-
-  Widget _buildEmptyState(
-    BuildContext context,
-    ColorScheme colorScheme,
-    String title,
-    String subtitle,
-  ) {
-    return Center(
-      child: Padding(
+  Widget _buildContent(BuildContext context, ColorScheme colorScheme) {
+    if (_selectedTeamId == null) {
+      return Container(
         padding: EdgeInsets.all(48),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Container(
-              padding: EdgeInsets.all(AppSizes.p24),
-              decoration: BoxDecoration(
-                color: colorScheme.primaryContainer.withOpacity(0.3),
-                shape: BoxShape.circle,
-              ),
-              child: Icon(
-                Icons.group,
-                size: 64,
-                color: colorScheme.primary,
-              ),
+            Icon(
+              Icons.groups_outlined,
+              size: 64,
+              color: Colors.grey[400],
             ),
-            SizedBox(height: AppSizes.p24),
+            SizedBox(height: AppSizes.p16),
             Text(
-              title,
+              'Sélectionnez une équipe',
               style: TextStyle(
-                fontSize: 20,
+                fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: colorScheme.onSurface,
               ),
             ),
-            SizedBox(height: AppSizes.p12),
-            Text(
-              subtitle,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                fontSize: 14,
-                color: Colors.grey[600],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildError(BuildContext context, String msg, ColorScheme colorScheme) {
-    return Center(
-      child: Padding(
-        padding: EdgeInsets.all(AppSizes.p24),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.error_outline, size: 64, color: colorScheme.error),
-            SizedBox(height: AppSizes.p16),
-            Text(
-              'Erreur',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: colorScheme.error,
-              ),
-            ),
             SizedBox(height: AppSizes.p8),
             Text(
-              msg,
+              'Choisissez une équipe pour voir ses statistiques',
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.grey[600]),
             ),
-            SizedBox(height: AppSizes.p24),
-            ElevatedButton.icon(
-              onPressed: _loadDashboard,
-              icon: const Icon(Icons.refresh),
-              label: const Text('Réessayer'),
-            ),
           ],
         ),
-      ),
-    );
-  }
-
-  String _getPeriodLabel() {
-    switch (_selectedPeriod) {
-      case ReportPeriod.week:
-        return 'Hebdomadaire';
-      case ReportPeriod.month:
-        return 'Mensuel';
-      case ReportPeriod.year:
-        return 'Annuel';
+      );
     }
+
+    return BlocConsumer<DashboardCubit, DashboardState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          error: (msg) => context.showError(msg),
+        );
+      },
+      builder: (context, state) {
+        return state.when(
+          initial: () => const LoadingStateWidget(),
+          loading: () => const LoadingStateWidget(
+            message: 'Chargement du dashboard de l\'équipe...',
+          ),
+          userLoaded: (_) => const SizedBox(),
+          teamLoaded: (report) => DashboardContentWidget(
+            report: report.dashboard,
+            selectedPeriod: _selectedPeriod,
+            onPeriodChanged: (period) {
+              setState(() => _selectedPeriod = period);
+              _loadDashboard();
+            },
+            colorScheme: colorScheme,
+            periodButtonColor: colorScheme.secondary,
+          ),
+          globalLoaded: (_) => const SizedBox(),
+          error: (msg) => ErrorStateWidget(
+            message: msg,
+            onRetry: _loadDashboard,
+          ),
+        );
+      },
+    );
   }
 }

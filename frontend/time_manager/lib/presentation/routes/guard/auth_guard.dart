@@ -10,14 +10,13 @@ class AuthGuard extends AutoRouteGuard {
 
   @override
   void onNavigation(NavigationResolver resolver, StackRouter router) async {
+    
     final token = await _storage.getToken();
-
+    
     if (token != null && token.isNotEmpty) {
-      // ✅ User is authenticated → proceed
       resolver.next(true);
     } else {
-      // 🚫 User not authenticated → redirect to Login
-      router.replace(const LoginRoute());
+      resolver.redirect(const LoginRoute());
     }
   }
 }
