@@ -19,6 +19,7 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final JwtService jwtService;
     private final PasswordResetService passwordResetService;
+    private final UserAuthorization userAuthorization;
 
     public String authenticate(AuthModels.LoginRequest input) {
         Authentication authentication;
@@ -35,12 +36,12 @@ public class AuthService {
             throw new InvalidCredentials("Invalid username", input.username(), ex);
         }
         AccountEntity account = (AccountEntity) authentication.getPrincipal();
-        if (account.getUser() == null && !account.isAdmin()) throw new UnknownUser(account.getUsername());;
+        if (account.getUser() == null && !account.isAdmin()) throw new UnknownUser(account.getUsername());
         return jwtService.generateToken(account);
     }
 
     public void resetPassword() {
-        passwordResetService.createResetToken(UserAuthorization.getCurrentUser());
+        passwordResetService.createResetToken(userAuthorization.getCurrentUser());
     }
 
     public void changePassword(AuthModels.ChangeRequest body) {

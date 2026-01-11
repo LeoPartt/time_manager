@@ -1,6 +1,5 @@
 package eu.epitech.t_dev_700.entities;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import static eu.epitech.t_dev_700.entities.MembershipEntity.TeamRole.MEMBER;
@@ -8,120 +7,118 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MembershipEntityTest {
 
-    private MembershipEntity membership;
-    private UserEntity user;
-    private TeamEntity team;
+    // ---- small helpers ----
 
-    @BeforeEach
-    void setUp() {
-        membership = new MembershipEntity();
-        membership.setId(1L);
-        membership.setRole(MEMBER);
+    private static UserEntity user(long id) {
+        UserEntity u = new UserEntity();
+        u.setId(id);
+        return u;
+    }
 
-        user = new UserEntity();
-        user.setId(1L);
-        user.setFirstName("John");
-        user.setLastName("Doe");
+    private static TeamEntity team(long id) {
+        TeamEntity t = new TeamEntity();
+        t.setId(id);
+        return t;
+    }
 
-        team = new TeamEntity();
-        team.setId(1L);
-        team.setName("Development Team");
+    private static MembershipEntity m(UserEntity u, TeamEntity t) {
+        return new MembershipEntity(u, t, MEMBER);
+    }
 
-        membership.setUser(user);
-        membership.setTeam(team);
+    /* -------------------------
+     * equals() branch coverage
+     * ------------------------- */
+
+    @Test
+    void equals_reflexive_and_typeCheck() {
+        MembershipEntity a = m(user(1), team(1));
+
+        // this == o
+        assertThat(a).isEqualTo(a);
+
+        // !(o instanceof MembershipEntity)
+        assertThat(a.equals("nope")).isFalse();
     }
 
     @Test
-    void testGettersAndSetters() {
-        assertThat(membership.getId()).isEqualTo(1L);
-        assertThat(membership.getUser()).isEqualTo(user);
-        assertThat(membership.getTeam()).isEqualTo(team);
-        assertThat(membership.getRole()).isEqualTo(MEMBER);
+    void equals_whenBothIdsNonNull_comparesOnlyIds_true_and_false() {
+        MembershipEntity a = m(user(1), team(1));
+        a.setId(10L);
+
+        MembershipEntity sameIdDifferentLinks = m(user(999), team(999));
+        sameIdDifferentLinks.setId(10L);
+
+        MembershipEntity differentIdSameLinks = m(user(1), team(1));
+        differentIdSameLinks.setId(11L);
+
+        // id branch -> true
+        assertThat(a).isEqualTo(sameIdDifferentLinks);
+
+        // id branch -> false
+        assertThat(a).isNotEqualTo(differentIdSameLinks);
     }
 
     @Test
-    void testNoArgsConstructor_initialState() {
-        MembershipEntity m = new MembershipEntity();
+    void equals_whenThisIdNonNull_andOtherIdNull_hitsOtherIdNullBranch_and_returnsFalse() {
+        MembershipEntity a = m(user(1), team(1));
+        a.setId(10L); // this.id != null
 
-        // Entity defines no defaults, so everything should be null initially.
-        assertThat(m.getId()).isNull();
-        assertThat(m.getUser()).isNull();
-        assertThat(m.getTeam()).isNull();
-        assertThat(m.getRole()).isNull();
+        MembershipEntity b = m(user(2), team(2));
+        b.setId(null); // other.id == null -> (id != null && other.id != null) is false because other.id != null is false
+
+        // falls back to userId/teamId -> different => false
+        assertThat(a).isNotEqualTo(b);
     }
 
     @Test
-    void testAllArgsConstructor_setsFields() {
-        MembershipEntity m = new MembershipEntity(
-                user,
-                team,
-                MembershipEntity.TeamRole.MANAGER
-        );
+    void equals_fallback_otherUserNull_falseBranch() {
+        MembershipEntity a = m(user(1), team(1)); // ids null
+        MembershipEntity b = m(null, team(1));    // other.user == null
 
-        assertThat(m.getUser()).isEqualTo(user);
-        assertThat(m.getTeam()).isEqualTo(team);
-        assertThat(m.getRole()).isEqualTo(MembershipEntity.TeamRole.MANAGER);
+        assertThat(a).isNotEqualTo(b);
     }
 
     @Test
-    void testSetRole_MEMBER() {
-        membership.setRole(MEMBER);
-        assertThat(membership.getRole()).isEqualTo(MEMBER);
+    void equals_fallback_otherTeamNull_falseBranch() {
+        MembershipEntity a = m(user(1), team(1)); // ids null
+        MembershipEntity b = m(user(1), null);    // other.team == null
+
+        assertThat(a).isNotEqualTo(b);
     }
 
     @Test
-    void testSetRole_MANAGER() {
-        membership.setRole(MembershipEntity.TeamRole.MANAGER);
-        assertThat(membership.getRole()).isEqualTo(MembershipEntity.TeamRole.MANAGER);
+    void equals_fallback_sameUserIdAndTeamId_withDifferentInstances_true_then_userIdMismatch_false() {
+        // true: different objects but same IDs
+        MembershipEntity a = m(user(1), team(10));
+        MembershipEntity b = m(user(1), team(10));
+
+        assertThat(a.getId()).isNull();
+        assertThat(b.getId()).isNull();
+        assertThat(a).isEqualTo(b);
+
+        // false: userId mismatch (still passes all null checks)
+        MembershipEntity c = m(user(2), team(10));
+        assertThat(a).isNotEqualTo(c);
+    }
+
+    /* -------------------------
+     * hashCode() branch coverage
+     * ------------------------- */
+
+    @Test
+    void hashCode_whenIdNonNull_usesIdHash() {
+        MembershipEntity a = m(user(1), team(1));
+        a.setId(123L);
+
+        assertThat(a.hashCode()).isEqualTo(Long.valueOf(123L).hashCode());
     }
 
     @Test
-    void testTeamRoleEnum_hasCorrectValues() {
-        MembershipEntity.TeamRole[] roles = MembershipEntity.TeamRole.values();
-        assertThat(roles).hasSize(2);
-        assertThat(roles).containsExactlyInAnyOrder(
-                MEMBER,
-                MembershipEntity.TeamRole.MANAGER
-        );
-    }
+    void hashCode_whenIdNull_usesUserIdAndTeamId_consistently() {
+        MembershipEntity a = m(user(1), team(10));
+        MembershipEntity b = m(user(1), team(10));
 
-    @Test
-    void testTeamRoleEnum_valueOf() {
-        assertThat(MembershipEntity.TeamRole.valueOf("MEMBER"))
-                .isEqualTo(MEMBER);
-        assertThat(MembershipEntity.TeamRole.valueOf("MANAGER"))
-                .isEqualTo(MembershipEntity.TeamRole.MANAGER);
-    }
-
-    @Test
-    void testRelationshipWithUser() {
-        UserEntity newUser = new UserEntity();
-        newUser.setId(2L);
-        newUser.setFirstName("Jane");
-
-        membership.setUser(newUser);
-
-        assertThat(membership.getUser()).isEqualTo(newUser);
-        assertThat(membership.getUser().getFirstName()).isEqualTo("Jane");
-    }
-
-    @Test
-    void testRelationshipWithTeam() {
-        TeamEntity newTeam = new TeamEntity();
-        newTeam.setId(2L);
-        newTeam.setName("QA Team");
-
-        membership.setTeam(newTeam);
-
-        assertThat(membership.getTeam()).isEqualTo(newTeam);
-        assertThat(membership.getTeam().getName()).isEqualTo("QA Team");
-    }
-
-    @Test
-    void equals_shouldMatchSameUserAndTeam() {
-        MembershipEntity m1 = new MembershipEntity(user, team, MEMBER);
-        MembershipEntity m2 = new MembershipEntity(user, team, MEMBER);
-
-        assertThat(m1).isEqualTo(m2);
+        // same (userId, teamId) => same hash
+        assertThat(a.hashCode()).isEqualTo(b.hashCode());
     }
 }

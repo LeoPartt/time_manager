@@ -24,6 +24,7 @@ public class ClockService {
 
     private final UserComponent userComponent;
     private final ScheduleRepository scheduleRepository;
+    private final UserAuthorization userAuthorization;
 
     public Long[] getUserClocks(Long id, UserScheduleQuery query) {
         UserEntity user = userComponent.getUser(id);
@@ -32,7 +33,7 @@ public class ClockService {
         OffsetDateTime from = query.getFrom();
         OffsetDateTime to = query.getTo();
 
-        if (query.getCurrent())
+        if (Boolean.TRUE.equals(query.getCurrent()))
             scheduleEntityList = scheduleRepository.findCurrentSchedules(user, OffsetDateTime.now());
         else if (from != null && to != null)
             scheduleEntityList = scheduleRepository.findOverlapping(user, from, to);
@@ -56,7 +57,7 @@ public class ClockService {
     }
 
     public void postClock(ClockModels.PostClockRequest body) {
-        this.postClock(body, UserAuthorization.getCurrentUser());
+        this.postClock(body, userAuthorization.getCurrentUser());
     }
 
     public void postClock(ClockModels.PostClockRequest body, Long id) {
