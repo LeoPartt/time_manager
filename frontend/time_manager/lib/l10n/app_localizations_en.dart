@@ -15,6 +15,426 @@ class AppLocalizationsEn extends AppLocalizations {
   String get login => 'Login';
 
   @override
+  String get clocking => 'Clocking';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get noPlanning => 'No planning';
+
+  @override
+  String get variance => 'Variance';
+
+  @override
+  String get clockedIn => 'Clocked in';
+
+  @override
+  String get management => 'Management';
+
+  @override
+  String get planningManagement => 'Planning Management';
+
+  @override
+  String get createUser => 'Create a user';
+
+  @override
+  String get addUser => 'Add a user';
+
+  @override
+  String get addTeam => 'Add a team';
+
+  @override
+  String get addDay => 'Add a day';
+
+  @override
+  String get teamName => 'Team name';
+
+  @override
+  String get teamDescription => 'Team description';
+
+  @override
+  String get teamNameRequired => 'Team name is required';
+
+  @override
+  String get selectUserSubtitle => 'Use the search bar to find a user';
+
+  @override
+  String get noPlanningConfigured => 'No planning configured';
+
+  @override
+  String get noPlanningSubtitle => 'Start by adding working days';
+
+  @override
+  String get noMembers => 'No members';
+
+  @override
+  String get members => 'members';
+
+  @override
+  String get removeMember => 'Remove member';
+
+  @override
+  String get deleteTeam => 'Delete team';
+
+  @override
+  String get confirmDelete => 'Confirm deletion';
+
+  @override
+  String get confirmDeletePlanning => 'Are you sure you want to delete the planning from';
+
+  @override
+  String get confirmDeleteTeam => 'Are you sure you want to delete this team? This action is irreversible.';
+
+  @override
+  String get confirmRemoveMember => 'Are you sure you want to remove';
+
+  @override
+  String get planningDeletedSuccess => 'Planning deleted successfully';
+
+  @override
+  String get teamCreatedSuccess => 'Team created successfully';
+
+  @override
+  String get teamDeletedSuccess => 'Team deleted successfully';
+
+  @override
+  String get memberAddedSuccess => 'Member added successfully';
+
+  @override
+  String get memberRemovedSuccess => 'Member removed successfully';
+
+  @override
+  String get createdSuccessfully => 'created successfully';
+
+  @override
+  String get createNewUserAccount => 'Create a new user account';
+
+  @override
+  String get createNewTeam => 'Create a new team';
+
+  @override
+  String get configurePlanningsForUsers => 'Configure user plannings';
+
+  @override
+  String get managePlanning => 'Manage planning';
+
+  @override
+  String get account => 'Account';
+
+  @override
+  String get logoutAdminDesc => 'Sign out from your administrator account';
+
+  @override
+  String get logoutConfirmationMessage => 'Do you really want to logout? You will need to sign in again to access the app.';
+
+  @override
+  String get userSelected => 'User selected';
+
+  @override
+  String get noUsersFound => 'No users found';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get editPlanning => 'Edit planning';
+
+  @override
+  String get addPlanning => 'Add planning';
+
+  @override
+  String get arrivalTime => 'Arrival time';
+
+  @override
+  String get departureTime => 'Departure time';
+
+  @override
+  String get selectArrivalTime => 'Select arrival time';
+
+  @override
+  String get selectDepartureTime => 'Select departure time';
+
+  @override
+  String get weekDay => 'Weekday';
+
+  @override
+  String get workDay => 'Weekly Work';
+
+  @override
+  String get workYear => 'Annual Work';
+
+  @override
+  String get equipDashboard => 'Team Dashboard';
+
+  @override
+  String get noDataForThisDay => 'No data for this day';
+
+  @override
+  String get simplifiedView => 'Simplified view';
+
+  @override
+  String get detailedView => 'Detailed view';
+
+  @override
+  String get planned => 'Planned';
+
+  @override
+  String get actual => 'Actual';
+
+  @override
+  String get noClocking => 'No clocking';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
+
+  @override
+  String get noTeamsAvailable => 'No teams available';
+
+  @override
+  String get selectTeam => 'Select a team';
+
+  @override
+  String get selectATeam => 'Select a team';
+
+  @override
+  String get selectTeamToViewStatistics => 'Choose a team to view its statistics';
+
+  @override
+  String get loadingTeamDashboard => 'Loading team dashboard...';
+
+  @override
+  String get avgPerMonth => 'Average';
+
+  @override
+  String get increasedBy => 'Increased by';
+
+  @override
+  String get decreasedBy => 'Decreased by';
+
+  @override
+  String get workMonth => 'Monthly work';
+
+  @override
+  String get average => 'Average';
+
+  @override
+  String get duration => 'Duration';
+
+  @override
+  String get invalid => 'Invalid';
+
+  @override
+  String get invalidTimeRange => 'Departure time must be after arrival time';
+
+  @override
+  String get planningCreatedSuccess => 'Planning created successfully';
+
+  @override
+  String get planningUpdatedSuccess => 'Planning updated successfully';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get users => 'Users';
+
+  @override
+  String get userDetails => 'User details';
+
+  @override
+  String get viewDashboard => 'View dashboard';
+
+  @override
+  String get featureInDevelopment => 'Feature in development';
+
+  @override
+  String get confirmDeleteUser => 'Are you sure you want to delete';
+
+  @override
+  String get userDeletedSuccess => 'User deleted successfully';
+
+  @override
+  String get loadingUsers => 'Loading users...';
+
+  @override
+  String get loadingTeams => 'Loading teams...';
+
+  @override
+  String get noUsers => 'No users';
+
+  @override
+  String get noUsersSubtitle => 'No users have been found';
+
+  @override
+  String get noTeams => 'No teams';
+
+  @override
+  String get noTeamsSubtitle => 'No teams have been created';
+
+  @override
+  String get member => 'member';
+
+  @override
+  String get globalDashboard => 'Global Dashboard';
+
+  @override
+  String get companyOverview => 'Company Overview';
+
+  @override
+  String get globalStatisticsAllEmployees => 'Global statistics for all employees';
+
+  @override
+  String get loadingGlobalDashboard => 'Loading global dashboard...';
+
+  @override
+  String get daysConfigured => 'days configured';
+
+  @override
+  String get outOf5WorkingDays => 'out of 5 working days';
+
+  @override
+  String get changeUser => 'Change user';
+
+  @override
+  String get editUser => 'Edit user';
+
+  @override
+  String get editTeam => 'Edit team';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get userUpdatedSuccess => 'User updated successfully';
+
+  @override
+  String get teamUpdatedSuccess => 'Team updated successfully';
+
+  @override
+  String get usernameRequired => 'Username is required';
+
+  @override
+  String get firstNameRequired => 'First name is required';
+
+  @override
+  String get lastNameRequired => 'Last name is required';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get irreversibleAction => 'This action is irreversible';
+
+  @override
+  String get searchByNameOrEmail => 'Search by name or email...';
+
+  @override
+  String get add => 'Add';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get search => 'Search';
+
+  @override
+  String get myPlanning => 'My planning';
+
+  @override
+  String get initializing => 'Initializing...';
+
+  @override
+  String get loadingDashboard => 'Loading dashboard...';
+
+  @override
+  String get loadingPlanning => 'Loading planning...';
+
+  @override
+  String get viewingPlanningFor => 'Planning for';
+
+  @override
+  String get selectUser => 'Select a user';
+
+  @override
+  String get workingDays => 'Working days';
+
+  @override
+  String get weeklyHours => 'Hours/week';
+
+  @override
+  String get avgPerDay => 'Average/day';
+
+  @override
+  String get clockedOut => 'Clocked out';
+
+  @override
+  String get clockinConfirmation => 'Confirm clock-in now?';
+
+  @override
+  String get clockoutConfirmation => 'Confirm clock-out now?';
+
+  @override
+  String get clockinSuccessful => 'Clock-in recorded successfully';
+
+  @override
+  String get clockoutSuccessful => 'Clock-out recorded successfully';
+
+  @override
+  String get clockedInAt => 'Clocked in at';
+
+  @override
+  String get clockoutAt => 'Clock-out at';
+
+  @override
+  String get workingFor => 'Working for';
+
+  @override
+  String get manualTime => 'Manual time';
+
+  @override
+  String get selectClockinTime => 'Select clock-in time';
+
+  @override
+  String get selectClockoutTime => 'Select clock-out time';
+
+  @override
+  String get cannotClockInFuture => 'Cannot clock in the future';
+
+  @override
+  String get history => 'History';
+
+  @override
+  String get todayStats => 'Today\'s stats';
+
+  @override
+  String get firstClockin => 'First clock-in';
+
+  @override
+  String get totalWorked => 'Total worked';
+
+  @override
+  String get expectedTime => 'Expected time';
+
+  @override
+  String get confirm => 'Confirm';
+
+  @override
+  String get loginSuccessful => 'Login successful';
+
+  @override
   String get logout => 'Logout';
 
   @override
@@ -45,7 +465,79 @@ class AppLocalizationsEn extends AppLocalizations {
   String get modify => 'Modify';
 
   @override
-  String get successful => 'with success';
+  String get searchUser => 'Search user...';
+
+  @override
+  String get searchUsersOrTeams => 'Search users or teams...';
+
+  @override
+  String get noUserFound => 'No user found';
+
+  @override
+  String get noResultsFound => 'No results found';
+
+  @override
+  String get clear => 'Clear';
+
+  @override
+  String get phoneNumber => 'Phone number';
+
+  @override
+  String get myProfile => 'My profile';
+
+  @override
+  String get editProfile => 'Edit profile';
+
+  @override
+  String get administrator => 'Administrator';
+
+  @override
+  String get manager => 'Manager';
+
+  @override
+  String get notProvided => 'Not provided';
+
+  @override
+  String get preferences => 'Preferences';
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get logoutConfirmation => 'Are you sure you want to logout?';
+
+  @override
+  String get logoutSuccessful => 'Logout successful';
+
+  @override
+  String get profileUpdated => 'Profile updated';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get discard => 'Discard';
+
+  @override
+  String get unsavedChanges => 'Unsaved changes';
+
+  @override
+  String get unsavedChangesMessage => 'Do you want to discard your changes?';
+
+  @override
+  String get unsavedChangesHint => 'You have unsaved changes';
+
+  @override
+  String get username => 'Username';
+
+  @override
+  String get firstName => 'First name';
+
+  @override
+  String get lastName => 'Last name';
+
+  @override
+  String get successful => 'successful';
 
   @override
   String get delete => 'Delete';
@@ -63,7 +555,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get arrival => 'Arrival time';
 
   @override
-  String get registerTitle => 'Create an user';
+  String get registerTitle => 'Create a user';
 
   @override
   String get welcome => 'Welcome';
@@ -75,13 +567,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get team => 'Team';
 
   @override
-  String get teamDetails => 'Team Details';
+  String get teamDetails => 'Team details';
 
   @override
   String get reports => 'Reports';
 
   @override
-  String get kpiTitle => 'Performance Indicators';
+  String get kpiTitle => 'Key Performance Indicators';
 
   @override
   String get loading => 'Loading...';
@@ -90,7 +582,34 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error => 'An error occurred';
 
   @override
-  String get emailLabel => 'Email Address';
+  String get emailLabel => 'Email address';
+
+  @override
+  String get appearance => 'Appearance';
+
+  @override
+  String get pushNotifications => 'Push notifications';
+
+  @override
+  String get pushNotificationsDesc => 'Receive notifications on your device';
+
+  @override
+  String get emailNotifications => 'Email notifications';
+
+  @override
+  String get emailNotificationsDesc => 'Receive emails for important events';
+
+  @override
+  String get about => 'About';
+
+  @override
+  String get appVersion => 'App version';
+
+  @override
+  String get buildNumber => 'Build number';
+
+  @override
+  String get languageChanged => 'Language changed successfully';
 
   @override
   String get passwordLabel => 'Password';
@@ -99,16 +618,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get userNameLabel => 'Username';
 
   @override
-  String get firstNameLabel => 'First Name';
+  String get firstNameLabel => 'First name';
 
   @override
-  String get phoneNumberLabel => 'Phone Number';
+  String get lastNameLabel => 'Last name';
 
   @override
-  String get lastNameLabel => 'Last Name';
+  String get phoneNumberLabel => 'Phone number';
 
   @override
-  String get loginButton => 'Sign In';
+  String get loginButton => 'Login';
 
   @override
   String get registerButton => 'Create';
@@ -126,10 +645,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get shortPassword => 'Password must be at least 6 characters';
 
   @override
-  String get fieldRequired => 'The field cannot be empty';
+  String get fieldRequired => 'Field cannot be empty';
 
   @override
-  String get departure => 'departure time';
+  String get departure => 'Departure time';
 
   @override
   String get badRequest => 'Invalid request (400)';
@@ -144,16 +663,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get serverError => 'Server error (500)';
 
   @override
-  String get forgotPassword => 'Forgot your password?';
+  String get forgotPassword => 'Forgot password?';
 
   @override
-  String get management => 'MANAGEMENT';
+  String get appSubtitle => 'Manage your time efficiently';
 
   @override
-  String get addanewuser => 'new user';
+  String get addanewuser => 'New user';
 
   @override
-  String get addanewteam => 'new team';
+  String get addanewteam => 'New team';
 
   @override
   String get searchbarhint => 'User or team...';
@@ -165,17 +684,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String fieldIsRequired(String field) {
-    return 'The \'$field\' field is required.';
+    return 'The field \'$field\' is required.';
   }
-
-  @override
-  String get toggleThemeHint => 'Toggle between dark and light mode';
-
-  @override
-  String get languageSelectionHint => 'Select the application language';
-
-  @override
-  String get accessibilityInfo => 'These settings improve accessibility and readability for all users.';
 
   @override
   String get invalidPhoneNumber => 'Invalid phone number';
@@ -184,7 +694,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get phoneNumberRequired => 'Phone number is required';
 
   @override
-  String get phoneFormatHint => 'Example: +1 202 555 0123';
+  String get phoneFormatHint => 'Example: +33 6 12 34 56 78';
+
+  @override
+  String get toggleThemeHint => 'Enable or disable dark mode';
+
+  @override
+  String get languageSelectionHint => 'Choose the app language';
+
+  @override
+  String get accessibilityInfo => 'These settings improve accessibility and readability for all users.';
 
   @override
   String get teamManagement => 'TEAM MANAGEMENT';
@@ -196,13 +715,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get createTeam => 'Create team';
 
   @override
-  String get teamNameLabel => 'Name :';
+  String get teamNameLabel => 'Name:';
 
   @override
-  String get teamDescriptionLabel => 'Description :';
+  String get teamDescriptionLabel => 'Description:';
 
   @override
-  String get teamNoMember => 'No members';
+  String get teamNoMember => 'No member';
 
   @override
   String get cancel => 'Cancel';
@@ -223,7 +742,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get week => 'Week';
 
   @override
-  String get month => 'month';
+  String get month => 'Month';
 
   @override
   String get year => 'Year';
@@ -247,31 +766,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get yearly => 'Yearly';
 
   @override
-  String get dashboardLoading => 'Dashboard is loading...';
-
-  @override
-  String get planningCalendar => 'Planning calendar';
-
-  @override
-  String get planning => 'Schedule';
-
-  @override
-  String get noPlanningForToday => 'No schedule for today';
-
-  @override
-  String get planningWeekly => 'Weekly schedule';
-
-  @override
-  String get noConfigPlanning => 'No schedule configured';
+  String get dashboardLoading => 'Loading dashboard...';
 
   @override
   String get planningLoading => 'Loading planning...';
 
   @override
-  String get monday => 'Monday';
+  String get planningCalendar => 'Planning calendar';
 
   @override
-  String get tuesday => 'Tuesday';
+  String get planning => 'Planning';
+
+  @override
+  String get noPlanningForTodat => 'No planning for this day';
+
+  @override
+  String get planingWeekly => 'Weekly planning';
+
+  @override
+  String get noConfigplanning => 'No planning configured';
 
   @override
   String get wednesday => 'Wednesday';
@@ -280,13 +793,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get thursday => 'Thursday';
 
   @override
-  String get friday => 'Friday';
+  String get teamDashboard => 'Team Dashboard';
 
   @override
-  String get saturday => 'Saturday';
-
-  @override
-  String get sunday => 'Sunday';
+  String get manage => 'Manage';
 
   @override
   String get january => 'January';
@@ -331,7 +841,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectEquip => 'Select a team';
 
   @override
-  String get ponctuality => 'Ponctuality';
+  String get ponctuality => 'Punctuality';
 
   @override
   String get assiduity => 'Attendance';
@@ -346,5 +856,5 @@ class AppLocalizationsEn extends AppLocalizations {
   String get good => 'Good';
 
   @override
-  String get atUpgrade => 'At improve';
+  String get atUpgrade => 'Needs improvement';
 }

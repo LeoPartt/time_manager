@@ -2,9 +2,9 @@ import 'dart:convert';
 import 'package:time_manager/core/exceptions/network_exception.dart';
 import 'package:time_manager/data/datasources/local/local_storage_service.dart';
 import 'package:time_manager/data/datasources/remote/team_api.dart';
-import 'package:time_manager/data/models/team_model.dart';
-import 'package:time_manager/domain/entities/team.dart';
-import 'package:time_manager/domain/entities/user.dart';
+import 'package:time_manager/data/models/team/team_model.dart';
+import 'package:time_manager/domain/entities/team/team.dart';
+import 'package:time_manager/domain/entities/user/user.dart';
 import 'package:time_manager/domain/repositories/team_repository.dart';
 import 'package:time_manager/domain/usecases/team/update_team.dart';
 

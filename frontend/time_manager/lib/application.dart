@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
 import 'package:time_manager/core/theme/local_provider.dart';
+import 'package:time_manager/core/widgets/app_info_provider.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/account/auth_cubit.dart';
 import 'package:time_manager/presentation/cubits/clock/clock_cubit.dart';
@@ -27,11 +28,14 @@ class Application extends StatelessWidget {
       builder: (context, themeSwitcher, _) {
         return MultiBlocProvider(
           providers: [
+              ChangeNotifierProvider(
+      create: (_) => AppInfoProvider()..load(),
+    ),
             BlocProvider<AuthCubit>(
-              create: (_) => locator<AuthCubit>(),
+               create: (_) => locator<AuthCubit>()..restoreSession(),
             ),
             BlocProvider<UserCubit>(
-              create: (_) => locator<UserCubit>()..restoreSession(),
+              create: (_) => locator<UserCubit>(),
             ),
             BlocProvider<NavCubit>(
               create: (_) => NavCubit(),

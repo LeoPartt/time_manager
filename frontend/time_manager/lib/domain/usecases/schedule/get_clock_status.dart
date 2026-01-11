@@ -1,5 +1,5 @@
 
-import 'package:time_manager/domain/entities/schedule.dart';
+import 'package:time_manager/domain/entities/schedule/schedule.dart';
 import 'package:time_manager/domain/repositories/schedule_repository.dart';
 
 class GetClockStatus {

@@ -1,7 +1,9 @@
+
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
+import 'package:time_manager/core/utils/extensions/context_extensions.dart';
 import 'package:time_manager/core/widgets/app_button.dart';
 import 'package:time_manager/core/widgets/app_card.dart';
 import 'package:time_manager/core/widgets/app_input_field.dart';
@@ -38,63 +40,97 @@ class _CreateTeamScreenState extends State<CreateTeamScreen> {
             name: _nameController.text.trim(),
             description: _descController.text.trim(),
           );
-      context.router.replace(const ManagementRoute());
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    return Scaffold(
-      bottomNavigationBar: const NavBar(),
-      body: SafeArea(
-        child: ListView(
-          padding: const EdgeInsets.all(AppSizes.p24),
-          children: [
-            Header(label: tr.createTeam),
-            const SizedBox(height: AppSizes.p32),
-            AppCard(
-              padding: const EdgeInsets.all(AppSizes.p24),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  children: [
-                    AppInputField(
-                      label: tr.teamNameLabel,
-                      controller: _nameController,
-                      icon: Icons.group_outlined,
-                      textInputAction: TextInputAction.next,
-                      validator: (value) => value == null || value.isEmpty
-                          ? tr.teamHintName
-                          : null,
-                    ),
-                    const SizedBox(height: AppSizes.p16),
-                    AppInputField(
-                      label: tr.teamDescriptionLabel,
-                      controller: _descController,
-                      icon: Icons.description_outlined,
-                      keyboardType: TextInputType.multiline,
-                      maxLines: 3,
-                    ),
-                    const SizedBox(height: AppSizes.p24),
-                    BlocBuilder<TeamCubit, TeamState>(
-                      builder: (context, state) {
-                        final isLoading = state is TeamLoading;
-                        return AppButton(
-                          label: tr.createTeam,
-                          fullSize: true,
-                          isLoading: isLoading,
-                          onPressed: () => _onSubmit(context),
-                        );
-                      },
-                    ),
-                  ],
+    final isTablet = context.screenWidth >= 600;
+
+    return BlocConsumer<TeamCubit, TeamState>(
+      listener: (context, state) {
+        state.whenOrNull(
+          loaded: (team,_) {
+            context.showSuccess(tr.teamCreatedSuccess);
+            context.router.replace(const ManagementRoute());
+          },
+          error: (msg) => context.showError(msg),
+        );
+      },
+      builder: (context, state) {
+        final isLoading = state is TeamLoading;
+
+        return Scaffold(
+          bottomNavigationBar: const NavBar(),
+          body: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.all(AppSizes.p24),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth: isTablet ? 600 : double.infinity,
+                  ),
+                  child: Column(
+                    children: [
+                      Header(
+                        label: tr.createTeam,
+                        leading: IconButton(
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: () => context.router.pop(),
+                        ),
+                      ),
+                      
+                      SizedBox(height: AppSizes.p24),
+
+                      AppCard(
+                        padding: EdgeInsets.all(AppSizes.p24),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            children: [
+                              AppInputField(
+                                label: tr.teamName,
+                                controller: _nameController,
+                                icon: Icons.group_outlined,
+                                textInputAction: TextInputAction.next,
+                                validator: (value) =>
+                                    value == null || value.isEmpty
+                                        ? tr.teamNameRequired
+                                        : null,
+                              ),
+                              
+                              SizedBox(height: AppSizes.p16),
+                              
+                              AppInputField(
+                                label: tr.teamDescription,
+                                controller: _descController,
+                                icon: Icons.description_outlined,
+                                keyboardType: TextInputType.multiline,
+                                maxLines: 3,
+                              ),
+                              
+                              SizedBox(height: AppSizes.p24),
+                              
+                              AppButton(
+                                label: tr.createTeam,
+                                fullSize: true,
+                                isLoading: isLoading,
+                                onPressed: () => _onSubmit(context),
+                                icon: Icons.group_add,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

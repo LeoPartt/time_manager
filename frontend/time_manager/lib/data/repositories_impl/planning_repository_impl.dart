@@ -1,8 +1,7 @@
-// 📁 lib/data/repositories/planning_repository_impl.dart
 
 import 'package:time_manager/data/datasources/remote/planning_api.dart';
-import 'package:time_manager/data/models/planning_model.dart';
-import 'package:time_manager/domain/entities/planning.dart';
+import 'package:time_manager/data/models/planning/planning_model.dart';
+import 'package:time_manager/domain/entities/planning/planning.dart';
 import 'package:time_manager/domain/repositories/planning_repository.dart';
 
 class PlanningRepositoryImpl implements PlanningRepository {
@@ -14,17 +13,14 @@ class PlanningRepositoryImpl implements PlanningRepository {
   Future<List<Planning>> getUserPlannings(int userId) async {
     try {
       final jsonList = await api.getUserPlannings(userId);
-      print('📦 [PlanningRepository] JSON List: $jsonList');
       
       final models = jsonList
           .map((json) => PlanningModel.fromJson(json))
           .toList();
       
-      print('📦 [PlanningRepository] Models: $models');
       
       return models.map((model) => model.toEntity()).toList();
     } catch (e) {
-      print('🔴 [PlanningRepository] Error: $e');
       rethrow;
     }
   }

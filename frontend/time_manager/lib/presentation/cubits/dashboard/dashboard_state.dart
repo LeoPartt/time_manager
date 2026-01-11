@@ -1,5 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:time_manager/domain/entities/dashboard_report.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
 
 part 'dashboard_state.freezed.dart';
 
@@ -7,6 +7,8 @@ part 'dashboard_state.freezed.dart';
 class DashboardState with _$DashboardState {
   const factory DashboardState.initial() = Initial;
   const factory DashboardState.loading() = Loading;
-  const factory DashboardState.loaded(DashboardReport report) = Loaded;
+  const factory DashboardState.userLoaded(UserDashboardReport report) = UserLoaded;
+  const factory DashboardState.teamLoaded(TeamDashboardReport report) = TeamLoaded;
+  const factory DashboardState.globalLoaded(GlobalDashboardReport report) = GlobalLoaded;
   const factory DashboardState.error(String message) = Error;
 }

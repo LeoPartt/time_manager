@@ -55,13 +55,15 @@ extension DashboardStatePatterns on DashboardState {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Initial value)?  initial,TResult Function( Loading value)?  loading,TResult Function( Loaded value)?  loaded,TResult Function( Error value)?  error,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( Initial value)?  initial,TResult Function( Loading value)?  loading,TResult Function( UserLoaded value)?  userLoaded,TResult Function( TeamLoaded value)?  teamLoaded,TResult Function( GlobalLoaded value)?  globalLoaded,TResult Function( Error value)?  error,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case Initial() when initial != null:
 return initial(_that);case Loading() when loading != null:
-return loading(_that);case Loaded() when loaded != null:
-return loaded(_that);case Error() when error != null:
+return loading(_that);case UserLoaded() when userLoaded != null:
+return userLoaded(_that);case TeamLoaded() when teamLoaded != null:
+return teamLoaded(_that);case GlobalLoaded() when globalLoaded != null:
+return globalLoaded(_that);case Error() when error != null:
 return error(_that);case _:
   return orElse();
 
@@ -80,13 +82,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Initial value)  initial,required TResult Function( Loading value)  loading,required TResult Function( Loaded value)  loaded,required TResult Function( Error value)  error,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( Initial value)  initial,required TResult Function( Loading value)  loading,required TResult Function( UserLoaded value)  userLoaded,required TResult Function( TeamLoaded value)  teamLoaded,required TResult Function( GlobalLoaded value)  globalLoaded,required TResult Function( Error value)  error,}){
 final _that = this;
 switch (_that) {
 case Initial():
 return initial(_that);case Loading():
-return loading(_that);case Loaded():
-return loaded(_that);case Error():
+return loading(_that);case UserLoaded():
+return userLoaded(_that);case TeamLoaded():
+return teamLoaded(_that);case GlobalLoaded():
+return globalLoaded(_that);case Error():
 return error(_that);case _:
   throw StateError('Unexpected subclass');
 
@@ -104,13 +108,15 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Initial value)?  initial,TResult? Function( Loading value)?  loading,TResult? Function( Loaded value)?  loaded,TResult? Function( Error value)?  error,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( Initial value)?  initial,TResult? Function( Loading value)?  loading,TResult? Function( UserLoaded value)?  userLoaded,TResult? Function( TeamLoaded value)?  teamLoaded,TResult? Function( GlobalLoaded value)?  globalLoaded,TResult? Function( Error value)?  error,}){
 final _that = this;
 switch (_that) {
 case Initial() when initial != null:
 return initial(_that);case Loading() when loading != null:
-return loading(_that);case Loaded() when loaded != null:
-return loaded(_that);case Error() when error != null:
+return loading(_that);case UserLoaded() when userLoaded != null:
+return userLoaded(_that);case TeamLoaded() when teamLoaded != null:
+return teamLoaded(_that);case GlobalLoaded() when globalLoaded != null:
+return globalLoaded(_that);case Error() when error != null:
 return error(_that);case _:
   return null;
 
@@ -128,12 +134,14 @@ return error(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( DashboardReport report)?  loaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function()?  initial,TResult Function()?  loading,TResult Function( UserDashboardReport report)?  userLoaded,TResult Function( TeamDashboardReport report)?  teamLoaded,TResult Function( GlobalDashboardReport report)?  globalLoaded,TResult Function( String message)?  error,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case Initial() when initial != null:
 return initial();case Loading() when loading != null:
-return loading();case Loaded() when loaded != null:
-return loaded(_that.report);case Error() when error != null:
+return loading();case UserLoaded() when userLoaded != null:
+return userLoaded(_that.report);case TeamLoaded() when teamLoaded != null:
+return teamLoaded(_that.report);case GlobalLoaded() when globalLoaded != null:
+return globalLoaded(_that.report);case Error() when error != null:
 return error(_that.message);case _:
   return orElse();
 
@@ -152,12 +160,14 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( DashboardReport report)  loaded,required TResult Function( String message)  error,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function()  initial,required TResult Function()  loading,required TResult Function( UserDashboardReport report)  userLoaded,required TResult Function( TeamDashboardReport report)  teamLoaded,required TResult Function( GlobalDashboardReport report)  globalLoaded,required TResult Function( String message)  error,}) {final _that = this;
 switch (_that) {
 case Initial():
 return initial();case Loading():
-return loading();case Loaded():
-return loaded(_that.report);case Error():
+return loading();case UserLoaded():
+return userLoaded(_that.report);case TeamLoaded():
+return teamLoaded(_that.report);case GlobalLoaded():
+return globalLoaded(_that.report);case Error():
 return error(_that.message);case _:
   throw StateError('Unexpected subclass');
 
@@ -175,12 +185,14 @@ return error(_that.message);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( DashboardReport report)?  loaded,TResult? Function( String message)?  error,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function()?  initial,TResult? Function()?  loading,TResult? Function( UserDashboardReport report)?  userLoaded,TResult? Function( TeamDashboardReport report)?  teamLoaded,TResult? Function( GlobalDashboardReport report)?  globalLoaded,TResult? Function( String message)?  error,}) {final _that = this;
 switch (_that) {
 case Initial() when initial != null:
 return initial();case Loading() when loading != null:
-return loading();case Loaded() when loaded != null:
-return loaded(_that.report);case Error() when error != null:
+return loading();case UserLoaded() when userLoaded != null:
+return userLoaded(_that.report);case TeamLoaded() when teamLoaded != null:
+return teamLoaded(_that.report);case GlobalLoaded() when globalLoaded != null:
+return globalLoaded(_that.report);case Error() when error != null:
 return error(_that.message);case _:
   return null;
 
@@ -256,23 +268,23 @@ String toString() {
 /// @nodoc
 
 
-class Loaded implements DashboardState {
-  const Loaded(this.report);
+class UserLoaded implements DashboardState {
+  const UserLoaded(this.report);
   
 
- final  DashboardReport report;
+ final  UserDashboardReport report;
 
 /// Create a copy of DashboardState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
 @pragma('vm:prefer-inline')
-$LoadedCopyWith<Loaded> get copyWith => _$LoadedCopyWithImpl<Loaded>(this, _$identity);
+$UserLoadedCopyWith<UserLoaded> get copyWith => _$UserLoadedCopyWithImpl<UserLoaded>(this, _$identity);
 
 
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is Loaded&&(identical(other.report, report) || other.report == report));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is UserLoaded&&(identical(other.report, report) || other.report == report));
 }
 
 
@@ -281,38 +293,38 @@ int get hashCode => Object.hash(runtimeType,report);
 
 @override
 String toString() {
-  return 'DashboardState.loaded(report: $report)';
+  return 'DashboardState.userLoaded(report: $report)';
 }
 
 
 }
 
 /// @nodoc
-abstract mixin class $LoadedCopyWith<$Res> implements $DashboardStateCopyWith<$Res> {
-  factory $LoadedCopyWith(Loaded value, $Res Function(Loaded) _then) = _$LoadedCopyWithImpl;
+abstract mixin class $UserLoadedCopyWith<$Res> implements $DashboardStateCopyWith<$Res> {
+  factory $UserLoadedCopyWith(UserLoaded value, $Res Function(UserLoaded) _then) = _$UserLoadedCopyWithImpl;
 @useResult
 $Res call({
- DashboardReport report
+ UserDashboardReport report
 });
 
 
-$DashboardReportCopyWith<$Res> get report;
+$UserDashboardReportCopyWith<$Res> get report;
 
 }
 /// @nodoc
-class _$LoadedCopyWithImpl<$Res>
-    implements $LoadedCopyWith<$Res> {
-  _$LoadedCopyWithImpl(this._self, this._then);
+class _$UserLoadedCopyWithImpl<$Res>
+    implements $UserLoadedCopyWith<$Res> {
+  _$UserLoadedCopyWithImpl(this._self, this._then);
 
-  final Loaded _self;
-  final $Res Function(Loaded) _then;
+  final UserLoaded _self;
+  final $Res Function(UserLoaded) _then;
 
 /// Create a copy of DashboardState
 /// with the given fields replaced by the non-null parameter values.
 @pragma('vm:prefer-inline') $Res call({Object? report = null,}) {
-  return _then(Loaded(
+  return _then(UserLoaded(
 null == report ? _self.report : report // ignore: cast_nullable_to_non_nullable
-as DashboardReport,
+as UserDashboardReport,
   ));
 }
 
@@ -320,9 +332,159 @@ as DashboardReport,
 /// with the given fields replaced by the non-null parameter values.
 @override
 @pragma('vm:prefer-inline')
-$DashboardReportCopyWith<$Res> get report {
+$UserDashboardReportCopyWith<$Res> get report {
   
-  return $DashboardReportCopyWith<$Res>(_self.report, (value) {
+  return $UserDashboardReportCopyWith<$Res>(_self.report, (value) {
+    return _then(_self.copyWith(report: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class TeamLoaded implements DashboardState {
+  const TeamLoaded(this.report);
+  
+
+ final  TeamDashboardReport report;
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$TeamLoadedCopyWith<TeamLoaded> get copyWith => _$TeamLoadedCopyWithImpl<TeamLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is TeamLoaded&&(identical(other.report, report) || other.report == report));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,report);
+
+@override
+String toString() {
+  return 'DashboardState.teamLoaded(report: $report)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $TeamLoadedCopyWith<$Res> implements $DashboardStateCopyWith<$Res> {
+  factory $TeamLoadedCopyWith(TeamLoaded value, $Res Function(TeamLoaded) _then) = _$TeamLoadedCopyWithImpl;
+@useResult
+$Res call({
+ TeamDashboardReport report
+});
+
+
+$TeamDashboardReportCopyWith<$Res> get report;
+
+}
+/// @nodoc
+class _$TeamLoadedCopyWithImpl<$Res>
+    implements $TeamLoadedCopyWith<$Res> {
+  _$TeamLoadedCopyWithImpl(this._self, this._then);
+
+  final TeamLoaded _self;
+  final $Res Function(TeamLoaded) _then;
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? report = null,}) {
+  return _then(TeamLoaded(
+null == report ? _self.report : report // ignore: cast_nullable_to_non_nullable
+as TeamDashboardReport,
+  ));
+}
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$TeamDashboardReportCopyWith<$Res> get report {
+  
+  return $TeamDashboardReportCopyWith<$Res>(_self.report, (value) {
+    return _then(_self.copyWith(report: value));
+  });
+}
+}
+
+/// @nodoc
+
+
+class GlobalLoaded implements DashboardState {
+  const GlobalLoaded(this.report);
+  
+
+ final  GlobalDashboardReport report;
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@JsonKey(includeFromJson: false, includeToJson: false)
+@pragma('vm:prefer-inline')
+$GlobalLoadedCopyWith<GlobalLoaded> get copyWith => _$GlobalLoadedCopyWithImpl<GlobalLoaded>(this, _$identity);
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is GlobalLoaded&&(identical(other.report, report) || other.report == report));
+}
+
+
+@override
+int get hashCode => Object.hash(runtimeType,report);
+
+@override
+String toString() {
+  return 'DashboardState.globalLoaded(report: $report)';
+}
+
+
+}
+
+/// @nodoc
+abstract mixin class $GlobalLoadedCopyWith<$Res> implements $DashboardStateCopyWith<$Res> {
+  factory $GlobalLoadedCopyWith(GlobalLoaded value, $Res Function(GlobalLoaded) _then) = _$GlobalLoadedCopyWithImpl;
+@useResult
+$Res call({
+ GlobalDashboardReport report
+});
+
+
+$GlobalDashboardReportCopyWith<$Res> get report;
+
+}
+/// @nodoc
+class _$GlobalLoadedCopyWithImpl<$Res>
+    implements $GlobalLoadedCopyWith<$Res> {
+  _$GlobalLoadedCopyWithImpl(this._self, this._then);
+
+  final GlobalLoaded _self;
+  final $Res Function(GlobalLoaded) _then;
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@pragma('vm:prefer-inline') $Res call({Object? report = null,}) {
+  return _then(GlobalLoaded(
+null == report ? _self.report : report // ignore: cast_nullable_to_non_nullable
+as GlobalDashboardReport,
+  ));
+}
+
+/// Create a copy of DashboardState
+/// with the given fields replaced by the non-null parameter values.
+@override
+@pragma('vm:prefer-inline')
+$GlobalDashboardReportCopyWith<$Res> get report {
+  
+  return $GlobalDashboardReportCopyWith<$Res>(_self.report, (value) {
     return _then(_self.copyWith(report: value));
   });
 }

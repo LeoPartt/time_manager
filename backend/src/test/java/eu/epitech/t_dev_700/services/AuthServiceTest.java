@@ -9,7 +9,6 @@ import eu.epitech.t_dev_700.services.exceptions.UnknownUser;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockedStatic;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -28,10 +27,11 @@ class AuthServiceTest {
     @Mock private AuthenticationManager authenticationManager;
     @Mock private JwtService jwtService;
     @Mock private PasswordResetService passwordResetService;
+    @Mock private UserAuthorization userAuthorization;
 
     @Test
     void authenticate_success_returnsJwtToken() {
-        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService);
+        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService, userAuthorization);
         AuthModels.LoginRequest input = new AuthModels.LoginRequest("sam", "secret");
 
         Authentication authentication = mock(Authentication.class);
@@ -53,7 +53,7 @@ class AuthServiceTest {
     @Test
     void authenticate_badCredentials_throwsInvalidCredentials_invalidPassword() {
         // Arrange
-        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService);
+        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService, userAuthorization);
         AuthModels.LoginRequest input = new AuthModels.LoginRequest("sam", "wrong");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -70,7 +70,7 @@ class AuthServiceTest {
     @Test
     void authenticate_usernameNotFound_throwsInvalidCredentials_invalidUsername() {
         // Arrange
-        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService);
+        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService, userAuthorization);
         AuthModels.LoginRequest input = new AuthModels.LoginRequest("unknown", "secret");
 
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
@@ -87,7 +87,7 @@ class AuthServiceTest {
     @Test
     void authenticate_accountHasNoUserAndNotAdmin_throwsUnknownUser() {
         // Arrange
-        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService);
+        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService, userAuthorization);
         AuthModels.LoginRequest input = new AuthModels.LoginRequest("sam", "secret");
 
         Authentication authentication = mock(Authentication.class);
@@ -110,24 +110,45 @@ class AuthServiceTest {
 
     @Test
     void resetPassword_delegatesToPasswordResetServiceWithCurrentUser() {
-        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService);
+        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService, userAuthorization);
 
         UserEntity currentUser = mock(UserEntity.class);
+        when(userAuthorization.getCurrentUser()).thenReturn(currentUser);
 
-        try (MockedStatic<UserAuthorization> mocked = mockStatic(UserAuthorization.class)) {
-            mocked.when(UserAuthorization::getCurrentUser).thenReturn(currentUser);
+        authService.resetPassword();
 
-            authService.resetPassword();
+        verify(userAuthorization).getCurrentUser();
+        verify(passwordResetService).createResetToken(currentUser);
+        verifyNoInteractions(authenticationManager, jwtService);
+    }
 
-            verify(passwordResetService).createResetToken(currentUser);
-            verifyNoInteractions(authenticationManager, jwtService);
-        }
+    @Test
+    void authenticate_adminWithoutUser_doesNotThrow_andReturnsJwtToken() {
+        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService, userAuthorization);
+        AuthModels.LoginRequest input = new AuthModels.LoginRequest("admin", "secret");
+
+        Authentication authentication = mock(Authentication.class);
+        AccountEntity account = mock(AccountEntity.class);
+
+        when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
+                .thenReturn(authentication);
+        when(authentication.getPrincipal()).thenReturn(account);
+
+        when(account.getUser()).thenReturn(null);     // user missing
+        when(account.isAdmin()).thenReturn(true);     // admin => condition becomes false
+        when(jwtService.generateToken(account)).thenReturn("jwt-admin");
+
+        String token = authService.authenticate(input);
+
+        assertEquals("jwt-admin", token);
+        verify(jwtService).generateToken(account);
+        verifyNoInteractions(passwordResetService, userAuthorization);
     }
 
     @Test
     void changePassword_delegatesToPasswordResetService() {
         // Arrange
-        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService);
+        AuthService authService = new AuthService(authenticationManager, jwtService, passwordResetService, userAuthorization);
         AuthModels.ChangeRequest body = new AuthModels.ChangeRequest("CODE123", "newPassword!");
 
         // Act

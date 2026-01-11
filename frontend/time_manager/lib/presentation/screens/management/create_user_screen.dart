@@ -2,7 +2,6 @@ import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
-import 'package:time_manager/core/utils/accessibility_utils.dart';
 import 'package:time_manager/core/utils/extensions/context_extensions.dart';
 import 'package:time_manager/core/utils/validators.dart';
 import 'package:time_manager/core/widgets/app_button.dart';
@@ -15,6 +14,7 @@ import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_state.dart';
 import 'package:time_manager/presentation/routes/app_router.dart';
 import 'package:time_manager/presentation/widgets/header.dart';
+import 'package:time_manager/presentation/widgets/navbar.dart';
 
 @RoutePage()
 class CreateUserScreen extends StatefulWidget {
@@ -62,31 +62,27 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
   @override
   Widget build(BuildContext context) {
     final tr = AppLocalizations.of(context)!;
-    final size = MediaQuery.of(context).size;
-    final isTablet = size.width >= 600;
-    final padding = AppSizes.responsiveWidth(context, AppSizes.p24);
+    final isTablet = context.screenWidth >= 600;
 
     return BlocConsumer<UserCubit, UserState>(
       listener: (context, state) {
         state.whenOrNull(
           loaded: (user) {
-            context.showSnack("✅ ${user.username} ${tr.registerButton} !");
+            context.showSuccess('${user.username} ${tr.createdSuccessfully}');
             context.router.replace(const ManagementRoute());
           },
-          error: (message) => context.showSnack(message, isError: true),
+          error: (message) => context.showError(message),
         );
       },
       builder: (context, state) {
         final isLoading = state is UserLoading;
 
         return Scaffold(
+          bottomNavigationBar: const NavBar(),
           resizeToAvoidBottomInset: true,
           body: SafeArea(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(
-                horizontal: padding,
-                vertical: AppSizes.responsiveHeight(context, AppSizes.p24),
-              ),
+              padding: EdgeInsets.all(AppSizes.p24),
               child: Center(
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
@@ -94,113 +90,84 @@ class _CreateUserScreenState extends State<CreateUserScreen> {
                   ),
                   child: Column(
                     children: [
-  AccessibilityUtils.withLabel(
-                        label: tr.registerTitle,
-                        child: Header(label: tr.registerTitle),
-                      ),                      SizedBox(
-                        height: AppSizes.responsiveHeight(
-                          context,
-                          AppSizes.p24,
+                      Header(
+                        label: tr.createUser,
+                        leading: IconButton(
+                          icon: const Icon(Icons.arrow_back),
+                          onPressed: () => context.router.pop(),
                         ),
                       ),
+                      
+                      SizedBox(height: AppSizes.p24),
 
-                      // ────────────── FORM CARD ──────────────
                       AppCard(
-                        padding: EdgeInsets.all(
-                          AppSizes.responsiveWidth(context, AppSizes.p20),
-                        ),
+                        padding: EdgeInsets.all(AppSizes.p20),
                         child: Form(
                           key: _formKey,
                           child: Column(
                             children: [
-   AccessibilityUtils.withTooltip(
-    context,
-                                tooltip: tr.userNameLabel,                                child: AppInputField(
-                                  label: tr.userNameLabel,
-                                  controller: _usernameController,
-                                  icon: Icons.person,
-                                  textInputAction: TextInputAction.next,
-                                ),
+                              AppInputField(
+                                label: tr.username,
+                                controller: _usernameController,
+                                icon: Icons.person_outline,
+                                textInputAction: TextInputAction.next,
                               ),
-                              const SizedBox(height: AppSizes.p16),
+                              SizedBox(height: AppSizes.p16),
 
-   AccessibilityUtils.withTooltip(context,
-                                tooltip: tr.passwordLabel,                                child: AppInputField(
-                                  label: tr.passwordLabel,
-                                  controller: _passwordController,
-                                  obscureText: true,
-                                  icon: Icons.lock_outline,
-                                  textInputAction: TextInputAction.next,
-                                  validator: (v) =>
-                                      Validators.validatePassword(context, v),
-                                ),
+                              AppInputField(
+                                label: tr.passwordLabel,
+                                controller: _passwordController,
+                                obscureText: true,
+                                icon: Icons.lock_outline,
+                                textInputAction: TextInputAction.next,
+                                validator: (v) =>
+                                    Validators.validatePassword(context, v),
                               ),
-                              const SizedBox(height: AppSizes.p16),
+                              SizedBox(height: AppSizes.p16),
 
-                              AccessibilityUtils.withTooltip(
-                                context,
-                                tooltip: tr.firstNameLabel,
-                                child: AppInputField(
-                                  label: tr.firstNameLabel,
-                                  controller: _firstNameController,
-                                  icon: Icons.person_outline,
-                                  textInputAction: TextInputAction.next,
-                                ),
+                              AppInputField(
+                                label: tr.firstName,
+                                controller: _firstNameController,
+                                icon: Icons.badge_outlined,
+                                textInputAction: TextInputAction.next,
                               ),
-                              const SizedBox(height: AppSizes.p16),
+                              SizedBox(height: AppSizes.p16),
 
-                              AccessibilityUtils.withTooltip(context,
-                                tooltip: tr.lastNameLabel,
-                                child: AppInputField(
-                                  label: tr.lastNameLabel,
-                                  controller: _lastNameController,
-                                  icon: Icons.person_outline,
-                                  textInputAction: TextInputAction.next,
-                                ),
+                              AppInputField(
+                                label: tr.lastName,
+                                controller: _lastNameController,
+                                icon: Icons.badge_outlined,
+                                textInputAction: TextInputAction.next,
                               ),
-                              const SizedBox(height: AppSizes.p16),
+                              SizedBox(height: AppSizes.p16),
 
-AccessibilityUtils.withTooltip(context,
-                                tooltip: tr.lastNameLabel,                                child: AppInputField(
-                                  label: tr.emailLabel,
-                                  controller: _emailController,
-                                  icon: Icons.email_outlined,
-                                  keyboardType: TextInputType.emailAddress,
-                                  textInputAction: TextInputAction.next,
-                                  validator: (v) =>
-                                      Validators.validateEmail(context, v),
-                                ),
+                              AppInputField(
+                                label: tr.emailLabel,
+                                controller: _emailController,
+                                icon: Icons.email_outlined,
+                                keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.next,
+                                validator: (v) =>
+                                    Validators.validateEmail(context, v),
                               ),
-                              const SizedBox(height: AppSizes.p16),
-                              AccessibilityUtils.withTooltip(context,
-                                tooltip: tr.phoneNumberLabel,
-                                child: AppPhoneField(
-                                  controller: _phoneController,
-                                  label: tr.phoneNumberLabel,
-                                  validator: (v) => Validators.validatePhone(
-                                    context,
-                                    v as String?,
-                                  ),
-                                
-                                  initialCountryCode: getDefaultCountryCode(),
-                                ),
+                              SizedBox(height: AppSizes.p16),
+
+                              AppPhoneField(
+                                controller: _phoneController,
+                                label: tr.phoneNumber,
+                                validator: (v) =>
+                                    Validators.validatePhone(context, v as String?),
+                                initialCountryCode: getDefaultCountryCode(),
                               ),
 
-                              SizedBox(
-                                height: AppSizes.responsiveHeight(
-                                  context,
-                                  AppSizes.p24,
-                                ),
-                              ),
+                              SizedBox(height: AppSizes.p24),
 
-                              // ────────────── SUBMIT BUTTON ──────────────
- AccessibilityUtils.withLabel(
-                                label: tr.registerButton,                                child: AppButton(
-                                  label: tr.registerButton,
-                                  fullSize: true,
-                                  isLoading: isLoading,
-                                  onPressed: () => _onSubmit(context),
-                                ),
+                              AppButton(
+                                label: tr.createUser,
+                                fullSize: true,
+                                isLoading: isLoading,
+                                onPressed: () => _onSubmit(context),
+                                icon: Icons.person_add,
                               ),
                             ],
                           ),

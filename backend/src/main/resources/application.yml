@@ -6,7 +6,7 @@ spring:
     timeout-per-shutdown-phase: 30s
 
   profiles:
-    active: ${BACKEND_PROFILE}
+    active: ${BACKEND_PROFILE:test}
 
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}

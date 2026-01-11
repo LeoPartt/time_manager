@@ -1,4 +1,4 @@
-import 'package:time_manager/domain/entities/team.dart';
+import 'package:time_manager/domain/entities/team/team.dart';
 import 'package:time_manager/domain/repositories/team_repository.dart';
 
 class GetTeamById {
