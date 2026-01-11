@@ -7,6 +7,7 @@ import 'package:time_manager/domain/usecases/user/get_current_user.dart';
 import 'package:time_manager/domain/usecases/user/get_user.dart';
 import 'package:time_manager/domain/usecases/user/get_user_profile.dart';
 import 'package:time_manager/domain/usecases/user/get_users.dart';
+import 'package:time_manager/domain/usecases/user/update_user.dart';
 import 'package:time_manager/domain/usecases/user/update_user_profile.dart';
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'user_state.dart';
@@ -15,6 +16,7 @@ class UserCubit extends Cubit<UserState> {
   final GetUserProfile getUserProfile;
   final UpdateUserProfile updateUserProfile;
   final DeleteUser deleteUser;
+   final UpdateUser updateUserUseCase;
   final CreateUser createUserUsecase;
   final GetUser getUserUseCase;
   final GetUsers getUsersUseCase;
@@ -26,6 +28,7 @@ class UserCubit extends Cubit<UserState> {
     required this.deleteUser,
     required this.getUserUseCase,
     required this.getUsersUseCase,
+    required this.updateUserUseCase, 
     required this.getCurrentUser,
     required this.createUserUsecase,
   }) : super(const UserState.initial());
@@ -37,6 +40,33 @@ class UserCubit extends Cubit<UserState> {
       emit(UserState.loaded(user));
     } catch (e) {
       emit(UserState.error(e.toString()));
+    }
+  }
+
+    Future<void> updateUser(
+    BuildContext context, {
+    required int userId,
+    required String username,
+    required String firstName,
+    required String lastName,
+    required String email,
+    required String phoneNumber,
+  }) async {
+    final tr = AppLocalizations.of(context)!;
+
+    emit(const UserState.loading());
+    try {
+      final user = await updateUserUseCase(
+        userId: userId,
+        username: username,
+        firstName: firstName,
+        lastName: lastName,
+        email: email,
+        phoneNumber: phoneNumber,
+      );
+      emit(UserState.updated(user));
+    } catch (e) {
+      emit(UserState.error('${tr.error}: ${e.toString()}'));
     }
   }
    Future<void> restoreSession() async {
@@ -72,13 +102,16 @@ class UserCubit extends Cubit<UserState> {
   }
 
   Future<void> getUsers() async {
-    emit(const UserState.loading());
+      
 
+   emit(const UserState.loading());
     try {
       final users = await getUsersUseCase();
+
       emit(UserState.listLoaded(users));
     } catch (e) {
-      emit(UserState.error(e.toString()));
+
+      emit(UserState.error((' ${e.toString()}')));
     }
   }
 

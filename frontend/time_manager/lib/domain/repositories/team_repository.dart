@@ -1,5 +1,5 @@
-import 'package:time_manager/domain/entities/team.dart';
-import 'package:time_manager/domain/entities/user.dart';
+import 'package:time_manager/domain/entities/team/team.dart';
+import 'package:time_manager/domain/entities/user/user.dart';
 import 'package:time_manager/domain/usecases/team/update_team.dart';
 
 abstract class TeamRepository {

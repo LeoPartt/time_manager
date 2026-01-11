@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:time_manager/core/utils/role/role_manager.dart';
 import 'package:time_manager/data/datasources/local/cache_manager.dart';
 import 'package:time_manager/data/datasources/local/local_storage_service.dart';
 import 'package:time_manager/data/datasources/remote/account_api.dart';
@@ -25,6 +26,7 @@ import 'package:time_manager/domain/repositories/user_repository.dart';
 import 'package:time_manager/domain/usecases/account/login_user.dart';
 import 'package:time_manager/domain/usecases/account/logout_user.dart';
 import 'package:time_manager/domain/usecases/account/register_account.dart';
+import 'package:time_manager/domain/usecases/dashboard/get_global_report.dart';
 import 'package:time_manager/domain/usecases/dashboard/get_team_report.dart';
 import 'package:time_manager/domain/usecases/dashboard/get_user_report.dart';
 import 'package:time_manager/domain/usecases/planning/create_planning.dart';
@@ -34,6 +36,7 @@ import 'package:time_manager/domain/usecases/planning/update_planning.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_in.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_out.dart';
 import 'package:time_manager/domain/usecases/schedule/get_clock_status.dart';
+import 'package:time_manager/domain/usecases/schedule/get_daily_work.dart';
 import 'package:time_manager/domain/usecases/team/add_member_to_team.dart';
 import 'package:time_manager/domain/usecases/team/assign_manager.dart';
 import 'package:time_manager/domain/usecases/team/create_team.dart';
@@ -50,6 +53,7 @@ import 'package:time_manager/domain/usecases/user/get_current_user.dart';
 import 'package:time_manager/domain/usecases/user/get_user.dart';
 import 'package:time_manager/domain/usecases/user/get_user_profile.dart';
 import 'package:time_manager/domain/usecases/user/get_users.dart';
+import 'package:time_manager/domain/usecases/user/update_user.dart';
 import 'package:time_manager/domain/usecases/user/update_user_profile.dart';
 import 'package:time_manager/presentation/cubits/account/auth_cubit.dart';
 import 'package:time_manager/presentation/cubits/clock/clock_cubit.dart';
@@ -58,6 +62,8 @@ import 'package:time_manager/presentation/cubits/planning/planning_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/user/user_cubit.dart';
 import 'package:time_manager/presentation/routes/guard/auth_guard.dart';
+import 'package:time_manager/presentation/routes/guard/role_guard.dart';
+
 
 import '../presentation/routes/app_router.dart';
 
@@ -75,13 +81,38 @@ Future<void> setupLocator() async {
   );
   locator.registerLazySingleton<CacheManager>(() => CacheManager());
 
-  locator.registerLazySingleton<AuthGuard>(
-  () => AuthGuard(locator<LocalStorageService>()),
+   locator.registerLazySingleton<AuthGuard>(
+    () => AuthGuard(locator<LocalStorageService>()),
+  );
+
+  locator.registerLazySingleton<RoleGuard>(
+  () => RoleGuard(
+    locator<UserRepository>(),
+    locator<LocalStorageService>(),
+    UserRole.administrator,
+  ),
+  instanceName: 'adminGuard',
 );
-    // Router
+
+locator.registerLazySingleton<RoleGuard>(
+  () => RoleGuard(
+    locator<UserRepository>(),
+    locator<LocalStorageService>(),
+    UserRole.manager,
+  ),
+  instanceName: 'managerGuard',
+);
+
+// Router
 locator.registerLazySingleton<AppRouter>(
-  () => AppRouter(locator<AuthGuard>(), navigatorKey: locator<NavigationService>().navigatorKey),
+  () => AppRouter(
+    locator<AuthGuard>(),
+    locator<RoleGuard>(instanceName: 'adminGuard'),
+    locator<RoleGuard>(instanceName: 'managerGuard'),
+    navigatorKey: locator<NavigationService>().navigatorKey,
+  ),
 );
+
 
  
   locator.registerLazySingleton<AuthHeaderService>(
@@ -113,7 +144,7 @@ locator.registerLazySingleton<AppRouter>(
     () => AuthCubit(
       loginUser: locator<LoginUser>(),
       registerUser: locator<RegisterUser>(),
-      logoutUser: locator<LogoutUser>(),
+      logoutUser: locator<LogoutUser>(), storage: locator<LocalStorageService>(),
     ),
   );
 
@@ -130,6 +161,7 @@ locator.registerLazySingleton<AppRouter>(
 
   locator.registerFactory(() => GetUserProfile(locator<UserRepository>()));
   locator.registerFactory(() => UpdateUserProfile(locator<UserRepository>()));
+  locator.registerFactory(() => UpdateUser(locator<UserRepository>()));
   locator.registerFactory(() => DeleteUser(locator<UserRepository>()));
   locator.registerFactory(() => CreateUser(locator<UserRepository>()));
   locator.registerFactory(() => GetUser(locator<UserRepository>()));
@@ -145,7 +177,7 @@ locator.registerLazySingleton<AppRouter>(
       createUserUsecase: locator<CreateUser>(), 
       getUserUseCase: locator<GetUser>(), 
       getUsersUseCase: locator<GetUsers>(), 
-      getCurrentUser: locator<GetCurrentUser>(),
+      getCurrentUser: locator<GetCurrentUser>(), updateUserUseCase: locator<UpdateUser>(),
     ),
   );
   
@@ -159,6 +191,7 @@ locator.registerLazySingleton<ClockRepository>(
 locator.registerFactory(() => ClockIn(locator<ClockRepository>()));
 locator.registerFactory(() => ClockOut(locator<ClockRepository>()));
 locator.registerFactory(() => GetClockStatus(locator<ClockRepository>()));
+locator.registerFactory(() => GetDailyWork(clockRepository: locator<ClockRepository>(), planningRepository: locator<PlanningRepository>()));
 
 locator.registerFactory(() => ClockCubit(
       clockInUseCase: locator<ClockIn>(),
@@ -204,16 +237,16 @@ locator.registerFactory(() => ClockCubit(
 
    locator.registerLazySingleton<DashboardApi>(() => DashboardApi(locator<ApiClient>()));
     locator.registerLazySingleton<DashboardRepository>(
-    () => DashboardRepositoryImpl(api: locator<DashboardApi>(), storage: locator<LocalStorageService>()),
+    () => DashboardRepositoryImpl(api: locator<DashboardApi>()),
   );
 
-  locator.registerFactory(() => GetUserReport(locator<DashboardRepository>()));
-  locator.registerFactory(() => GetTeamReport(locator<DashboardRepository>()));
+  locator.registerFactory(() => GetUserDashboard(locator<DashboardRepository>()));
+  locator.registerFactory(() => GetTeamDashboard(locator<DashboardRepository>()));
+  locator.registerFactory(() => GetGlobalDashboard(locator<DashboardRepository>()));
 
 
   locator.registerFactory(() => DashboardCubit(
-     getUserReportUseCase: locator<GetUserReport>(), 
-     getTeamReportUseCase: locator<GetTeamReport>()
+     getUserDashboardUseCase: locator<GetUserDashboard>(), getTeamDashboardUseCase: locator<GetTeamDashboard>(), getGlobalDashboardUseCase: locator<GetGlobalDashboard>()
     ));
 
 

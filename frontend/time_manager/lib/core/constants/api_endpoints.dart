@@ -43,20 +43,14 @@ class ApiEndpoints {
   //  SCHEDULE endpoints
   // ───────────────────────────────
   static String get schedules => '/clocks';
-  static String scheduleById(int id) => '/schedules/$id';
-  // static String get clockIn => '/clocks';
-  // static String get clockOut => '/clocks';
-  static String get history => '/schedules/history';
-   
-  static String get clockStatus => '/clocks/status';
 
   // ───────────────────────────────
   // REPORTS / KPI endpoints
   // ───────────────────────────────
 
-  static const String globalReport = '/reports';
-  static String userReport(int userId) => '/reports/users/$userId';
-  static String teamReport(int teamId) => '/reports/teams/$teamId';
+  static const String globalDashboard = '/reports/dashboard';
+  static String userDashboard(int userId) => '/reports/users/$userId/dashboard';
+  static String teamDashboard(int teamId) => '/reports/teams/$teamId/dashboard';
 
   // ═══════════════════════════════════════════════════════
   // 📅 PLANNINGS

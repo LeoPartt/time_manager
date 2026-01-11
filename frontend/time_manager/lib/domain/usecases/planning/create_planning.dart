@@ -1,4 +1,4 @@
-import 'package:time_manager/domain/entities/planning.dart';
+import 'package:time_manager/domain/entities/planning/planning.dart';
 import 'package:time_manager/domain/repositories/planning_repository.dart';
 
 class CreatePlanning {

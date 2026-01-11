@@ -1,8 +1,9 @@
 
 
+import 'package:time_manager/core/exceptions/network_exception.dart';
 import 'package:time_manager/data/datasources/local/cache_manager.dart';
 import 'package:time_manager/data/datasources/remote/schedule_api.dart';
-import 'package:time_manager/domain/entities/schedule.dart';
+import 'package:time_manager/domain/entities/schedule/schedule.dart';
 
 import 'package:time_manager/domain/repositories/schedule_repository.dart';
 
@@ -39,6 +40,31 @@ class ClockRepositoryImpl implements ClockRepository {
       }, ttlSeconds: 600);
     } catch (e) {
       rethrow;
+    }
+  }
+
+    @override
+  Future<List<int>> getUserClocks({
+    required int userId,
+    DateTime? from,
+    DateTime? to,
+    bool? current,
+  }) async {
+    try {
+      final response = await api.getUserClocks(
+        userId: userId,
+        from: from,
+        to: to,
+        current: current,
+      );
+
+      if (response is List) {
+        return response.map((e) => e as int).toList();
+      }
+
+      throw NetworkException('Invalid response format');
+    } catch (e) {
+      throw NetworkException('Error fetching clocks: $e');
     }
   }
 
