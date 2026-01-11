@@ -43,7 +43,9 @@ public class UserService extends CRUDService<
 
   @Transactional(readOnly = true)
     public UserModels.UserResponse getCurrentUser() {
-        return userMapper.toModel(userAuthorization.getCurrentUser());
+        UserEntity currentUser = userAuthorization.getCurrentUser();
+        UserEntity user = findEntityOrThrow(currentUser.getId());
+        return userMapper.toModel(user);
     }
 
     @Transactional(readOnly = true)
