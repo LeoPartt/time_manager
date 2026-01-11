@@ -43,7 +43,7 @@ public class UserService extends CRUDService<
 
   @Transactional(readOnly = true)
 public UserModels.UserResponse getCurrentUser() {
-    UserEntity currentUser = UserAuthorization.getCurrentUser();
+    UserEntity currentUser = userAuthorization.getCurrentUser();
     
     // ✅ Recharger l'utilisateur depuis la base pour initialiser les collections lazy
     UserEntity user = ((UserRepository) this.repository).findById(currentUser.getId())
