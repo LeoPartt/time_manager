@@ -1,4 +1,3 @@
-// 📁 lib/core/utils/role_manager.dart
 
 import 'package:time_manager/domain/entities/user/user.dart';
 

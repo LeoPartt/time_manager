@@ -1,4 +1,3 @@
-// 📁 lib/presentation/widgets/planning_calendar/detailed_view_widget.dart
 
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';

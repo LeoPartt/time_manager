@@ -45,7 +45,9 @@
   "createNewTeam": "Create a new team",
   "configurePlanningsForUsers": "Configure user plannings",
   "managePlanning": "Manage planning",
-  
+   "account": "Account",
+  "logoutAdminDesc": "Sign out from your administrator account",
+  "logoutConfirmationMessage": "Do you really want to logout? You will need to sign in again to access the app.",
   "userSelected": "User selected",
   "noUsersFound": "No users found",
   
@@ -297,7 +299,7 @@
   "wednesday": "Wednesday",
   "thursday": "Thursday",
 "teamDashboard": "Team Dashboard",
-  
+  "manage":"Manage",
   "january": "January",
   "february": "February",
   "march": "March",

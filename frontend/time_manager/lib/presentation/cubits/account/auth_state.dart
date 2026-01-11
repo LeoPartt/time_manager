@@ -1,4 +1,3 @@
-// 📁 lib/presentation/cubits/account/auth_state.dart
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:time_manager/domain/entities/user/user.dart';

@@ -317,6 +317,24 @@ abstract class AppLocalizations {
   /// **'Manage planning'**
   String get managePlanning;
 
+  /// No description provided for @account.
+  ///
+  /// In en, this message translates to:
+  /// **'Account'**
+  String get account;
+
+  /// No description provided for @logoutAdminDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign out from your administrator account'**
+  String get logoutAdminDesc;
+
+  /// No description provided for @logoutConfirmationMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you really want to logout? You will need to sign in again to access the app.'**
+  String get logoutConfirmationMessage;
+
   /// No description provided for @userSelected.
   ///
   /// In en, this message translates to:
@@ -1642,6 +1660,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Team Dashboard'**
   String get teamDashboard;
+
+  /// No description provided for @manage.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage'**
+  String get manage;
 
   /// No description provided for @january.
   ///

@@ -23,19 +23,30 @@ class _NavBarState extends State<NavBar> {
   @override
   void initState() {
     super.initState();
-    // ✅ Charger le profil si pas encore fait (pour les non-admins)
+    
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
+      
       
       final authState = context.read<AuthCubit>().state;
       authState.whenOrNull(
         authenticated: (user, isNewLogin) {
-          // ✅ Si pas admin, charger le profil
-          if (!(user.isAdministrator && user.username.toLowerCase() == 'admin')) {
+          
+          // ✅ Charger le profil pour TOUS les utilisateurs sauf l'admin pur
+          final isPureAdmin = user.isAdministrator && user.username.toLowerCase() == 'admin';
+          
+          if (!isPureAdmin) {
             final userState = context.read<UserCubit>().state;
-            if (userState is Initial) {
-              context.read<UserCubit>().loadProfile();
-            }
+            
+            userState.whenOrNull(
+              initial: () {
+                context.read<UserCubit>().loadProfile();
+              },
+              error: (msg) {
+                context.read<UserCubit>().loadProfile();
+              },
+            );
+          } else {
           }
         },
       );
@@ -48,14 +59,23 @@ class _NavBarState extends State<NavBar> {
     final colorScheme = theme.colorScheme;
     final size = MediaQuery.sizeOf(context);
 
+
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
+        
         return authState.when(
-          initial: () => const SizedBox.shrink(),
-          loading: () => _buildLoadingNavBar(context, colorScheme, size),
+          initial: () {
+            return const SizedBox.shrink();
+          },
+          loading: () {
+            return _buildLoadingNavBar(context, colorScheme, size);
+          },
           authenticated: (user, isNewLogin) {
-            // ✅ Si admin pur
-            if (user.isAdministrator && user.username.toLowerCase() == 'admin') {
+            
+            // ✅ Admin pur → Afficher directement la NavBar admin
+            final isPureAdmin = user.isAdministrator && user.username.toLowerCase() == 'admin';
+            
+            if (isPureAdmin) {
               return _buildNavBar(
                 context,
                 _getAdminNavItems(),
@@ -64,38 +84,70 @@ class _NavBarState extends State<NavBar> {
               );
             }
 
-            // ✅ Sinon → Attendre UserCubit
+            // ✅ Autres utilisateurs → Attendre UserCubit
             return BlocBuilder<UserCubit, UserState>(
               builder: (context, userState) {
+                
                 return userState.when(
-                  initial: () => _buildLoadingNavBar(context, colorScheme, size),
-                  loading: () => _buildLoadingNavBar(context, colorScheme, size),
-                  loaded: (fullUser) => _buildNavBar(
-                    context,
-                    _getUserNavItems(fullUser.isManager, fullUser.isAdministrator),
-                    colorScheme,
-                    size,
-                  ),
-                  listLoaded: (_) => _buildLoadingNavBar(context, colorScheme, size),
-                  updated: (fullUser) => _buildNavBar(
-                    context,
-                    _getUserNavItems(fullUser.isManager, fullUser.isAdministrator),
-                    colorScheme,
-                    size,
-                  ),
-                  deleted: () => const SizedBox.shrink(),
-                  error: (_) => _buildNavBar(
-                    context,
-                    _getUserNavItems(false, false),
-                    colorScheme,
-                    size,
-                  ),
+                  initial: () {
+                    return _buildLoadingNavBar(context, colorScheme, size);
+                  },
+                  loading: () {
+                    return _buildLoadingNavBar(context, colorScheme, size);
+                  },
+                  loaded: (fullUser) {
+                    
+                    final navItems = _getUserNavItems(
+                      fullUser.isManager,
+                      fullUser.isAdministrator,
+                    );
+                    
+                    return _buildNavBar(
+                      context,
+                      navItems,
+                      colorScheme,
+                      size,
+                    );
+                  },
+                  listLoaded: (_) {
+                    return _buildLoadingNavBar(context, colorScheme, size);
+                  },
+                  updated: (fullUser) {
+                    
+                    final navItems = _getUserNavItems(
+                      fullUser.isManager,
+                      fullUser.isAdministrator,
+                    );
+                    
+                    return _buildNavBar(
+                      context,
+                      navItems,
+                      colorScheme,
+                      size,
+                    );
+                  },
+                  deleted: () {
+                    return const SizedBox.shrink();
+                  },
+                  error: (msg) {
+                    // ✅ En cas d'erreur, utiliser les infos de AuthCubit
+                    return _buildNavBar(
+                      context,
+                      _getUserNavItems(user.isManager, user.isAdministrator),
+                      colorScheme,
+                      size,
+                    );
+                  },
                 );
               },
             );
           },
-          unauthenticated: () => const SizedBox.shrink(),
-          error: (_) => const SizedBox.shrink(),
+          unauthenticated: () {
+            return const SizedBox.shrink();
+          },
+          error: (msg) {
+            return const SizedBox.shrink();
+          },
         );
       },
     );
@@ -118,7 +170,7 @@ class _NavBarState extends State<NavBar> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withValues(alpha:0.25),
+            color: colorScheme.shadow.withValues(alpha: 0.25),
             offset: const Offset(0, 4),
             blurRadius: AppSizes.r12,
           ),
@@ -128,7 +180,7 @@ class _NavBarState extends State<NavBar> {
         child: SizedBox(
           height: 24,
           width: 24,
-          child: CircularProgressIndicator(strokeWidth: 2),
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
         ),
       ),
     );
@@ -140,6 +192,7 @@ class _NavBarState extends State<NavBar> {
     ColorScheme colorScheme,
     Size size,
   ) {
+    
     return Container(
       margin: EdgeInsets.all(
         AppSizes.responsiveHeight(context, size.height * 0.02),
@@ -152,7 +205,7 @@ class _NavBarState extends State<NavBar> {
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: colorScheme.shadow.withValues(alpha:0.25),
+            color: colorScheme.shadow.withValues(alpha: 0.25),
             offset: const Offset(0, 4),
             blurRadius: AppSizes.r12,
           ),
@@ -188,34 +241,34 @@ class _NavBarState extends State<NavBar> {
 
   List<NavItem> _getAdminNavItems() {
     return [
-
       NavItem(Icons.business_outlined, const GlobalDashboardRoute()),
       NavItem(Icons.people_outline, const ManagementRoute()),
-        NavItem(Icons.calendar_today,  PlanningManagementRoute()),
-        NavItem(Icons.dashboard_outlined,  UsersTeamsManagementRoute()),
-        NavItem(Icons.settings, const SettingsRoute()),
+      NavItem(Icons.calendar_today,  PlanningManagementRoute()),
+      NavItem(Icons.dashboard_outlined,  UsersTeamsManagementRoute()),
+      NavItem(Icons.settings, const SettingsRoute()),
     ];
   }
 
   List<NavItem> _getUserNavItems(bool isManager, bool isAdministrator) {
+    
     if (isAdministrator) {
       return [
         NavItem(Icons.people_outline, const ManagementRoute()),
-        NavItem(Icons.calendar_today,  PlanningManagementRoute()),
+        NavItem(Icons.calendar_today, PlanningManagementRoute()),
         NavItem(Icons.dashboard_outlined,  UsersTeamsManagementRoute()),
         NavItem(Icons.settings, const SettingsRoute()),
       ];
     } else if (isManager) {
       return [
-        NavItem(Icons.bar_chart_rounded, DashboardRoute()),
+        NavItem(Icons.bar_chart_rounded,  DashboardRoute()),
         NavItem(Icons.work_history_rounded, const ClockingRoute()),
-        NavItem(Icons.groups_rounded, TeamDashboardRoute()),
+        NavItem(Icons.dashboard_outlined,  UsersTeamsManagementRoute()),
         NavItem(Icons.person_rounded, const UserRoute()),
         NavItem(Icons.settings, const SettingsRoute()),
       ];
     } else {
       return [
-        NavItem(Icons.bar_chart_rounded, DashboardRoute()),
+        NavItem(Icons.bar_chart_rounded,  DashboardRoute()),
         NavItem(Icons.work_history_rounded, const ClockingRoute()),
         NavItem(Icons.person_rounded, const UserRoute()),
         NavItem(Icons.settings, const SettingsRoute()),

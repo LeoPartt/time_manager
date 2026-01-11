@@ -120,6 +120,15 @@ class AppLocalizationsFr extends AppLocalizations {
   String get managePlanning => 'Gérer le planning';
 
   @override
+  String get account => 'Compte';
+
+  @override
+  String get logoutAdminDesc => 'Déconnecter votre compte administrateur';
+
+  @override
+  String get logoutConfirmationMessage => 'Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à l\'application.';
+
+  @override
   String get userSelected => 'Utilisateur sélectionné';
 
   @override
@@ -785,6 +794,9 @@ class AppLocalizationsFr extends AppLocalizations {
 
   @override
   String get teamDashboard => 'Tableau de bord de l\'équipe';
+
+  @override
+  String get manage => 'Gérer';
 
   @override
   String get january => 'Janvier';
