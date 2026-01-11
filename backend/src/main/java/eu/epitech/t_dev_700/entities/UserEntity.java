@@ -2,6 +2,7 @@ package eu.epitech.t_dev_700.entities;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -27,8 +28,9 @@ public class UserEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne(fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
-    @JoinColumn(name = "account_id", unique = true, foreignKey = @ForeignKey(name = "fk_user_account"))
+    @NotNull
+    @OneToOne(fetch = FetchType.LAZY, optional = false, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @JoinColumn(name = "account_id", nullable = false, unique = true, foreignKey = @ForeignKey(name = "fk_user_account"))
     private AccountEntity account;
 
     @NotBlank
@@ -60,6 +62,8 @@ public class UserEntity {
         return memberships.stream()
                 .anyMatch(m -> m.getRole() == MembershipEntity.TeamRole.MANAGER);
     }
+
+
 
     @Override
     public boolean equals(Object o) {

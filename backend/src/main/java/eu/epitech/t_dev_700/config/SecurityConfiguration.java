@@ -1,11 +1,14 @@
 package eu.epitech.t_dev_700.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.epitech.t_dev_700.config.filters.JwtAuthenticationFilter;
+import eu.epitech.t_dev_700.models.ErrorModels;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -26,7 +29,6 @@ import java.util.List;
 @EnableWebSecurity
 @RequiredArgsConstructor
 @EnableMethodSecurity
-@org.springframework.context.annotation.Profile("!test")
 public class SecurityConfiguration {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -34,15 +36,13 @@ public class SecurityConfiguration {
 
     @Value("${cors.allowed-origins}")
     private String allowedOrigins;
-    
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, ObjectMapper objectMapper) throws Exception {
         return http
                 .csrf(AbstractHttpConfigurer::disable)
                 .cors(Customizer.withDefaults())
-                .sessionManagement(
-                        s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(s -> s.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/actuator/health").permitAll()
@@ -50,17 +50,36 @@ public class SecurityConfiguration {
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
-                        .authenticationEntryPoint(
-                                (req, res, e) -> res.setStatus(HttpServletResponse.SC_UNAUTHORIZED))
-                        .accessDeniedHandler(
-                                (req, res, e) -> res.setStatus(HttpServletResponse.SC_FORBIDDEN))
+                        .authenticationEntryPoint((req, res, e) -> {
+                            res.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                            res.setContentType("application/json");
+                            res.setCharacterEncoding("UTF-8");
+
+                            var body = new ErrorModels.ErrorResponse(
+                                    HttpStatus.UNAUTHORIZED,
+                                    "Authentication is required to access this resource",
+                                    req
+                            );
+
+                            objectMapper.writeValue(res.getWriter(), body);
+                        })
+                        .accessDeniedHandler((req, res, e) -> {
+                            res.setStatus(HttpServletResponse.SC_FORBIDDEN);
+                            res.setContentType("application/json");
+                            res.setCharacterEncoding("UTF-8");
+
+                            var body = new ErrorModels.ErrorResponse(
+                                    HttpStatus.FORBIDDEN,
+                                    "You are not allowed to access this resource",
+                                    req
+                            );
+
+                            objectMapper.writeValue(res.getWriter(), body);
+                        })
                 )
-                .headers(
-                        h -> h
-                                .contentSecurityPolicy(csp -> csp
-                                        .policyDirectives("default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'")
-                                )
-                )
+                .headers(h -> h.contentSecurityPolicy(csp -> csp
+                        .policyDirectives("default-src 'self'; script-src 'self'; object-src 'none'; base-uri 'self'")
+                ))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();

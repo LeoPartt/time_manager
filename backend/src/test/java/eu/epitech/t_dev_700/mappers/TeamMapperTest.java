@@ -4,21 +4,18 @@ import eu.epitech.t_dev_700.entities.TeamEntity;
 import eu.epitech.t_dev_700.models.TeamModels;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
+import org.mapstruct.factory.Mappers;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
-@SpringBootTest
-@ActiveProfiles("test")
 class TeamMapperTest {
 
-    @Autowired
-    private TeamMapper teamMapper;
+    private final TeamMapper teamMapper = Mappers.getMapper(TeamMapper.class);
 
     private TeamEntity teamEntity;
 
@@ -121,17 +118,19 @@ class TeamMapperTest {
     }
 
     @Test
-    void testReplaceEntity_withNullDescription_shouldReplaceWithNull() {
+    void testReplaceEntity_withNullDescription_shouldSetDescriptionToNull() {
         TeamModels.PutTeamRequest request = new TeamModels.PutTeamRequest(
                 "New Name",
-                ""
+                null
         );
 
         teamMapper.replaceEntity(teamEntity, request);
 
         assertThat(teamEntity.getName()).isEqualTo("New Name");
-        // Note: MapStruct BeanMapping with IGNORE strategy may not map null values to null
+        assertThat(teamEntity.getDescription()).isNull();
+        assertThat(teamEntity.getId()).isEqualTo(1L);
     }
+
 
     @Test
     void testUpdateEntity_shouldUpdateOnlyProvidedFields() {
@@ -190,5 +189,63 @@ class TeamMapperTest {
 
         assertThat(teamEntity.getName()).isEqualTo("Completely New Name");
         assertThat(teamEntity.getDescription()).isEqualTo("Completely New Description");
+    }
+
+    @Test
+    void testToModel_withNullEntity_shouldReturnNull() {
+        assertThat(teamMapper.toModel(null)).isNull();
+    }
+
+    @Test
+    void testListEntity_stream_shouldMapEntitiesToModels() {
+        TeamEntity team2 = new TeamEntity();
+        team2.setId(2L);
+        team2.setName("QA Team");
+        team2.setDescription("Quality assurance team");
+
+        TeamModels.TeamResponse[] models =
+                teamMapper.listEntity(Stream.of(teamEntity, team2));
+
+        assertThat(models).hasSize(2);
+        assertThat(models[0].id()).isEqualTo(1L);
+        assertThat(models[1].id()).isEqualTo(2L);
+    }
+
+    @Test
+    void testListEntity_withNullList_shouldThrow() {
+        assertThatThrownBy(() -> teamMapper.listEntity((List<TeamEntity>) null))
+                .isInstanceOf(NullPointerException.class);
+    }
+
+
+    @Test
+    void testCreateEntity_withNullRequest_shouldReturnNull() {
+        assertThat(teamMapper.createEntity(null)).isNull();
+    }
+
+    @Test
+    void testReplaceEntity_withNullBody_shouldDoNothing() {
+        String originalName = teamEntity.getName();
+        String originalDescription = teamEntity.getDescription();
+        Long originalId = teamEntity.getId();
+
+        teamMapper.replaceEntity(teamEntity, null);
+
+        assertThat(teamEntity.getId()).isEqualTo(originalId);
+        assertThat(teamEntity.getName()).isEqualTo(originalName);
+        assertThat(teamEntity.getDescription()).isEqualTo(originalDescription);
+    }
+
+    @Test
+    void testUpdateEntity_withNullBody_shouldDoNothing() {
+        String originalName = teamEntity.getName();
+        String originalDescription = teamEntity.getDescription();
+        Long originalId = teamEntity.getId();
+
+        teamMapper.updateEntity(teamEntity, null);
+
+        assertThat(teamEntity.getId()).isEqualTo(originalId);
+        assertThat(teamEntity.getName()).isEqualTo(originalName);
+        assertThat(teamEntity.getDescription()).isEqualTo(originalDescription);
     }
 }

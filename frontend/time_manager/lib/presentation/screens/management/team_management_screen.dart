@@ -36,6 +36,7 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
   List<User> _allUsers = [];
   bool _isAddingMember = false;
   String _query = '';
+  int? _managerId;
 
   @override
   void initState() {
@@ -68,7 +69,13 @@ class _TeamManagementScreenState extends State<TeamManagementScreen> {
         BlocListener<TeamCubit, TeamState>(
           listener: (context, state) {
             state.whenOrNull(
-              loaded: (_) {
+              loaded: (team, managerId) {
+                if (mounted) {
+                  setState(() {
+                    _managerId = managerId;
+                  });
+                }
+
                 if (mounted && _isAddingMember) {
                   setState(() {});
                 }

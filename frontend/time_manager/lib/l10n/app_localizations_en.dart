@@ -537,6 +537,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get teams => 'Teams';
 
   @override
+  String get team => 'Team';
+
+  @override
   String get teamDetails => 'Team Details';
 
   @override
@@ -671,4 +674,142 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addMembers => 'Add members';
+
+  @override
+  String get calendar => 'Calendar';
+
+  @override
+  String get loadingProfile => 'Loading your profile...';
+
+  @override
+  String get day => 'Day';
+
+  @override
+  String get week => 'Week';
+
+  @override
+  String get month => 'month';
+
+  @override
+  String get year => 'Year';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get work => 'Work';
+
+  @override
+  String get hours => 'Hours';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String get dashboardLoading => 'Dashboard is loading...';
+
+  @override
+  String get planningCalendar => 'Planning calendar';
+
+  @override
+  String get planning => 'Schedule';
+
+  @override
+  String get noPlanningForToday => 'No schedule for today';
+
+  @override
+  String get planningWeekly => 'Weekly schedule';
+
+  @override
+  String get noConfigPlanning => 'No schedule configured';
+
+  @override
+  String get planningLoading => 'Loading planning...';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
+
+  @override
+  String get january => 'January';
+
+  @override
+  String get february => 'February';
+
+  @override
+  String get march => 'March';
+
+  @override
+  String get april => 'April';
+
+  @override
+  String get may => 'May';
+
+  @override
+  String get june => 'June';
+
+  @override
+  String get july => 'July';
+
+  @override
+  String get august => 'August';
+
+  @override
+  String get september => 'September';
+
+  @override
+  String get october => 'October';
+
+  @override
+  String get november => 'November';
+
+  @override
+  String get december => 'December';
+
+  @override
+  String get dashboardTeam => 'Team dashboard';
+
+  @override
+  String get selectEquip => 'Select a team';
+
+  @override
+  String get ponctuality => 'Ponctuality';
+
+  @override
+  String get assiduity => 'Attendance';
+
+  @override
+  String get performance => 'Performance';
+
+  @override
+  String get excellent => 'Excellent';
+
+  @override
+  String get good => 'Good';
+
+  @override
+  String get atUpgrade => 'At improve';
 }

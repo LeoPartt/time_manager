@@ -223,4 +223,147 @@ class CRUDHookUtilsTest {
             hook2Called = true;
         }
     }
+
+    @Test
+    void hookWithInvalidSignature_shouldThrowInvalidMethodSignature_wrappedByRun() {
+        class BadSignatureService extends CRUDService<TeamEntity, TeamModels.TeamResponse,
+                TeamModels.PostTeamRequest, TeamModels.PutTeamRequest, TeamModels.PatchTeamRequest> {
+
+            protected BadSignatureService(TeamRepository repo, TeamMapper mapper) {
+                super(repo, mapper, "Test");
+            }
+
+            @CRUDHookUtils.CRUDHook(moment = CRUDHookUtils.Moment.BEFORE, action = CRUDHookUtils.Action.CREATE)
+            public void badHook() { // <- invalid: 0 params
+            }
+        }
+
+        BadSignatureService service = new BadSignatureService(teamRepository, teamMapper);
+
+        RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> CRUDHookUtils.beforeCreate(service, testEntity, postRequest)
+        );
+
+        // outer wrapper
+        assertThat(ex.getMessage()).isEqualTo("Failed to invoke CRUD hooks");
+        assertThat(ex.getCause()).isInstanceOf(CRUDHookUtils.InvalidMethodSignature.class);
+
+        // cover InvalidMethodSignature message constructor
+        assertThat(ex.getCause().getMessage()).contains("Invalid CRUDHookUtils method signature:");
+    }
+
+    @Test
+    void hookThatThrows_shouldBeWrappedAsExceptionInHook_withOriginalCause() {
+        class ThrowingHookService extends CRUDService<TeamEntity, TeamModels.TeamResponse,
+                TeamModels.PostTeamRequest, TeamModels.PutTeamRequest, TeamModels.PatchTeamRequest> {
+
+            protected ThrowingHookService(TeamRepository repo, TeamMapper mapper) {
+                super(repo, mapper, "Test");
+            }
+
+            @CRUDHookUtils.CRUDHook(moment = CRUDHookUtils.Moment.BEFORE, action = CRUDHookUtils.Action.CREATE)
+            public void boom(TeamEntity entity, TeamModels.PostTeamRequest request) {
+                throw new IllegalStateException("boom");
+            }
+        }
+
+        ThrowingHookService service = new ThrowingHookService(teamRepository, teamMapper);
+
+        RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> CRUDHookUtils.beforeCreate(service, testEntity, postRequest)
+        );
+
+        // run() outer wrapper
+        assertThat(ex.getMessage()).isEqualTo("Failed to invoke CRUD hooks");
+
+        // inner wrapper from invoke()
+        assertThat(ex.getCause()).isInstanceOf(RuntimeException.class);
+        assertThat(ex.getCause().getMessage()).isEqualTo("Exception in hook");
+
+        // original cause preserved
+        assertThat(ex.getCause().getCause())
+                .isInstanceOf(IllegalStateException.class)
+                .hasMessage("boom");
+    }
+
+    @Test
+    void hookWithWrongEntityType_shouldThrowInvalidMethodSignature_wrapped() {
+        class WrongEntityTypeService extends CRUDService<TeamEntity, TeamModels.TeamResponse,
+                TeamModels.PostTeamRequest, TeamModels.PutTeamRequest, TeamModels.PatchTeamRequest> {
+
+            protected WrongEntityTypeService(TeamRepository repo, TeamMapper mapper) {
+                super(repo, mapper, "Test");
+            }
+
+            @CRUDHookUtils.CRUDHook(moment = CRUDHookUtils.Moment.BEFORE, action = CRUDHookUtils.Action.DELETE)
+            public void wrongType(String notAnEntity) { // 1 param but not entity type
+            }
+        }
+
+        WrongEntityTypeService service = new WrongEntityTypeService(teamRepository, teamMapper);
+
+        RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> CRUDHookUtils.beforeDelete(service, testEntity)
+        );
+
+        assertThat(ex.getMessage()).isEqualTo("Failed to invoke CRUD hooks");
+        assertThat(ex.getCause()).isInstanceOf(CRUDHookUtils.InvalidMethodSignature.class);
+    }
+
+    @Test
+    void hookWithWrongRequestType_shouldThrowInvalidMethodSignature_wrapped() {
+        class WrongRequestTypeService extends CRUDService<TeamEntity, TeamModels.TeamResponse,
+                TeamModels.PostTeamRequest, TeamModels.PutTeamRequest, TeamModels.PatchTeamRequest> {
+
+            protected WrongRequestTypeService(TeamRepository repo, TeamMapper mapper) {
+                super(repo, mapper, "Test");
+            }
+
+            @CRUDHookUtils.CRUDHook(moment = CRUDHookUtils.Moment.BEFORE, action = CRUDHookUtils.Action.CREATE)
+            public void wrongReq(TeamEntity entity, Integer request) { // request type mismatch
+            }
+        }
+
+        WrongRequestTypeService service = new WrongRequestTypeService(teamRepository, teamMapper);
+
+        RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> CRUDHookUtils.beforeCreate(service, testEntity, postRequest)
+        );
+
+        assertThat(ex.getMessage()).isEqualTo("Failed to invoke CRUD hooks");
+        assertThat(ex.getCause()).isInstanceOf(CRUDHookUtils.InvalidMethodSignature.class);
+    }
+
+    @Test
+    void hookWithTwoParams_whereFirstParamNotEntity_shouldHit_params0IsInstanceFalse() {
+        class FirstParamNotEntityService extends CRUDService<TeamEntity, TeamModels.TeamResponse,
+                TeamModels.PostTeamRequest, TeamModels.PutTeamRequest, TeamModels.PatchTeamRequest> {
+
+            protected FirstParamNotEntityService(TeamRepository repo, TeamMapper mapper) {
+                super(repo, mapper, "Test");
+            }
+
+            @CRUDHookUtils.CRUDHook(moment = CRUDHookUtils.Moment.BEFORE, action = CRUDHookUtils.Action.CREATE)
+            public void badFirstParam(String notEntity, TeamModels.PostTeamRequest request) {
+                // should never be called
+            }
+        }
+
+        var service = new FirstParamNotEntityService(teamRepository, teamMapper);
+
+        RuntimeException ex = org.junit.jupiter.api.Assertions.assertThrows(
+                RuntimeException.class,
+                () -> CRUDHookUtils.beforeCreate(service, testEntity, postRequest)
+        );
+
+        // run() wrapper
+        assertThat(ex.getMessage()).isEqualTo("Failed to invoke CRUD hooks");
+        // underlying reason: signature invalid (because params[0] doesn't match entity)
+        assertThat(ex.getCause()).isInstanceOf(CRUDHookUtils.InvalidMethodSignature.class);
+    }
+
 }

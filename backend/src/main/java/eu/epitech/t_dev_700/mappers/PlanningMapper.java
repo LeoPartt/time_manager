@@ -36,7 +36,7 @@ public interface PlanningMapper extends CRUDMapper<
     PlanningEntity createEntity(PlanningModels.PostPlanningRequest req);
 
     @Override
-    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_NULL)
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "user", ignore = true)
     void replaceEntity(@MappingTarget PlanningEntity entity, PlanningModels.PutPlanningRequest body);

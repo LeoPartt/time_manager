@@ -5,6 +5,7 @@ import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.repositories.AccountRepository;
 import eu.epitech.t_dev_700.repositories.TeamRepository;
 import eu.epitech.t_dev_700.repositories.UserRepository;
+import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import org.junit.jupiter.api.BeforeEach;
@@ -14,9 +15,11 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +27,9 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.hasSize;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -48,6 +54,28 @@ class IntegrationTest {
 
     @PersistenceContext
     private EntityManager entityManager;
+
+    @MockitoBean(name = "userAuth")
+    private UserAuthorization userAuth;
+
+    @BeforeEach
+    void allowAllPreAuthorize() {
+        // Return true for all predicates used by @PreAuthorize
+        when(userAuth.isAdministrator(any(Authentication.class))).thenReturn(true);
+
+        when(userAuth.isMemberOfTeam(any(Authentication.class), anyLong())).thenReturn(true);
+        when(userAuth.isMemberOfTeamOrManager(any(Authentication.class), anyLong())).thenReturn(true);
+        when(userAuth.isManagerOfTeam(any(Authentication.class), anyLong())).thenReturn(true);
+        when(userAuth.isManager(any(Authentication.class))).thenReturn(true);
+
+        when(userAuth.isSelfOrManager(any(Authentication.class), anyLong())).thenReturn(true);
+        when(userAuth.isSelfOrManagerOfUser(any(Authentication.class), anyLong())).thenReturn(true);
+        when(userAuth.isManagerOfUser(any(Authentication.class), anyLong())).thenReturn(true);
+        when(userAuth.isSelf(any(Authentication.class), anyLong())).thenReturn(true);
+
+        when(userAuth.isManagerOfOwner(any(Authentication.class), anyLong())).thenReturn(true);
+        when(userAuth.isOwnerOrManagerOfOwner(any(Authentication.class), anyLong())).thenReturn(true);
+    }
 
     @BeforeEach
     void setUp() {

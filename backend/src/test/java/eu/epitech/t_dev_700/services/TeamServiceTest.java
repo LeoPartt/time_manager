@@ -1,18 +1,22 @@
 package eu.epitech.t_dev_700.services;
 
 import eu.epitech.t_dev_700.entities.AccountEntity;
+import eu.epitech.t_dev_700.entities.MembershipEntity;
+import eu.epitech.t_dev_700.entities.TeamEntity;
 import eu.epitech.t_dev_700.entities.UserEntity;
+import eu.epitech.t_dev_700.mappers.TeamMapper;
+import eu.epitech.t_dev_700.mappers.UserMapper;
+import eu.epitech.t_dev_700.models.TeamModels;
+import eu.epitech.t_dev_700.models.UserModels;
+import eu.epitech.t_dev_700.repositories.TeamRepository;
+import eu.epitech.t_dev_700.services.components.UserAuthorization;
 import eu.epitech.t_dev_700.services.components.UserComponent;
 import eu.epitech.t_dev_700.services.exceptions.ResourceNotFound;
-import eu.epitech.t_dev_700.entities.TeamEntity;
-import eu.epitech.t_dev_700.mappers.TeamMapper;
-import eu.epitech.t_dev_700.models.TeamModels;
-import eu.epitech.t_dev_700.repositories.TeamRepository;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
+import org.mockito.*;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContext;
@@ -30,26 +34,23 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class TeamServiceTest {
 
-    @Mock
-    private TeamRepository teamRepository;
+    @Mock private TeamRepository teamRepository;
+    @Mock private TeamMapper teamMapper;
+    @Mock private UserMapper userMapper;
+    @Mock private MembershipService membershipService;
+    @Mock private UserComponent userComponent;
+    @Mock private UserAuthorization userAuthorization;
 
-    @Mock
-    private TeamMapper teamMapper;
-
-    @Mock
-    private MembershipService membershipService;
-
-    @InjectMocks
-    private TeamService teamService;
-
-    @InjectMocks
-    private UserComponent userComponent;
+    @InjectMocks private TeamService teamService;
 
     private TeamEntity teamEntity;
     private TeamModels.TeamResponse teamResponse;
     private TeamModels.PostTeamRequest postRequest;
     private TeamModels.PutTeamRequest putRequest;
     private TeamModels.PatchTeamRequest patchRequest;
+
+    private UserEntity currentUser;
+    private UserEntity otherUser;
 
     @BeforeEach
     void setUp() {
@@ -79,17 +80,31 @@ class TeamServiceTest {
                 "Patched description"
         );
 
-        UserEntity user = new UserEntity();
-        user.setAccount(new AccountEntity());
-        SecurityContext context = SecurityContextHolder.createEmptyContext();
-        context.setAuthentication(
-                new UsernamePasswordAuthenticationToken(user.getAccount(), null, List.of())
-        );
-        SecurityContextHolder.setContext(context);
+        currentUser = new UserEntity();
+        currentUser.setId(10L);
+        currentUser.setAccount(new AccountEntity());
+
+        otherUser = new UserEntity();
+        otherUser.setId(20L);
+        otherUser.setAccount(new AccountEntity());
+
+        SecurityContext ctx = SecurityContextHolder.createEmptyContext();
+        // principal can be currentUser or currentUser.getAccount() depending on your UserAuthorization implementation
+        ctx.setAuthentication(new UsernamePasswordAuthenticationToken(currentUser.getAccount(), null, List.of()));
+        SecurityContextHolder.setContext(ctx);
     }
 
+    @AfterEach
+    void tearDown() {
+        SecurityContextHolder.clearContext();
+    }
+
+    // -------------------------
+    // CRUDService inherited ops
+    // -------------------------
+
     @Test
-    void testList_shouldReturnAllTeams() {
+    void list_shouldReturnAllTeams() {
         List<TeamEntity> entities = Collections.singletonList(teamEntity);
         TeamModels.TeamResponse[] models = new TeamModels.TeamResponse[]{teamResponse};
 
@@ -98,14 +113,15 @@ class TeamServiceTest {
 
         TeamModels.TeamResponse[] result = teamService.list();
 
-        assertThat(result).hasSize(1);
-        assertThat(result[0]).isEqualTo(teamResponse);
+        assertThat(result).containsExactly(teamResponse);
         verify(teamRepository).findAll();
         verify(teamMapper).listEntity(entities);
+        verifyNoMoreInteractions(teamRepository, teamMapper);
+        verifyNoInteractions(membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testGet_whenTeamExists_shouldReturnTeam() {
+    void get_whenExists_shouldReturnTeam() {
         when(teamRepository.findById(1L)).thenReturn(Optional.of(teamEntity));
         when(teamMapper.toModel(teamEntity)).thenReturn(teamResponse);
 
@@ -114,21 +130,37 @@ class TeamServiceTest {
         assertThat(result).isEqualTo(teamResponse);
         verify(teamRepository).findById(1L);
         verify(teamMapper).toModel(teamEntity);
+        verifyNoMoreInteractions(teamRepository, teamMapper);
+        verifyNoInteractions(membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testGet_whenTeamNotExists_shouldThrowException() {
+    void get_whenMissing_shouldThrowResourceNotFound_withExactMessage() {
         when(teamRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.get(999L))
-                .isInstanceOf(ResourceNotFound.class);
+                .isInstanceOf(ResourceNotFound.class)
+                .hasMessage("Resource 'team' #999 not found");
 
         verify(teamRepository).findById(999L);
-        verify(teamMapper, never()).toModel(any());
+        verifyNoInteractions(teamMapper);
     }
 
     @Test
-    void testCreate_shouldCreateTeam() {
+    void get_whenMissing_shouldExposeDetails() {
+        when(teamRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> teamService.get(999L))
+                .isInstanceOf(ResourceNotFound.class)
+                .satisfies(ex -> {
+                    ResourceNotFound rn = (ResourceNotFound) ex;
+                    assertThat(rn.details().resource()).isEqualTo("team");
+                    assertThat(rn.details().id()).isEqualTo(999L);
+                });
+    }
+
+    @Test
+    void create_shouldCreateTeam() {
         when(teamMapper.createEntity(postRequest)).thenReturn(teamEntity);
         when(teamRepository.save(teamEntity)).thenReturn(teamEntity);
         when(teamMapper.toModel(teamEntity)).thenReturn(teamResponse);
@@ -139,10 +171,12 @@ class TeamServiceTest {
         verify(teamMapper).createEntity(postRequest);
         verify(teamRepository).save(teamEntity);
         verify(teamMapper).toModel(teamEntity);
+        verifyNoMoreInteractions(teamRepository, teamMapper);
+        verifyNoInteractions(membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testReplace_whenTeamExists_shouldReplaceTeam() {
+    void replace_whenExists_shouldReplaceTeam() {
         when(teamRepository.findById(1L)).thenReturn(Optional.of(teamEntity));
         doNothing().when(teamMapper).replaceEntity(teamEntity, putRequest);
         when(teamRepository.save(teamEntity)).thenReturn(teamEntity);
@@ -155,22 +189,25 @@ class TeamServiceTest {
         verify(teamMapper).replaceEntity(teamEntity, putRequest);
         verify(teamRepository).save(teamEntity);
         verify(teamMapper).toModel(teamEntity);
+        verifyNoMoreInteractions(teamRepository, teamMapper);
+        verifyNoInteractions(membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testReplace_whenTeamNotExists_shouldThrowException() {
+    void replace_whenMissing_shouldThrowResourceNotFound() {
         when(teamRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.replace(999L, putRequest))
-                .isInstanceOf(ResourceNotFound.class);
+                .isInstanceOf(ResourceNotFound.class)
+                .hasMessage("Resource 'team' #999 not found");
 
         verify(teamRepository).findById(999L);
-        verify(teamMapper, never()).replaceEntity(any(), any());
-        verify(teamRepository, never()).save(any());
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(teamMapper, membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testUpdate_whenTeamExists_shouldUpdateTeam() {
+    void update_whenExists_shouldUpdateTeam() {
         when(teamRepository.findById(1L)).thenReturn(Optional.of(teamEntity));
         doNothing().when(teamMapper).updateEntity(teamEntity, patchRequest);
         when(teamRepository.save(teamEntity)).thenReturn(teamEntity);
@@ -183,22 +220,25 @@ class TeamServiceTest {
         verify(teamMapper).updateEntity(teamEntity, patchRequest);
         verify(teamRepository).save(teamEntity);
         verify(teamMapper).toModel(teamEntity);
+        verifyNoMoreInteractions(teamRepository, teamMapper);
+        verifyNoInteractions(membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testUpdate_whenTeamNotExists_shouldThrowException() {
+    void update_whenMissing_shouldThrowResourceNotFound() {
         when(teamRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.update(999L, patchRequest))
-                .isInstanceOf(ResourceNotFound.class);
+                .isInstanceOf(ResourceNotFound.class)
+                .hasMessage("Resource 'team' #999 not found");
 
         verify(teamRepository).findById(999L);
-        verify(teamMapper, never()).updateEntity(any(), any());
-        verify(teamRepository, never()).save(any());
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(teamMapper, membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testDelete_whenTeamExists_shouldDeleteTeam() {
+    void delete_whenExists_shouldDeleteTeam() {
         when(teamRepository.findById(1L)).thenReturn(Optional.of(teamEntity));
         doNothing().when(teamRepository).delete(teamEntity);
 
@@ -206,38 +246,251 @@ class TeamServiceTest {
 
         verify(teamRepository).findById(1L);
         verify(teamRepository).delete(teamEntity);
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(teamMapper, membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testDelete_whenTeamNotExists_shouldThrowException() {
+    void delete_whenMissing_shouldThrowResourceNotFound() {
         when(teamRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.delete(999L))
-                .isInstanceOf(ResourceNotFound.class);
+                .isInstanceOf(ResourceNotFound.class)
+                .hasMessage("Resource 'team' #999 not found");
 
         verify(teamRepository).findById(999L);
-        verify(teamRepository, never()).delete(any());
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(teamMapper, membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testGetOrThrow_whenTeamExists_shouldReturnTeam() {
+    void findEntityOrThrow_whenExists_shouldReturnEntity() {
         when(teamRepository.findById(1L)).thenReturn(Optional.of(teamEntity));
 
         TeamEntity result = teamService.findEntityOrThrow(1L);
 
-        assertThat(result).isEqualTo(teamEntity);
+        assertThat(result).isSameAs(teamEntity);
         verify(teamRepository).findById(1L);
+        verifyNoMoreInteractions(teamRepository);
+        verifyNoInteractions(teamMapper, membershipService, userMapper, userComponent);
     }
 
     @Test
-    void testGetOrThrow_whenTeamNotExists_shouldThrowException() {
+    void findEntityOrThrow_whenMissing_shouldThrowResourceNotFound_withExactMessage() {
         when(teamRepository.findById(999L)).thenReturn(Optional.empty());
 
         assertThatThrownBy(() -> teamService.findEntityOrThrow(999L))
                 .isInstanceOf(ResourceNotFound.class)
-                .hasMessageContaining("team")
-                .hasMessageContaining("999");
+                .hasMessage("Resource 'team' #999 not found");
 
         verify(teamRepository).findById(999L);
+    }
+
+    // -------------------------
+    // TeamService-specific ops
+    // -------------------------
+
+    @Test
+    void onTeamCreation_whenNoCurrentUser_shouldDoNothing() {
+        try (MockedStatic<UserAuthorization> mocked = Mockito.mockStatic(UserAuthorization.class)) {
+            mocked.when(userAuthorization::getCurrentUser).thenReturn(null);
+
+            teamService.onTeamCreation(teamEntity, postRequest);
+
+            verifyNoInteractions(membershipService);
+        }
+    }
+
+    @Test
+    void onTeamCreation_whenCurrentUser_shouldCreateManagerMembership() {
+        try (MockedStatic<UserAuthorization> mocked = Mockito.mockStatic(UserAuthorization.class)) {
+            mocked.when(userAuthorization::getCurrentUser).thenReturn(currentUser);
+
+            teamService.onTeamCreation(teamEntity, postRequest);
+
+            verify(membershipService).createMembership(teamEntity, currentUser, MembershipEntity.TeamRole.MANAGER);
+            verifyNoMoreInteractions(membershipService);
+        }
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getByUser_shouldMapMembershipTeams_andPassCorrectTeamsToMapper() {
+        MembershipEntity m = new MembershipEntity();
+        m.setTeam(teamEntity);
+
+        TeamModels.TeamResponse[] expected = new TeamModels.TeamResponse[]{teamResponse};
+
+        when(membershipService.getMembershipsOfUser(currentUser)).thenReturn(List.of(m));
+
+        ArgumentCaptor<java.util.stream.Stream<TeamEntity>> captor =
+                ArgumentCaptor.forClass((Class) java.util.stream.Stream.class);
+
+        when(teamMapper.listEntity(captor.capture())).thenReturn(expected);
+
+        TeamModels.TeamResponse[] result = teamService.getByUser(currentUser);
+
+        assertThat(result).containsExactly(teamResponse);
+
+        // stream is single-use; consume once
+        assertThat(captor.getValue().toList()).containsExactly(teamEntity);
+
+        verify(membershipService).getMembershipsOfUser(currentUser);
+        verify(teamMapper).listEntity(any(java.util.stream.Stream.class));
+        verifyNoMoreInteractions(membershipService, teamMapper);
+        verifyNoInteractions(teamRepository, userMapper, userComponent);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getByTeam_entity_shouldMapMembershipUsers() {
+        MembershipEntity m = new MembershipEntity();
+        m.setUser(otherUser);
+
+        UserModels.UserResponse otherUserResponse = mock(UserModels.UserResponse.class);
+        UserModels.UserResponse[] expected = new UserModels.UserResponse[]{otherUserResponse};
+
+        when(membershipService.getMembershipsOfTeam(teamEntity)).thenReturn(List.of(m));
+
+        when(userMapper.listEntity(any(java.util.stream.Stream.class))).thenReturn(expected);
+
+        UserModels.UserResponse[] result = teamService.getByTeam(teamEntity);
+
+        assertThat(result).containsExactly(otherUserResponse);
+        verify(membershipService).getMembershipsOfTeam(teamEntity);
+        verify(userMapper).listEntity(any(java.util.stream.Stream.class));
+        verifyNoMoreInteractions(membershipService, userMapper);
+        verifyNoInteractions(teamRepository, teamMapper, userComponent);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getByTeam_entity_shouldMapMembershipUsers_andPassCorrectUsersToMapper() {
+        MembershipEntity m = new MembershipEntity();
+        m.setUser(otherUser);
+
+        UserModels.UserResponse otherUserResponse = mock(UserModels.UserResponse.class);
+        UserModels.UserResponse[] expected = new UserModels.UserResponse[]{otherUserResponse};
+
+        when(membershipService.getMembershipsOfTeam(teamEntity)).thenReturn(List.of(m));
+
+        ArgumentCaptor<java.util.stream.Stream<UserEntity>> captor =
+                ArgumentCaptor.forClass((Class) java.util.stream.Stream.class);
+
+        when(userMapper.listEntity(captor.capture())).thenReturn(expected);
+
+        UserModels.UserResponse[] result = teamService.getByTeam(teamEntity);
+
+        assertThat(result).containsExactly(otherUserResponse);
+
+        // ⚠️ Streams are single-use; only consume it once
+        List<UserEntity> passedUsers = captor.getValue().toList();
+        assertThat(passedUsers).containsExactly(otherUser);
+
+        verify(membershipService).getMembershipsOfTeam(teamEntity);
+        verify(userMapper).listEntity(any(java.util.stream.Stream.class));
+        verifyNoMoreInteractions(membershipService, userMapper);
+        verifyNoInteractions(teamRepository, teamMapper, userComponent);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void getByTeam_id_shouldPassEmptyUsersStreamToMapper() {
+        TeamService spy = Mockito.spy(teamService);
+        doReturn(teamEntity).when(spy).findEntityOrThrow(1L);
+
+        when(membershipService.getMembershipsOfTeam(teamEntity)).thenReturn(List.of());
+
+        ArgumentCaptor<java.util.stream.Stream<UserEntity>> captor =
+                ArgumentCaptor.forClass((Class) java.util.stream.Stream.class);
+
+        when(userMapper.listEntity(captor.capture()))
+                .thenReturn(new UserModels.UserResponse[]{});
+
+        UserModels.UserResponse[] result = spy.getByTeam(1L);
+
+        assertThat(result).isEmpty();
+        assertThat(captor.getValue().toList()).isEmpty(); // consume once
+
+        verify(spy).findEntityOrThrow(1L);
+        verify(membershipService).getMembershipsOfTeam(teamEntity);
+        verify(userMapper).listEntity(any(java.util.stream.Stream.class));
+    }
+
+    @Test
+    void postMembership_shouldCreateMembershipForTeamAndUser() {
+        TeamService spy = Mockito.spy(teamService);
+        doReturn(teamEntity).when(spy).findEntityOrThrow(1L);
+        when(userComponent.getUser(20L)).thenReturn(otherUser);
+
+        spy.postMembership(1L, 20L);
+
+        verify(spy).findEntityOrThrow(1L);
+        verify(userComponent).getUser(20L);
+        verify(membershipService).createMembership(teamEntity, otherUser);
+        verifyNoMoreInteractions(membershipService);
+    }
+
+    @Test
+    void deleteMembership_shouldDeleteMembershipForTeamAndUser() {
+        TeamService spy = Mockito.spy(teamService);
+        doReturn(teamEntity).when(spy).findEntityOrThrow(1L);
+        when(userComponent.getUser(20L)).thenReturn(otherUser);
+
+        spy.deleteMembership(1L, 20L);
+
+        verify(spy).findEntityOrThrow(1L);
+        verify(userComponent).getUser(20L);
+        verify(membershipService).deleteMembership(teamEntity, otherUser);
+        verifyNoMoreInteractions(membershipService);
+    }
+
+    @Test
+    void getManager_shouldReturnMappedManager() {
+        UserModels.UserResponse managerModel = mock(UserModels.UserResponse.class);
+
+        TeamService spy = Mockito.spy(teamService);
+        doReturn(teamEntity).when(spy).findEntityOrThrow(1L);
+        when(membershipService.getManagerOfTeam(teamEntity)).thenReturn(currentUser);
+        when(userMapper.toModel(currentUser)).thenReturn(managerModel);
+
+        UserModels.UserResponse result = spy.getManager(1L);
+
+        assertThat(result).isSameAs(managerModel);
+        verify(spy).findEntityOrThrow(1L);
+        verify(membershipService).getManagerOfTeam(teamEntity);
+        verify(userMapper).toModel(currentUser);
+        verifyNoMoreInteractions(membershipService, userMapper);
+    }
+
+    @Test
+    void updateManager_shouldUpdateAndReturnMappedUser() {
+        UserModels.UserResponse updatedManagerModel = mock(UserModels.UserResponse.class);
+
+        TeamService spy = Mockito.spy(teamService);
+        doReturn(teamEntity).when(spy).findEntityOrThrow(1L);
+        when(userComponent.getUser(20L)).thenReturn(otherUser);
+        when(userMapper.toModel(otherUser)).thenReturn(updatedManagerModel);
+
+        UserModels.UserResponse result = spy.updateManager(1L, 20L);
+
+        assertThat(result).isSameAs(updatedManagerModel);
+        verify(spy).findEntityOrThrow(1L);
+        verify(userComponent).getUser(20L);
+        verify(membershipService).updateManagerOfTeam(teamEntity, otherUser);
+        verify(userMapper).toModel(otherUser);
+        verifyNoMoreInteractions(membershipService, userMapper);
+    }
+
+    @Test
+    void deleteManager_shouldDelegateToMembershipService() {
+        TeamService spy = Mockito.spy(teamService);
+        doReturn(teamEntity).when(spy).findEntityOrThrow(1L);
+
+        spy.deleteManager(1L);
+
+        verify(spy).findEntityOrThrow(1L);
+        verify(membershipService).deleteManagerOfTeam(teamEntity);
+        verifyNoMoreInteractions(membershipService);
     }
 }

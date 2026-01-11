@@ -16,6 +16,7 @@ import java.util.Objects;
 public class PlanningEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne(optional = false)

@@ -8,5 +8,5 @@ import java.util.Optional;
 
 @Repository
 public interface TemporaryTokensRepository extends JpaRepository<TemporaryTokenEntity, Long> {
-    Optional<TemporaryTokenEntity> findByToken(String token);
+    Optional<TemporaryTokenEntity> findByTokenHash(String token_hash);
 }

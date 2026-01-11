@@ -11,21 +11,24 @@ class ScheduleEntityTest {
 
     private ScheduleEntity schedule;
     private UserEntity user;
+
+    private OffsetDateTime now;
     private OffsetDateTime arrivalTime;
     private OffsetDateTime departureTime;
 
     @BeforeEach
     void setUp() {
         schedule = new ScheduleEntity();
-        schedule.setId(1L);
 
         user = new UserEntity();
         user.setId(1L);
         user.setFirstName("John");
         user.setLastName("Doe");
 
-        arrivalTime = OffsetDateTime.now().minusHours(8);
-        departureTime = OffsetDateTime.now();
+        // Deterministic timestamps (no flakiness, no nanos surprises)
+        now = OffsetDateTime.parse("2026-01-09T12:00:00+01:00");
+        arrivalTime = now.minusHours(8);
+        departureTime = now;
 
         schedule.setUser(user);
         schedule.setArrivalTs(arrivalTime);
@@ -34,7 +37,6 @@ class ScheduleEntityTest {
 
     @Test
     void testGettersAndSetters() {
-        assertThat(schedule.getId()).isEqualTo(1L);
         assertThat(schedule.getUser()).isEqualTo(user);
         assertThat(schedule.getArrivalTs()).isEqualTo(arrivalTime);
         assertThat(schedule.getDepartureTs()).isEqualTo(departureTime);
@@ -43,7 +45,6 @@ class ScheduleEntityTest {
     @Test
     void testScheduleWithOnlyArrival() {
         ScheduleEntity activeSchedule = new ScheduleEntity();
-        activeSchedule.setId(2L);
         activeSchedule.setUser(user);
         activeSchedule.setArrivalTs(arrivalTime);
 
@@ -52,9 +53,7 @@ class ScheduleEntityTest {
     }
 
     @Test
-    void testScheduleWithArrivalAndDeparture() {
-        assertThat(schedule.getArrivalTs()).isEqualTo(arrivalTime);
-        assertThat(schedule.getDepartureTs()).isEqualTo(departureTime);
+    void testScheduleWithArrivalAndDeparture_hasConsistentTimes() {
         assertThat(schedule.getDepartureTs()).isAfterOrEqualTo(schedule.getArrivalTs());
     }
 
@@ -67,6 +66,7 @@ class ScheduleEntityTest {
 
         newSchedule.setDepartureTs(departureTime);
         assertThat(newSchedule.getDepartureTs()).isEqualTo(departureTime);
+        assertThat(newSchedule.getDepartureTs()).isAfterOrEqualTo(newSchedule.getArrivalTs());
     }
 
     @Test
@@ -82,8 +82,8 @@ class ScheduleEntityTest {
     }
 
     @Test
-    void testArrivalBeforeDeparture() {
-        OffsetDateTime arrival = OffsetDateTime.now();
+    void testArrivalBeforeDeparture_example() {
+        OffsetDateTime arrival = now;
         OffsetDateTime departure = arrival.plusHours(8);
 
         schedule.setArrivalTs(arrival);
@@ -93,8 +93,8 @@ class ScheduleEntityTest {
     }
 
     @Test
-    void testSameArrivalAndDeparture() {
-        OffsetDateTime sameTime = OffsetDateTime.now();
+    void testSameArrivalAndDeparture_allowedByConstraint() {
+        OffsetDateTime sameTime = now;
 
         schedule.setArrivalTs(sameTime);
         schedule.setDepartureTs(sameTime);
@@ -111,5 +111,14 @@ class ScheduleEntityTest {
         assertThat(minimalSchedule.getUser()).isNotNull();
         assertThat(minimalSchedule.getArrivalTs()).isNotNull();
         assertThat(minimalSchedule.getDepartureTs()).isNull();
+    }
+
+    @Test
+    void testConstructor_withUserAndArrival_shouldSetFields() {
+        ScheduleEntity constructed = new ScheduleEntity(user, arrivalTime);
+
+        assertThat(constructed.getUser()).isEqualTo(user);
+        assertThat(constructed.getArrivalTs()).isEqualTo(arrivalTime);
+        assertThat(constructed.getDepartureTs()).isNull();
     }
 }

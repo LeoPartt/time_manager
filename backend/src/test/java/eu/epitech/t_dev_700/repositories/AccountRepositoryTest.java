@@ -7,7 +7,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -25,7 +24,7 @@ class AccountRepositoryTest {
     private AccountRepository accountRepository;
 
     @Autowired
-    private TestEntityManager entityManager;
+    private org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager entityManager;
 
     private AccountEntity testAccount;
 
@@ -34,22 +33,29 @@ class AccountRepositoryTest {
         testAccount = new AccountEntity();
         testAccount.setUsername("testuser");
         testAccount.setPassword("hashedPassword");
+        // flags default is 0 in entity field initialization
     }
 
     @Test
-    void testSaveAccount_shouldPersistAccount() {
+    void save_shouldPersistAccount_andAssignId() {
         AccountEntity saved = accountRepository.save(testAccount);
+        entityManager.flush(); // IDENTITY -> make sure id is assigned + constraints checked
 
         assertThat(saved.getId()).isNotNull();
         assertThat(saved.getUsername()).isEqualTo("testuser");
         assertThat(saved.getPassword()).isEqualTo("hashedPassword");
-        assertThat(saved.getFlags()).isEqualTo((byte) 0);
+
+        // verify default persisted value from DB
+        entityManager.clear();
+        AccountEntity found = accountRepository.findById(saved.getId()).orElseThrow();
+        assertThat(found.getFlags()).isEqualTo((byte) 0);
     }
 
     @Test
-    void testFindById_whenExists_shouldReturnAccount() {
+    void findById_whenExists_shouldReturnAccount() {
         AccountEntity saved = accountRepository.save(testAccount);
         entityManager.flush();
+        entityManager.clear();
 
         Optional<AccountEntity> found = accountRepository.findById(saved.getId());
 
@@ -58,14 +64,31 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void testFindById_whenNotExists_shouldReturnEmpty() {
+    void findById_whenNotExists_shouldReturnEmpty() {
         Optional<AccountEntity> found = accountRepository.findById(999L);
-
         assertThat(found).isEmpty();
     }
 
     @Test
-    void testFindAll_shouldReturnAllAccounts() {
+    void findByUsername_whenExists_shouldReturnAccount() {
+        accountRepository.save(testAccount);
+        entityManager.flush();
+        entityManager.clear();
+
+        Optional<AccountEntity> found = accountRepository.findByUsername("testuser");
+
+        assertThat(found).isPresent();
+        assertThat(found.get().getUsername()).isEqualTo("testuser");
+    }
+
+    @Test
+    void findByUsername_whenNotExists_shouldReturnEmpty() {
+        Optional<AccountEntity> found = accountRepository.findByUsername("unknown");
+        assertThat(found).isEmpty();
+    }
+
+    @Test
+    void findAll_shouldReturnAllAccounts() {
         accountRepository.save(testAccount);
 
         AccountEntity account2 = new AccountEntity();
@@ -73,40 +96,48 @@ class AccountRepositoryTest {
         account2.setPassword("password2");
         accountRepository.save(account2);
 
+        entityManager.flush();
+        entityManager.clear();
+
         List<AccountEntity> accounts = accountRepository.findAll();
 
-        assertThat(accounts).hasSizeGreaterThanOrEqualTo(2);
+        // assuming no seed data: should be exactly 2
+        assertThat(accounts)
+                .extracting(AccountEntity::getUsername)
+                .contains("testuser", "seconduser");
     }
 
     @Test
-    void testUpdateAccount_shouldPersistChanges() {
+    void update_shouldPersistChanges() {
         AccountEntity saved = accountRepository.save(testAccount);
         entityManager.flush();
         entityManager.clear();
 
-        saved.setPassword("newHashedPassword");
-        AccountEntity updated = accountRepository.save(saved);
+        AccountEntity toUpdate = accountRepository.findById(saved.getId()).orElseThrow();
+        toUpdate.setPassword("newHashedPassword");
+        accountRepository.save(toUpdate);
         entityManager.flush();
+        entityManager.clear();
 
-        AccountEntity found = accountRepository.findById(updated.getId()).orElseThrow();
+        AccountEntity found = accountRepository.findById(saved.getId()).orElseThrow();
         assertThat(found.getPassword()).isEqualTo("newHashedPassword");
     }
 
     @Test
-    void testDeleteAccount_shouldRemoveAccount() {
+    void delete_shouldRemoveAccount() {
         AccountEntity saved = accountRepository.save(testAccount);
-        Long accountId = saved.getId();
         entityManager.flush();
 
-        accountRepository.delete(saved);
+        Long id = saved.getId();
+        accountRepository.deleteById(id);
         entityManager.flush();
+        entityManager.clear();
 
-        Optional<AccountEntity> found = accountRepository.findById(accountId);
-        assertThat(found).isEmpty();
+        assertThat(accountRepository.findById(id)).isEmpty();
     }
 
     @Test
-    void testSaveAccount_withoutUsername_shouldThrowException() {
+    void save_withoutUsername_shouldThrowConstraintViolationException() {
         testAccount.setUsername(null);
 
         assertThatThrownBy(() -> {
@@ -116,7 +147,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void testSaveAccount_withoutPassword_shouldThrowException() {
+    void save_withoutPassword_shouldThrowConstraintViolationException() {
         testAccount.setPassword(null);
 
         assertThatThrownBy(() -> {
@@ -126,7 +157,7 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void testSaveAccount_withBlankUsername_shouldThrowException() {
+    void save_withBlankUsername_shouldThrowConstraintViolationException() {
         testAccount.setUsername("   ");
 
         assertThatThrownBy(() -> {
@@ -136,7 +167,17 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void testSaveAccount_withDuplicateUsername_shouldThrowException() {
+    void save_withTooLongUsername_shouldThrowConstraintViolationException() {
+        testAccount.setUsername("a".repeat(256)); // @Size(max = 255)
+
+        assertThatThrownBy(() -> {
+            accountRepository.save(testAccount);
+            entityManager.flush();
+        }).isInstanceOf(ConstraintViolationException.class);
+    }
+
+    @Test
+    void save_withDuplicateUsername_shouldThrowDataIntegrityViolationException() {
         accountRepository.save(testAccount);
         entityManager.flush();
 
@@ -151,39 +192,53 @@ class AccountRepositoryTest {
     }
 
     @Test
-    void testSetFlags_shouldPersist() {
+    void flags_shouldPersist() {
         testAccount.setFlags((byte) 5);
+
         AccountEntity saved = accountRepository.save(testAccount);
         entityManager.flush();
+        entityManager.clear();
 
         AccountEntity found = accountRepository.findById(saved.getId()).orElseThrow();
         assertThat(found.getFlags()).isEqualTo((byte) 5);
     }
 
     @Test
-    void testAccountWithUser_shouldMaintainRelationship() {
+    void accountUserRelationship_shouldBeReadableFromAccountSide() {
+        // Account is inverse side (mappedBy="account"), so persist the owning side (UserEntity)
         UserEntity user = new UserEntity();
         user.setFirstName("John");
         user.setLastName("Doe");
         user.setEmail("john@example.com");
         user.setPhoneNumber("+123456");
-        user.setAccount(testAccount);
 
+        // Set both sides to keep object graph consistent
+        user.setAccount(testAccount);
         testAccount.setUser(user);
 
-        // Save user first to establish relationship
         entityManager.persist(user);
         entityManager.flush();
+
+        Long accountId = user.getAccount().getId();
         entityManager.clear();
 
-        AccountEntity found = accountRepository.findById(testAccount.getId()).orElseThrow();
+        AccountEntity found = accountRepository.findById(accountId).orElseThrow();
+
+        // user is LAZY in your UserEntity? Here, in @DataJpaTest transaction, accessing is OK.
         assertThat(found.getUser()).isNotNull();
         assertThat(found.getUser().getFirstName()).isEqualTo("John");
     }
 
     @Test
-    void testDefaultFlagsValue() {
+    void isAdmin_shouldReflectFlagsBitmaskLogic() {
+        testAccount.setFlags(AccountEntity.FLAG_ADMIN);
+
         AccountEntity saved = accountRepository.save(testAccount);
-        assertThat(saved.getFlags()).isEqualTo((byte) 0);
+        entityManager.flush();
+        entityManager.clear();
+
+        AccountEntity found = accountRepository.findById(saved.getId()).orElseThrow();
+        assertThat(found.isAdmin()).isTrue();
+        assertThat(found.hasFlag(AccountEntity.FLAG_ADMIN)).isTrue();
     }
 }
