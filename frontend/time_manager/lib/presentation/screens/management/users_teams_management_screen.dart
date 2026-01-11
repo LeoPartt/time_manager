@@ -787,7 +787,7 @@ class _TeamsTab extends StatelessWidget {
                         context.pushRoute(TeamDashboardRoute(teamId: team.id));
                         break;
                       
-                      case 'Manage':
+                      case 'manage':
                         context.pushRoute(TeamManagementRoute(team: team));
                         break;
                       case 'delete':
@@ -812,7 +812,7 @@ class _TeamsTab extends StatelessWidget {
                         children: [
                           const Icon(Icons.group_outlined, size: 20),
                           const SizedBox(width: 12),
-                          Text(tr.member),
+                          Text(tr.manage),
                         ],
                       ),
                     ),

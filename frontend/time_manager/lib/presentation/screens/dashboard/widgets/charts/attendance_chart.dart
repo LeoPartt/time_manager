@@ -1,4 +1,3 @@
-// 📁 lib/presentation/widgets/charts/attendance_chart.dart
 
 import 'package:flutter/material.dart';
 import 'package:time_manager/core/constants/app_sizes.dart';
@@ -188,6 +187,8 @@ final tr = AppLocalizations.of(context)!;
   }
 
   Widget _buildLegend(BuildContext context, ColorScheme colorScheme) {
+            final tr = AppLocalizations.of(context)!;
+
     return Container(
       padding: EdgeInsets.all(AppSizes.p12),
       decoration: BoxDecoration(
@@ -197,9 +198,9 @@ final tr = AppLocalizations.of(context)!;
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _buildLegendItem('Excellent', Colors.green, '≥ 90%'),
-          _buildLegendItem('Bien', Colors.orange, '70-89%'),
-          _buildLegendItem('À améliorer', Colors.red, '< 70%'),
+          _buildLegendItem(tr.excellent, Colors.green, '≥ 90%'),
+          _buildLegendItem(tr.good, Colors.orange, '70-89%'),
+          _buildLegendItem(tr.atUpgrade, Colors.red, '< 70%'),
         ],
       ),
     );

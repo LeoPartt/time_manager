@@ -120,6 +120,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get managePlanning => 'Manage planning';
 
   @override
+  String get account => 'Account';
+
+  @override
+  String get logoutAdminDesc => 'Sign out from your administrator account';
+
+  @override
+  String get logoutConfirmationMessage => 'Do you really want to logout? You will need to sign in again to access the app.';
+
+  @override
   String get userSelected => 'User selected';
 
   @override
@@ -785,6 +794,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get teamDashboard => 'Team Dashboard';
+
+  @override
+  String get manage => 'Manage';
 
   @override
   String get january => 'January';

@@ -1,4 +1,3 @@
-// 📁 lib/domain/entities/daily_work.dart
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 

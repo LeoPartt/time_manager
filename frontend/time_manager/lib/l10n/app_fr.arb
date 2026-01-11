@@ -17,6 +17,9 @@
   "addTeam": "Ajouter une équipe",
 
   "addDay": "Ajouter un jour",
+   "account": "Compte",
+  "logoutAdminDesc": "Déconnecter votre compte administrateur",
+  "logoutConfirmationMessage": "Voulez-vous vraiment vous déconnecter ? Vous devrez vous reconnecter pour accéder à l'application.",
   
   "teamName": "Nom de l'équipe",
   "teamDescription": "Description de l'équipe",
@@ -306,7 +309,7 @@
   "wednesday" : "Mercredi",
   "thursday" : "Jeudi",
    "teamDashboard": "Tableau de bord de l'équipe",
-
+"manage":"Gérer",
   "january": "Janvier",
   "february": "Fevrier",
   "march": "Mars",
