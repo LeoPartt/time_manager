@@ -18,7 +18,7 @@ enum UserRole {
 }
 
 class RoleManager {
-  // ✅ Vérifier si l'utilisateur a le rôle minimum requis
+
   static bool hasRole(User user, UserRole requiredRole) {
     final userRole = UserRole.fromUser(user);
     return _getRoleLevel(userRole) >= _getRoleLevel(requiredRole);
@@ -43,7 +43,7 @@ class RoleManager {
 
   // ✅ Vérifier si l'utilisateur est manager (ou admin)
   static bool isManager(User user) {
-    return user.isManager || user.isAdministrator;
+    return user.isAdministrator ||  user.isManager ;
   }
 
   // ✅ Vérifier si l'utilisateur est employé simple
@@ -74,6 +74,8 @@ class RoleManager {
           '/dashboard',
           '/clocking',
           '/team-dashboard',
+          '/planning-management',
+          '/users-teams-management',
           '/team-management',
           '/profile',
           '/settings',

@@ -27,7 +27,7 @@ class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
       );
 
       emit(const ForgotPasswordState.success());
-    } catch (e, stackTrace) {
+    } catch (e) {
       emit(ForgotPasswordState.error('${tr.error}: $e'));
     }
   }

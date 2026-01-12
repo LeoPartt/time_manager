@@ -62,6 +62,9 @@ class _NavBarState extends State<NavBar> {
 
     return BlocBuilder<AuthCubit, AuthState>(
       builder: (context, authState) {
+        final userCubit = context.read<UserCubit>();
+print('🆔 [NavBar] UserCubit hashCode: ${userCubit.hashCode}');
+print('📊 [NavBar] UserCubit state: ${userCubit.state.runtimeType}');
         
         return authState.when(
           initial: () {
@@ -84,53 +87,73 @@ class _NavBarState extends State<NavBar> {
               );
             }
 
-            // ✅ Autres utilisateurs → Attendre UserCubit
-            return BlocBuilder<UserCubit, UserState>(
+print('🔄 [NavBar] BUILD - Non-pure-admin, building UserCubit listener...');
+
+            return BlocConsumer<UserCubit, UserState>(
+              listener: (context, userState) {
+                print('👂 [NavBar] LISTENER - State changed: ${userState.runtimeType}');
+
+                if (userState is Initial) {
+                  print('⚠️ [NavBar] LISTENER - INITIAL detected, loading...');
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (context.mounted) {
+                      print('🔄 [NavBar] LISTENER - Calling loadProfile()');
+                      context.read<UserCubit>().loadProfile();
+                    }
+                  });
+                }
+              },
               builder: (context, userState) {
-                
+                print('🎨 [NavBar] BUILDER - UserState: ${userState.runtimeType}');
+
+                // ✅ Debug hashCode
+                final userCubit = context.read<UserCubit>();
+                print('🆔 [NavBar] BUILDER - UserCubit hashCode: ${userCubit.hashCode}');
+
                 return userState.when(
                   initial: () {
+                    print('⏳ [NavBar] BUILDER - INITIAL, showing loading');
                     return _buildLoadingNavBar(context, colorScheme, size);
                   },
                   loading: () {
+                    print('⏳ [NavBar] BUILDER - LOADING');
                     return _buildLoadingNavBar(context, colorScheme, size);
                   },
                   loaded: (fullUser) {
-                    
+                    print('✅ [NavBar] BUILDER - LOADED: ${fullUser.username}');
+                    print('🔐 [NavBar] BUILDER - isAdmin: ${fullUser.isAdministrator}');
+                    print('👔 [NavBar] BUILDER - isManager: ${fullUser.isManager}');
+
                     final navItems = _getUserNavItems(
                       fullUser.isManager,
                       fullUser.isAdministrator,
                     );
-                    
-                    return _buildNavBar(
-                      context,
-                      navItems,
-                      colorScheme,
-                      size,
-                    );
+                    print('📱 [NavBar] BUILDER - NavItems count: ${navItems.length}');
+
+                    return _buildNavBar(context, navItems, colorScheme, size);
                   },
                   listLoaded: (_) {
+                    context.read<UserCubit>().loadProfile();
+                    print('⚠️ [NavBar] BUILDER - LIST_LOADED');
                     return _buildLoadingNavBar(context, colorScheme, size);
                   },
                   updated: (fullUser) {
-                    
+                    print('✅ [NavBar] BUILDER - UPDATED: ${fullUser.username}');
+
                     final navItems = _getUserNavItems(
                       fullUser.isManager,
                       fullUser.isAdministrator,
                     );
-                    
-                    return _buildNavBar(
-                      context,
-                      navItems,
-                      colorScheme,
-                      size,
-                    );
+                    return _buildNavBar(context, navItems, colorScheme, size);
                   },
                   deleted: () {
+                    print('❌ [NavBar] BUILDER - DELETED');
                     return const SizedBox.shrink();
                   },
                   error: (msg) {
-                    // ✅ En cas d'erreur, utiliser les infos de AuthCubit
+                    print('❌ [NavBar] BUILDER - ERROR: $msg');
+                    print('🔄 [NavBar] BUILDER - Using AuthCubit fallback');
+
                     return _buildNavBar(
                       context,
                       _getUserNavItems(user.isManager, user.isAdministrator),
@@ -143,16 +166,17 @@ class _NavBarState extends State<NavBar> {
             );
           },
           unauthenticated: () {
+            print('❌ [NavBar] BUILD - UNAUTHENTICATED');
             return const SizedBox.shrink();
           },
           error: (msg) {
+            print('❌ [NavBar] BUILD - ERROR: $msg');
             return const SizedBox.shrink();
           },
         );
       },
     );
   }
-
   Widget _buildLoadingNavBar(
     BuildContext context,
     ColorScheme colorScheme,
@@ -180,7 +204,7 @@ class _NavBarState extends State<NavBar> {
         child: SizedBox(
           height: 24,
           width: 24,
-          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
+          child: CircularProgressIndicator(strokeWidth: 2, color: Colors.red),
         ),
       ),
     );
@@ -262,8 +286,8 @@ class _NavBarState extends State<NavBar> {
       return [
         NavItem(Icons.bar_chart_rounded,  DashboardRoute()),
         NavItem(Icons.work_history_rounded, const ClockingRoute()),
-        NavItem(Icons.dashboard_outlined,  UsersTeamsManagementRoute()),
         NavItem(Icons.person_rounded, const UserRoute()),
+        NavItem(Icons.dashboard_outlined,  UsersTeamsManagementRoute()),
         NavItem(Icons.settings, const SettingsRoute()),
       ];
     } else {

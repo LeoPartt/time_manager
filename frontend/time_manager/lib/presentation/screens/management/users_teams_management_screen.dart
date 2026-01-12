@@ -6,7 +6,7 @@ import 'package:time_manager/core/constants/app_sizes.dart';
 import 'package:time_manager/core/utils/extensions/context_extensions.dart';
 import 'package:time_manager/domain/entities/team/team.dart';
 import 'package:time_manager/domain/entities/user/user.dart';
-import 'package:time_manager/initialization/locator.dart';
+
 import 'package:time_manager/l10n/app_localizations.dart';
 import 'package:time_manager/presentation/cubits/team/team_cubit.dart';
 import 'package:time_manager/presentation/cubits/team/team_state.dart';
@@ -17,7 +17,7 @@ import 'package:time_manager/presentation/widgets/header.dart';
 import 'package:time_manager/presentation/widgets/navbar.dart';
 
 @RoutePage()
-class UsersTeamsManagementScreen extends StatelessWidget {
+class UsersTeamsManagementScreen extends StatefulWidget {
   final int? selectedUserId;
   final int? selectedTeamId;
 
@@ -28,21 +28,41 @@ class UsersTeamsManagementScreen extends StatelessWidget {
   });
 
   @override
+  State<UsersTeamsManagementScreen> createState() => _UsersTeamsManagementScreenState();
+}
+
+class _UsersTeamsManagementScreenState extends State<UsersTeamsManagementScreen> {
+  
+  @override
+ @override
+  void initState() {
+    super.initState();
+    
+    
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<UserCubit>().loadProfile();
+      context.read<UserCubit>().getUsers();
+      context.read<TeamCubit>().getTeams();
+    });
+  }
+
+
+
+  @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (context) => locator<UserCubit>()..getUsers(),
-        ),
-        BlocProvider(
-          create: (context) => locator<TeamCubit>()..getTeams(),
-        ),
-      ],
-      child: _UsersTeamsManagementView(
-        selectedUserId: selectedUserId,
-        selectedTeamId: selectedTeamId,
-      ),
-    );
+    
+    
+    return Builder(
+    builder: (context) {
+      
+    
+      
+      return _UsersTeamsManagementView(
+        selectedUserId: widget.selectedUserId,
+        selectedTeamId: widget.selectedTeamId,
+      );
+    },
+        );
   }
 }
 
@@ -92,7 +112,7 @@ class _UsersTeamsManagementViewState extends State<_UsersTeamsManagementView>
       body:SafeArea(
         child: Column(
           children: [
-            // ✅ Header avec cohérence
+            
             Padding(
               padding: EdgeInsets.all(AppSizes.p16),
               child: Header(

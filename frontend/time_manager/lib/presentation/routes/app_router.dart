@@ -81,7 +81,7 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(
       page: UsersTeamsManagementRoute.page,
-      guards: [authGuard, adminGuard,managerGuard],
+      guards: [authGuard, managerGuard],
     ),
     AutoRoute(
       page: GlobalDashboardRoute.page,
@@ -89,7 +89,7 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(
       page: CreateUserRoute.page,
-      guards: [authGuard, adminGuard,managerGuard],
+      guards: [authGuard, adminGuard],
     ),
     AutoRoute(
       page: CreateTeamRoute.page,
@@ -97,7 +97,7 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(
       page: EditManagementUserRoute.page,
-      guards: [authGuard, adminGuard,managerGuard],
+      guards: [authGuard, managerGuard],
     ),
   ];
 }
