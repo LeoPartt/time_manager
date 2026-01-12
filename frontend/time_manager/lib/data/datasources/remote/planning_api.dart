@@ -57,7 +57,8 @@ class PlanningApi {
         'startTime': startTime,
         'endTime': endTime,
       };
-      
+      // ignore: avoid_print
+      print('id select cubit :$userId');
       final response = await client.post(ApiEndpoints.plannings, body);
       
       return response;

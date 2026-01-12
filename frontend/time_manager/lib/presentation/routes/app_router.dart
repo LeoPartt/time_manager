@@ -4,6 +4,7 @@ import 'package:time_manager/domain/entities/team/team.dart';
 import 'package:time_manager/domain/entities/user/user.dart';
 import 'package:time_manager/presentation/routes/guard/auth_guard.dart';
 import 'package:time_manager/presentation/routes/guard/role_guard.dart';
+import 'package:time_manager/presentation/screens/auth/forgot_password_screen.dart';
 import 'package:time_manager/presentation/screens/auth/login_screen.dart';
 import 'package:time_manager/presentation/screens/dashboard/global_dashboard_screen.dart';
 import 'package:time_manager/presentation/screens/management/edit_user_screen.dart';
@@ -62,6 +63,10 @@ class AppRouter extends RootStackRouter {
     ),
     AutoRoute(
       page: PlanningCalendarRoute.page,
+      guards: [authGuard],
+    ),
+    AutoRoute(
+      page: ForgotPasswordRoute.page,
       guards: [authGuard],
     ),
 

@@ -23,6 +23,7 @@ import 'package:time_manager/domain/repositories/planning_repository.dart';
 import 'package:time_manager/domain/repositories/schedule_repository.dart';
 import 'package:time_manager/domain/repositories/team_repository.dart';
 import 'package:time_manager/domain/repositories/user_repository.dart';
+import 'package:time_manager/domain/usecases/account/change_password.dart';
 import 'package:time_manager/domain/usecases/account/login_user.dart';
 import 'package:time_manager/domain/usecases/account/logout_user.dart';
 import 'package:time_manager/domain/usecases/account/register_account.dart';
@@ -56,6 +57,7 @@ import 'package:time_manager/domain/usecases/user/get_users.dart';
 import 'package:time_manager/domain/usecases/user/update_user.dart';
 import 'package:time_manager/domain/usecases/user/update_user_profile.dart';
 import 'package:time_manager/presentation/cubits/account/auth_cubit.dart';
+import 'package:time_manager/presentation/cubits/account/forgot_password_cubit.dart';
 import 'package:time_manager/presentation/cubits/clock/clock_cubit.dart';
 import 'package:time_manager/presentation/cubits/dashboard/dashboard_cubit.dart';
 import 'package:time_manager/presentation/cubits/planning/planning_cubit.dart';
@@ -145,6 +147,17 @@ locator.registerLazySingleton<AppRouter>(
       loginUser: locator<LoginUser>(),
       registerUser: locator<RegisterUser>(),
       logoutUser: locator<LogoutUser>(), storage: locator<LocalStorageService>(),
+    ),
+  );
+
+  locator.registerLazySingleton(
+    () => ChangePassword(locator<AccountRepository>()),
+  );
+  
+  // ✅ Cubits
+  locator.registerFactory(
+    () => ForgotPasswordCubit(
+      changePasswordUseCase: locator<ChangePassword>(),
     ),
   );
 

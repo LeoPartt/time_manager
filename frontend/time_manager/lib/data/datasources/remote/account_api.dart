@@ -20,7 +20,25 @@ class AccountApi {
       throw NetworkException('Unexpected error during login: $e');
     }
   }
-
+ Future<void> changePassword({
+    required String code,
+    required String password,
+  }) async {
+    try {
+      await client.post(
+        ApiEndpoints.changePassword,
+        {
+          'code': code,
+          'password': password,
+        },
+      );
+      
+    } on NetworkException {
+      rethrow;
+    } catch (e) {
+      throw NetworkException('Error changing password: $e');
+    }
+  }
   Future<Map<String, dynamic>> register(String username, String email, String password) async {
     try {
       return await client.post(ApiEndpoints.register, {

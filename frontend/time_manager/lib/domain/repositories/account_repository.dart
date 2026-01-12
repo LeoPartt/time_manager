@@ -5,5 +5,9 @@ abstract class AccountRepository {
   Future<User> register(String username, String email, String password);
   Future<void> logout();
   
+Future<void> changePassword({
+    required String code,
+    required String password,
+  });
 
 }

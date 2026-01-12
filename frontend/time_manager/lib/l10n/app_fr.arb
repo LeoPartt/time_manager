@@ -12,7 +12,18 @@
   
   
   "createUser": "Créer un utilisateur",
-
+  "resetPassword": "Réinitialiser le mot de passe",
+  "forgotPasswordDesc": "Entrez le code reçu par email et votre nouveau mot de passe",
+  "resetCode": "Code de réinitialisation",
+  "newPassword": "Nouveau mot de passe",
+  "confirmPassword": "Confirmer le mot de passe",
+  "backToLogin": "Retour à la connexion",
+  
+  "codeRequired": "Le code est requis",
+  "codeMustBe6Digits": "Le code doit contenir 6 chiffres",
+  "confirmPasswordRequired": "La confirmation est requise",
+  "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+  "passwordChangedSuccess": "Mot de passe modifié avec succès",
   "addUser": "Ajouter un utilisateur",
   "addTeam": "Ajouter une équipe",
 

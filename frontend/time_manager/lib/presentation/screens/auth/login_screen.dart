@@ -160,7 +160,7 @@ class _LoginScreenState extends State<LoginScreen> {
             
             // Lien mot de passe oublié
             TextButton(
-              onPressed: () => context.showInfo(tr.forgotPassword),
+              onPressed: () => context.pushRoute(const ForgotPasswordRoute()),
               child: Text(
                 tr.forgotPassword,
                 style: context.textTheme.bodyMedium?.copyWith(

@@ -31,6 +31,20 @@ class AccountRepositoryImpl implements AccountRepository {
     );
   }
 
+  @override
+  Future<void> changePassword({
+    required String code,
+    required String password,
+  }) async {
+    try {
+      await api.changePassword(code: code, password: password);
+    } catch (e) {
+     
+
+      rethrow;
+    }
+  }
+
   // ─────────────────────────────────────────────
   //  REGISTER
   // ─────────────────────────────────────────────

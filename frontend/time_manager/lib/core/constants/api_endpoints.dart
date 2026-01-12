@@ -14,6 +14,7 @@ class ApiEndpoints {
   static String get register => '/auth/register';
   static String get logout => '/auth/logout';
   static String get refresh => '/auth/refresh';
+  static const changePassword = '/auth/change';
 
   // ───────────────────────────────
   //  USER endpoints

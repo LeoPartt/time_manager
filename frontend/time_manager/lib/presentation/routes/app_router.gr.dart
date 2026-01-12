@@ -169,6 +169,22 @@ class EditManagementUserRouteArgs {
 }
 
 /// generated route for
+/// [ForgotPasswordScreen]
+class ForgotPasswordRoute extends PageRouteInfo<void> {
+  const ForgotPasswordRoute({List<PageRouteInfo>? children})
+    : super(ForgotPasswordRoute.name, initialChildren: children);
+
+  static const String name = 'ForgotPasswordRoute';
+
+  static PageInfo page = PageInfo(
+    name,
+    builder: (data) {
+      return const ForgotPasswordScreen();
+    },
+  );
+}
+
+/// generated route for
 /// [GlobalDashboardScreen]
 class GlobalDashboardRoute extends PageRouteInfo<void> {
   const GlobalDashboardRoute({List<PageRouteInfo>? children})

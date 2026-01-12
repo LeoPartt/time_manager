@@ -133,7 +133,7 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
         return state.when(
           initial: () => const SizedBox(),
           loading: () => const LinearProgressIndicator(),
-          loaded: (_, __) => const LoadingStateWidget(),
+          loaded: (_, _) => const LoadingStateWidget(),
           loadedTeams: (teams) {
             if (teams.isEmpty) {
               return Container(
@@ -168,7 +168,7 @@ class _TeamDashboardViewState extends State<_TeamDashboardView> {
                 ),
               ),
               child: DropdownButtonFormField<int>(
-                value: _selectedTeamId,
+                initialValue: _selectedTeamId,
                 decoration: InputDecoration(
                   labelText: tr.selectTeam,
                   prefixIcon: Icon(Icons.groups, color: colorScheme.secondary),

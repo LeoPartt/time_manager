@@ -56,7 +56,7 @@ class _PlanningDialogWidgetState extends State<PlanningDialogWidget> {
     final tr = widget.tr ?? AppLocalizations.of(context)!;
     final colorScheme = context.colorScheme;
     final isEdit = widget.planning != null;
-
+    
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(AppSizes.r16),
@@ -390,6 +390,7 @@ class _PlanningDialogWidgetState extends State<PlanningDialogWidget> {
     }
 
     if (isEdit) {
+      
       context.read<PlanningCubit>().updatePlanning(
             context,
             userId: widget.userId,

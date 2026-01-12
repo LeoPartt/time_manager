@@ -48,6 +48,39 @@ class AppLocalizationsFr extends AppLocalizations {
   String get addDay => 'Ajouter un jour';
 
   @override
+  String get resetPassword => 'Réinitialiser le mot de passe';
+
+  @override
+  String get forgotPasswordDesc => 'Entrez le code reçu par email et votre nouveau mot de passe';
+
+  @override
+  String get resetCode => 'Code de réinitialisation';
+
+  @override
+  String get newPassword => 'Nouveau mot de passe';
+
+  @override
+  String get confirmPassword => 'Confirmer le mot de passe';
+
+  @override
+  String get backToLogin => 'Retour à la connexion';
+
+  @override
+  String get codeRequired => 'Le code est requis';
+
+  @override
+  String get codeMustBe6Digits => 'Le code doit contenir 6 chiffres';
+
+  @override
+  String get confirmPasswordRequired => 'La confirmation est requise';
+
+  @override
+  String get passwordsDoNotMatch => 'Les mots de passe ne correspondent pas';
+
+  @override
+  String get passwordChangedSuccess => 'Mot de passe modifié avec succès';
+
+  @override
   String get teamName => 'Nom de l\'équipe';
 
   @override

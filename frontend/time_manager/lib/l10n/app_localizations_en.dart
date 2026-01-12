@@ -48,6 +48,39 @@ class AppLocalizationsEn extends AppLocalizations {
   String get addDay => 'Add a day';
 
   @override
+  String get resetPassword => 'Reset Password';
+
+  @override
+  String get forgotPasswordDesc => 'Enter the code received by email and your new password';
+
+  @override
+  String get resetCode => 'Reset Code';
+
+  @override
+  String get newPassword => 'New Password';
+
+  @override
+  String get confirmPassword => 'Confirm Password';
+
+  @override
+  String get backToLogin => 'Back to Login';
+
+  @override
+  String get codeRequired => 'Code is required';
+
+  @override
+  String get codeMustBe6Digits => 'Code must be 6 digits';
+
+  @override
+  String get confirmPasswordRequired => 'Confirmation is required';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get passwordChangedSuccess => 'Password changed successfully';
+
+  @override
   String get teamName => 'Team name';
 
   @override

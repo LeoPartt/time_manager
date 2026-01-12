@@ -14,6 +14,18 @@
   "addUser": "Add a user",
   "addTeam": "Add a team",
   "addDay": "Add a day",
+  "resetPassword": "Reset Password",
+  "forgotPasswordDesc": "Enter the code received by email and your new password",
+  "resetCode": "Reset Code",
+  "newPassword": "New Password",
+  "confirmPassword": "Confirm Password",
+  "backToLogin": "Back to Login",
+  
+  "codeRequired": "Code is required",
+  "codeMustBe6Digits": "Code must be 6 digits",
+  "confirmPasswordRequired": "Confirmation is required",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "passwordChangedSuccess": "Password changed successfully",
   
   "teamName": "Team name",
   "teamDescription": "Team description",
