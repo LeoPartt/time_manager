@@ -5,6 +5,8 @@ import eu.epitech.t_dev_700.entities.UserEntity;
 import eu.epitech.t_dev_700.mappers.PlanningMapper;
 import eu.epitech.t_dev_700.models.PlanningModels;
 import eu.epitech.t_dev_700.repositories.PlanningRepository;
+import eu.epitech.t_dev_700.services.components.UserComponent;
+import eu.epitech.t_dev_700.utils.CRUDHookUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,13 +22,24 @@ public class PlanningService extends CRUDService<
 
     private final PlanningRepository planningRepository;
     private final MembershipService membershipService;
+    private final UserComponent userComponent;
 
     public PlanningService(
             PlanningRepository planningRepository,
-            PlanningMapper planningMapper, MembershipService membershipService) {
+            PlanningMapper planningMapper,
+            MembershipService membershipService,
+            UserComponent userComponent) {
         super(planningRepository, planningMapper, "Planning");
         this.planningRepository = planningRepository;
         this.membershipService = membershipService;
+        this.userComponent = userComponent;
+    }
+
+
+    @CRUDHookUtils.CRUDHook(action = CRUDHookUtils.Action.CREATE, moment = CRUDHookUtils.Moment.BEFORE)
+    public void onpPlanningCreation(PlanningEntity entity, PlanningModels.PostPlanningRequest request) {
+        UserEntity user = userComponent.getUser(request.userId());
+        entity.setUser(user);
     }
 
     public List<PlanningEntity> getForUser(UserEntity user) {
