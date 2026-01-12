@@ -257,6 +257,7 @@ class UserServiceTest {
     @Test
     void testGetCurrentUser_shouldReturnMappedUser() {
         when(userAuthorization.getCurrentUser()).thenReturn(userEntity);
+        when(userRepository.findById(1L)).thenReturn(Optional.ofNullable(userEntity));
         when(userMapper.toModel(userEntity)).thenReturn(userResponse);
 
         UserModels.UserResponse result = userService.getCurrentUser();

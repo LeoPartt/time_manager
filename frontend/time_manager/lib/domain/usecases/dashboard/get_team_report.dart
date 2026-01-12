@@ -1,12 +1,20 @@
-import 'package:time_manager/domain/entities/dashboard_report.dart';
+import 'package:time_manager/domain/entities/dashboard/dashboard_report.dart';
 import 'package:time_manager/domain/repositories/dashboard_repository.dart';
 
-class GetTeamReport {
+class GetTeamDashboard {
   final DashboardRepository repository;
 
-  GetTeamReport(this.repository);
+  GetTeamDashboard(this.repository);
 
-  Future<DashboardReport> call(int teamId) async {
-    return await repository.getTeamReport(teamId);
+  Future<TeamDashboardReport> call({
+    required int teamId,
+    required String mode,
+    DateTime? at,
+  }) async {
+    return await repository.getTeamDashboard(
+      teamId: teamId,
+      mode: mode,
+      at: at,
+    );
   }
 }

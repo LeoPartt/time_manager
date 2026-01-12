@@ -12,7 +12,6 @@ class PlanningApi {
     try {
       final response = await client.get(ApiEndpoints.userPlannings(userId));
       
-      print('🔵 [PlanningApi] Response: $response');
       
       // Le backend retourne un tableau
       if (response is List) {

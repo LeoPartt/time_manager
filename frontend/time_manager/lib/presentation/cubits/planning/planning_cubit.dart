@@ -25,19 +25,16 @@ class PlanningCubit extends Cubit<PlanningState> {
   Future<void> loadUserPlannings(BuildContext context, int userId) async {
     final tr = AppLocalizations.of(context)!;
     
-    print('🔵 [PlanningCubit] loadUserPlannings called with userId: $userId');
     emit(const PlanningState.loading());
 
     try {
-      print('🔵 [PlanningCubit] Calling getUserPlanningsUseCase...');
+    
       final plannings = await getUserPlanningsUseCase(userId);
-      
-      print('🟢 [PlanningCubit] Plannings received: ${plannings.length} items');
+    
       
       emit(PlanningState.loaded(plannings));
-    } catch (e, stackTrace) {
-      print('🔴 [PlanningCubit] Error: $e');
-      print('🔴 [PlanningCubit] StackTrace: $stackTrace');
+    } catch (e) {
+   
       emit(PlanningState.error('${tr.error}: $e'));
     }
   }
@@ -50,7 +47,7 @@ class PlanningCubit extends Cubit<PlanningState> {
   }) async {
     final tr = AppLocalizations.of(context)!;
     
-    print('🔵 [PlanningCubit] createPlanning called');
+  
     emit(const PlanningState.loading());
 
     try {
@@ -61,13 +58,12 @@ class PlanningCubit extends Cubit<PlanningState> {
         endTime: endTime,
       );
       
-      print('🟢 [PlanningCubit] Planning created successfully');
+    
       
       // Recharge la liste après création
       await loadUserPlannings(context, userId);
-    } catch (e, stackTrace) {
-      print('🔴 [PlanningCubit] Error creating planning: $e');
-      print('🔴 [PlanningCubit] StackTrace: $stackTrace');
+    } catch (e) {
+   
       emit(PlanningState.error('${tr.error}: $e'));
     }
   }
@@ -83,7 +79,6 @@ class PlanningCubit extends Cubit<PlanningState> {
   }) async {
     final tr = AppLocalizations.of(context)!;
     
-    print('🔵 [PlanningCubit] updatePlanning called for planningId: $planningId');
     emit(const PlanningState.loading());
 
     try {
@@ -94,13 +89,11 @@ class PlanningCubit extends Cubit<PlanningState> {
         endTime: endTime,
       );
       
-      print('🟢 [PlanningCubit] Planning updated successfully');
       
       // Recharge la liste après mise à jour
       await loadUserPlannings(context, userId);
-    } catch (e, stackTrace) {
-      print('🔴 [PlanningCubit] Error updating planning: $e');
-      print('🔴 [PlanningCubit] StackTrace: $stackTrace');
+    } catch (e) {
+   
       emit(PlanningState.error('${tr.error}: $e'));
     }
   }
@@ -113,19 +106,16 @@ class PlanningCubit extends Cubit<PlanningState> {
   }) async {
     final tr = AppLocalizations.of(context)!;
     
-    print('🔵 [PlanningCubit] deletePlanning called for planningId: $planningId');
     emit(const PlanningState.loading());
 
     try {
       await deletePlanningUseCase(planningId);
       
-      print('🟢 [PlanningCubit] Planning deleted successfully');
       
       // Recharge la liste après suppression
       await loadUserPlannings(context, userId);
-    } catch (e, stackTrace) {
-      print('🔴 [PlanningCubit] Error deleting planning: $e');
-      print('🔴 [PlanningCubit] StackTrace: $stackTrace');
+    } catch (e) {
+
       emit(PlanningState.error('${tr.error}: $e'));
     }
   }

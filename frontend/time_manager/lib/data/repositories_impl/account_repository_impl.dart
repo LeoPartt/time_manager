@@ -1,8 +1,8 @@
 import 'package:time_manager/data/datasources/local/local_storage_service.dart';
 import 'package:time_manager/data/datasources/remote/account_api.dart';
-import 'package:time_manager/data/models/account_model.dart';
-import 'package:time_manager/data/models/user_model.dart';
-import 'package:time_manager/domain/entities/user.dart';
+import 'package:time_manager/data/models/account/account_model.dart';
+import 'package:time_manager/data/models/user/user_model.dart';
+import 'package:time_manager/domain/entities/user/user.dart';
 import 'package:time_manager/domain/repositories/account_repository.dart';
 
 class AccountRepositoryImpl implements AccountRepository {
